@@ -51,6 +51,56 @@ class VET_CPD_Admin {
                 <li><code>/cpd-venue/{venue-name}/</code> - <?php _e('Events by venue', 'vet-cpd-directory'); ?></li>
             </ul>
             <p><?php _e('Make sure to visit Settings > Permalinks and click "Save Changes" after activating this plugin.', 'vet-cpd-directory'); ?></p>
+            
+            <h2><?php _e('Shortcodes', 'vet-cpd-directory'); ?></h2>
+            <p><?php _e('Use these shortcodes to display CPD events anywhere on your site:', 'vet-cpd-directory'); ?></p>
+            
+            <table class="widefat" style="max-width: 900px;">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;"><?php _e('Shortcode', 'vet-cpd-directory'); ?></th>
+                        <th style="width: 40%;"><?php _e('Description', 'vet-cpd-directory'); ?></th>
+                        <th style="width: 30%;"><?php _e('Parameters', 'vet-cpd-directory'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>[cpd_venue_events]</code></td>
+                        <td><?php _e('Display events at a specific venue. Perfect for venue pages.', 'vet-cpd-directory'); ?></td>
+                        <td>
+                            <code>venue_id</code> - <?php _e('ID of the venue', 'vet-cpd-directory'); ?><br>
+                            <code>limit</code> - <?php _e('Number of events (default: 5)', 'vet-cpd-directory'); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>[cpd_instructor_events]</code></td>
+                        <td><?php _e('Display events by a specific instructor. Perfect for instructor pages.', 'vet-cpd-directory'); ?></td>
+                        <td>
+                            <code>instructor_id</code> - <?php _e('ID of the instructor', 'vet-cpd-directory'); ?><br>
+                            <code>limit</code> - <?php _e('Number of events (default: 5)', 'vet-cpd-directory'); ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><code>[cpd_organiser_events]</code></td>
+                        <td><?php _e('Display events by a specific organiser. Perfect for organiser pages.', 'vet-cpd-directory'); ?></td>
+                        <td>
+                            <code>organiser_id</code> - <?php _e('ID of the organiser', 'vet-cpd-directory'); ?><br>
+                            <code>limit</code> - <?php _e('Number of events (default: 5)', 'vet-cpd-directory'); ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3><?php _e('Shortcode Examples', 'vet-cpd-directory'); ?></h3>
+            <pre style="background: #f5f5f5; padding: 15px; border-radius: 4px; max-width: 900px;">
+&lt;!-- Show events at venue ID 123 --&gt;
+[cpd_venue_events venue_id="123" limit="10"]
+
+&lt;!-- Show events by instructor ID 456 --&gt;
+[cpd_instructor_events instructor_id="456" limit="3"]
+
+&lt;!-- Show events by organiser ID 789 --&gt;
+[cpd_organiser_events organiser_id="789" limit="5"]</pre>
         </div>
         <?php
     }

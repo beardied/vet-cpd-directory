@@ -10,6 +10,16 @@ class VET_CPD_Taxonomies {
     
     public static function init() {
         add_action('init', [__CLASS__, 'register']);
+        add_action('init', [__CLASS__, 'fix_tag_rewrite'], 20);
+    }
+    
+    /**
+     * Fix tag rewrite rules to prevent redirect issues
+     */
+    public static function fix_tag_rewrite() {
+        // Ensure cpd-type URLs don't get redirected
+        add_rewrite_rule('cpd-type/([^/]+)/?$', 'index.php?cpd_tag=$matches[1]', 'top');
+        add_rewrite_rule('cpd-type/([^/]+)/page/?([0-9]{1,})/?$', 'index.php?cpd_tag=$matches[1]&paged=$matches[2]', 'top');
     }
     
     public static function register() {
