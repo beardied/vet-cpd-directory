@@ -6,20 +6,10 @@
 class VET_CPD_Taxonomies {
     
     const CATEGORY = 'cpd_category';
-    const TAG = 'cpd_tag';  // Keep internal name as cpd_tag
+    const TAG = 'cpd_tag';
     
     public static function init() {
         add_action('init', [__CLASS__, 'register']);
-        add_action('init', [__CLASS__, 'fix_tag_rewrite'], 20);
-    }
-    
-    /**
-     * Fix tag rewrite rules to prevent redirect issues
-     */
-    public static function fix_tag_rewrite() {
-        // Ensure cpd-type URLs don't get redirected
-        add_rewrite_rule('cpd-type/([^/]+)/?$', 'index.php?cpd_tag=$matches[1]', 'top');
-        add_rewrite_rule('cpd-type/([^/]+)/page/?([0-9]{1,})/?$', 'index.php?cpd_tag=$matches[1]&paged=$matches[2]', 'top');
     }
     
     public static function register() {
@@ -53,7 +43,6 @@ class VET_CPD_Taxonomies {
         register_taxonomy(self::CATEGORY, [VET_CPD_CPD::POST_TYPE], $cat_args);
         
         // Tags (flat) - Status tags like upcoming, on-demand, online, free
-        // Only the URL is cpd-type, everything else stays as "Tags"
         $tag_labels = [
             'name'                       => _x('Tags', 'Taxonomy general name', 'vet-cpd-directory'),
             'singular_name'              => _x('Tag', 'Taxonomy singular name', 'vet-cpd-directory'),
@@ -80,7 +69,7 @@ class VET_CPD_Taxonomies {
             'show_admin_column' => true,
             'show_in_nav_menus' => true,
             'show_tagcloud'     => true,
-            'rewrite'           => ['slug' => 'cpd-type'],  // URL is cpd-type
+            'rewrite'           => ['slug' => 'cpd-type'],
             'show_in_rest'      => true,
         ];
         
