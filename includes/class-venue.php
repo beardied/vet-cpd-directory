@@ -88,4 +88,29 @@ class VET_CPD_Venue {
         ];
         return implode(', ', array_filter($parts));
     }
+    
+    /**
+     * Get all venues
+     */
+    public static function get_all($args = []) {
+        $defaults = [
+            'post_type'      => self::POST_TYPE,
+            'posts_per_page' => -1,
+            'orderby'        => 'title',
+            'order'          => 'ASC',
+        ];
+        return get_posts(array_merge($defaults, $args));
+    }
+    
+    /**
+     * Get all venue meta
+     */
+    public static function get_all_meta($post_id) {
+        $fields = self::get_meta_fields();
+        $meta = [];
+        foreach ($fields as $key => $default) {
+            $meta[$key] = get_post_meta($post_id, $key, true) ?: $default;
+        }
+        return $meta;
+    }
 }
