@@ -6,14 +6,16 @@
 get_header();
 
 while (have_posts()) : the_post();
-    $date = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_date');
+    $start_date = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_start_date');
+    $end_date = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_end_date');
     $all_day = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_all_day');
-    $hours = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_hours');
+    $cost = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_cost');
+    $currency = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_currency');
     $provider_url = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_provider_url');
     $venues = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_venues');
     $show_map = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_show_map');
     $online_url = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_online_url');
-    $organizer_id = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_organizer');
+    $organisers = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_organisers');
     $instructors = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_instructors');
     $series_id = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_series');
     $statuses = VET_CPD_Frontend::get_status(get_the_ID());
@@ -28,12 +30,23 @@ while (have_posts()) : the_post();
         <h1><?php the_title(); ?></h1>
         
         <div class="cpd-header-meta">
-            <?php if ($date) : ?>
-                <span class="cpd-date">📅 <?php echo esc_html(VET_CPD_Frontend::format_date($date, $all_day)); ?></span>
+            <?php if ($start_date) : ?>
+                <span class="cpd-date">📅 
+                    <?php 
+                    echo esc_html(VET_CPD_Frontend::format_date($start_date, $all_day));
+                    if ($end_date) {
+                        echo ' - ' . esc_html(VET_CPD_Frontend::format_date($end_date, $all_day));
+                    }
+                    ?>
+                </span>
             <?php endif; ?>
             
-            <?php if ($hours) : ?>
-                <span class="cpd-hours">⏱ <?php echo esc_html($hours); ?> <?php _e('CPD hours', 'vet-cpd-directory'); ?></span>
+            <?php if ($cost) : ?>
+                <span class="cpd-cost">💰 
+                    <?php echo esc_html($currency . ' ' . number_format($cost, 2)); ?>
+                </span>
+            <?php else : ?>
+                <span class="cpd-cost free"><?php _e('Free', 'vet-cpd-directory'); ?></span>
             <?php endif; ?>
             
             <?php if (!empty($statuses)) : ?>
@@ -105,33 +118,35 @@ while (have_posts()) : the_post();
         </div>
     <?php endif; ?>
     
-    <?php if ($organizer_id) : 
-        $organizer = get_post($organizer_id);
-        if ($organizer) :
-    ?>
-        <div class="cpd-section cpd-organizer">
-            <h2><?php _e('Organizer', 'vet-cpd-directory'); ?></h2>
-            <div class="cpd-person">
-                <?php if (has_post_thumbnail($organizer_id)) : ?>
-                    <?php echo get_the_post_thumbnail($organizer_id, 'thumbnail', ['class' => 'cpd-person-photo']); ?>
-                <?php endif; ?>
-                <div class="cpd-person-info">
-                    <h3><?php echo esc_html($organizer->post_title); ?></h3>
-                    <div class="cpd-person-bio">
-                        <?php echo wp_trim_words($organizer->post_content, 30); ?>
-                    </div>
-                    <div class="cpd-person-contact">
-                        <?php if ($email = VET_CPD_Person::get_meta($organizer_id, '_person_email')) : ?>
-                            <a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a><br>
-                        <?php endif; ?>
-                        <?php if ($website = VET_CPD_Person::get_meta($organizer_id, '_person_website')) : ?>
-                            <a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener"><?php _e('Website', 'vet-cpd-directory'); ?></a>
-                        <?php endif; ?>
+    <?php if (!empty($organisers)) : ?>
+        <div class="cpd-section cpd-organisers">
+            <h2><?php _e('Organisers', 'vet-cpd-directory'); ?></h2>
+            <?php foreach ((array)$organisers as $organiser_id) : 
+                $organiser = get_post($organiser_id);
+                if (!$organiser) continue;
+            ?>
+                <div class="cpd-person">
+                    <?php if (has_post_thumbnail($organiser_id)) : ?>
+                        <?php echo get_the_post_thumbnail($organiser_id, 'thumbnail', ['class' => 'cpd-person-photo']); ?>
+                    <?php endif; ?>
+                    <div class="cpd-person-info">
+                        <h3><?php echo esc_html($organiser->post_title); ?></h3>
+                        <div class="cpd-person-bio">
+                            <?php echo wp_trim_words($organiser->post_content, 30); ?>
+                        </div>
+                        <div class="cpd-person-contact">
+                            <?php if ($email = VET_CPD_Person::get_meta($organiser_id, '_person_email')) : ?>
+                                <a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a><br>
+                            <?php endif; ?>
+                            <?php if ($website = VET_CPD_Person::get_meta($organiser_id, '_person_website')) : ?>
+                                <a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener"><?php _e('Website', 'vet-cpd-directory'); ?></a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
         </div>
-    <?php endif; endif; ?>
+    <?php endif; ?>
     
     <?php if (!empty($instructors)) : ?>
         <div class="cpd-section cpd-instructors">

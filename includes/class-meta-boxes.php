@@ -38,7 +38,7 @@ class VET_CPD_Meta_Boxes {
         
         add_meta_box(
             'cpd_event_people',
-            __('Organizer & Instructors', 'vet-cpd-directory'),
+            __('Organisers & Instructors', 'vet-cpd-directory'),
             [__CLASS__, 'render_cpd_people'],
             VET_CPD_CPD::POST_TYPE,
             'normal',
@@ -82,9 +82,20 @@ class VET_CPD_Meta_Boxes {
         wp_nonce_field('cpd_save_meta', 'cpd_meta_nonce');
         
         $provider_url = VET_CPD_CPD::get_meta($post->ID, '_cpd_provider_url');
-        $date = VET_CPD_CPD::get_meta($post->ID, '_cpd_date');
+        $start_date = VET_CPD_CPD::get_meta($post->ID, '_cpd_start_date');
+        $end_date = VET_CPD_CPD::get_meta($post->ID, '_cpd_end_date');
         $all_day = VET_CPD_CPD::get_meta($post->ID, '_cpd_all_day');
-        $hours = VET_CPD_CPD::get_meta($post->ID, '_cpd_hours');
+        $cost = VET_CPD_CPD::get_meta($post->ID, '_cpd_cost');
+        $currency = VET_CPD_CPD::get_meta($post->ID, '_cpd_currency');
+        
+        $currencies = [
+            'GBP' => 'GBP (£)',
+            'USD' => 'USD ($)',
+            'EUR' => 'EUR (€)',
+            'AUD' => 'AUD ($)',
+            'CAD' => 'CAD ($)',
+            'NZD' => 'NZD ($)',
+        ];
         ?>
         <table class="form-table">
             <tr>
@@ -96,10 +107,17 @@ class VET_CPD_Meta_Boxes {
                 </td>
             </tr>
             <tr>
-                <th><label for="_cpd_date"><?php _e('CPD Date & Time', 'vet-cpd-directory'); ?></label></th>
+                <th><label for="_cpd_start_date"><?php _e('Start Date & Time', 'vet-cpd-directory'); ?></label></th>
                 <td>
-                    <input type="datetime-local" id="_cpd_date" name="_cpd_date" 
-                           value="<?php echo esc_attr($date); ?>" class="regular-text">
+                    <input type="datetime-local" id="_cpd_start_date" name="_cpd_start_date" 
+                           value="<?php echo esc_attr($start_date); ?>" class="regular-text">
+                </td>
+            </tr>
+            <tr>
+                <th><label for="_cpd_end_date"><?php _e('End Date & Time', 'vet-cpd-directory'); ?></label></th>
+                <td>
+                    <input type="datetime-local" id="_cpd_end_date" name="_cpd_end_date" 
+                           value="<?php echo esc_attr($end_date); ?>" class="regular-text">
                 </td>
             </tr>
             <tr>
@@ -109,11 +127,18 @@ class VET_CPD_Meta_Boxes {
                 </td>
             </tr>
             <tr>
-                <th><label for="_cpd_hours"><?php _e('CPD Hours', 'vet-cpd-directory'); ?></label></th>
+                <th><label for="_cpd_cost"><?php _e('Cost', 'vet-cpd-directory'); ?></label></th>
                 <td>
-                    <input type="number" id="_cpd_hours" name="_cpd_hours" 
-                           value="<?php echo esc_attr($hours); ?>" class="small-text" step="0.5" min="0">
-                    <p class="description"><?php _e('Hours of CPD credit awarded', 'vet-cpd-directory'); ?></p>
+                    <input type="number" id="_cpd_cost" name="_cpd_cost" step="0.01" min="0"
+                           value="<?php echo esc_attr($cost); ?>" class="small-text">
+                    <select name="_cpd_currency" style="margin-left: 10px;">
+                        <?php foreach ($currencies as $code => $label) : ?>
+                            <option value="<?php echo esc_attr($code); ?>" <?php selected($currency, $code); ?>>
+                                <?php echo esc_html($label); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <p class="description"><?php _e('Leave blank or 0 for free CPDs', 'vet-cpd-directory'); ?></p>
                 </td>
             </tr>
         </table>
@@ -138,16 +163,30 @@ class VET_CPD_Meta_Boxes {
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="_cpd_venues"><?php _e('Venues', 'vet-cpd-directory'); ?></label></th>
+                <th><?php _e('Venues', 'vet-cpd-directory'); ?></th>
                 <td>
-                    <select id="_cpd_venues" name="_cpd_venues[]" multiple="multiple" style="width: 100%; height: 100px;">
-                        <?php foreach ($all_venues as $venue) : ?>
-                            <option value="<?php echo $venue->ID; ?>" <?php selected(in_array($venue->ID, (array)$venues)); ?>>
-                                <?php echo esc_html($venue->post_title); ?>
-                            </option>
+                    <div id="cpd-venues-container">
+                        <?php 
+                        $venue_array = (array)$venues;
+                        if (empty($venue_array)) $venue_array = [''];
+                        foreach ($venue_array as $index => $venue_id) : 
+                        ?>
+                            <div class="cpd-venue-row" style="margin-bottom: 8px;">
+                                <select name="_cpd_venues[]" style="width: 70%;">
+                                    <option value=""><?php _e('-- Select Venue --', 'vet-cpd-directory'); ?></option>
+                                    <?php foreach ($all_venues as $venue) : ?>
+                                        <option value="<?php echo $venue->ID; ?>" <?php selected($venue_id, $venue->ID); ?>>
+                                            <?php echo esc_html($venue->post_title); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if ($index > 0 || count($venue_array) > 1) : ?>
+                                    <a href="#" class="cpd-remove-venue" style="margin-left: 10px; color: #a00;"><?php _e('Remove', 'vet-cpd-directory'); ?></a>
+                                <?php endif; ?>
+                            </div>
                         <?php endforeach; ?>
-                    </select>
-                    <p class="description"><?php _e('Hold Ctrl/Cmd to select multiple venues', 'vet-cpd-directory'); ?></p>
+                    </div>
+                    <p><a href="#" id="cpd-add-venue" class="button"><?php _e('+ Add another venue', 'vet-cpd-directory'); ?></a></p>
                 </td>
             </tr>
             <tr>
@@ -172,6 +211,24 @@ class VET_CPD_Meta_Boxes {
                 </td>
             </tr>
         </table>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            $('#cpd-add-venue').on('click', function(e) {
+                e.preventDefault();
+                var row = $('.cpd-venue-row:first').clone();
+                row.find('select').val('');
+                row.find('.cpd-remove-venue').remove();
+                row.append('<a href="#" class="cpd-remove-venue" style="margin-left: 10px; color: #a00;"><?php _e('Remove', 'vet-cpd-directory'); ?></a>');
+                $('#cpd-venues-container').append(row);
+            });
+            
+            $(document).on('click', '.cpd-remove-venue', function(e) {
+                e.preventDefault();
+                $(this).closest('.cpd-venue-row').remove();
+            });
+        });
+        </script>
         <?php
     }
     
@@ -179,40 +236,102 @@ class VET_CPD_Meta_Boxes {
      * Render CPD People meta box
      */
     public static function render_cpd_people($post) {
-        $organizer = VET_CPD_CPD::get_meta($post->ID, '_cpd_organizer');
+        $organisers = VET_CPD_CPD::get_meta($post->ID, '_cpd_organisers');
         $instructors = VET_CPD_CPD::get_meta($post->ID, '_cpd_instructors');
         
-        $all_organizers = VET_CPD_Person::get_by_role('organizer');
+        $all_organisers = VET_CPD_Person::get_by_role('organizer');
         $all_instructors = VET_CPD_Person::get_by_role('instructor');
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="_cpd_organizer"><?php _e('Organizer', 'vet-cpd-directory'); ?></label></th>
+                <th><?php _e('Organisers', 'vet-cpd-directory'); ?></th>
                 <td>
-                    <select id="_cpd_organizer" name="_cpd_organizer">
-                        <option value=""><?php _e('-- Select Organizer --', 'vet-cpd-directory'); ?></option>
-                        <?php foreach ($all_organizers as $person) : ?>
-                            <option value="<?php echo $person->ID; ?>" <?php selected($organizer, $person->ID); ?>>
-                                <?php echo esc_html($person->post_title); ?>
-                            </option>
+                    <div id="cpd-organisers-container">
+                        <?php 
+                        $organiser_array = (array)$organisers;
+                        if (empty($organiser_array)) $organiser_array = [''];
+                        foreach ($organiser_array as $index => $organiser_id) : 
+                        ?>
+                            <div class="cpd-organiser-row" style="margin-bottom: 8px;">
+                                <select name="_cpd_organisers[]" style="width: 70%;">
+                                    <option value=""><?php _e('-- Select Organiser --', 'vet-cpd-directory'); ?></option>
+                                    <?php foreach ($all_organisers as $person) : ?>
+                                        <option value="<?php echo $person->ID; ?>" <?php selected($organiser_id, $person->ID); ?>>
+                                            <?php echo esc_html($person->post_title); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if ($index > 0 || count($organiser_array) > 1) : ?>
+                                    <a href="#" class="cpd-remove-organiser" style="margin-left: 10px; color: #a00;"><?php _e('Remove', 'vet-cpd-directory'); ?></a>
+                                <?php endif; ?>
+                            </div>
                         <?php endforeach; ?>
-                    </select>
+                    </div>
+                    <p><a href="#" id="cpd-add-organiser" class="button"><?php _e('+ Add another organiser', 'vet-cpd-directory'); ?></a></p>
                 </td>
             </tr>
             <tr>
-                <th><label for="_cpd_instructors"><?php _e('Instructors', 'vet-cpd-directory'); ?></label></th>
+                <th><?php _e('Instructors', 'vet-cpd-directory'); ?></th>
                 <td>
-                    <select id="_cpd_instructors" name="_cpd_instructors[]" multiple="multiple" style="width: 100%; height: 100px;">
-                        <?php foreach ($all_instructors as $person) : ?>
-                            <option value="<?php echo $person->ID; ?>" <?php selected(in_array($person->ID, (array)$instructors)); ?>>
-                                <?php echo esc_html($person->post_title); ?>
-                            </option>
+                    <div id="cpd-instructors-container">
+                        <?php 
+                        $instructor_array = (array)$instructors;
+                        if (empty($instructor_array)) $instructor_array = [''];
+                        foreach ($instructor_array as $index => $instructor_id) : 
+                        ?>
+                            <div class="cpd-instructor-row" style="margin-bottom: 8px;">
+                                <select name="_cpd_instructors[]" style="width: 70%;">
+                                    <option value=""><?php _e('-- Select Instructor --', 'vet-cpd-directory'); ?></option>
+                                    <?php foreach ($all_instructors as $person) : ?>
+                                        <option value="<?php echo $person->ID; ?>" <?php selected($instructor_id, $person->ID); ?>>
+                                            <?php echo esc_html($person->post_title); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if ($index > 0 || count($instructor_array) > 1) : ?>
+                                    <a href="#" class="cpd-remove-instructor" style="margin-left: 10px; color: #a00;"><?php _e('Remove', 'vet-cpd-directory'); ?></a>
+                                <?php endif; ?>
+                            </div>
                         <?php endforeach; ?>
-                    </select>
-                    <p class="description"><?php _e('Hold Ctrl/Cmd to select multiple instructors', 'vet-cpd-directory'); ?></p>
+                    </div>
+                    <p><a href="#" id="cpd-add-instructor" class="button"><?php _e('+ Add another instructor', 'vet-cpd-directory'); ?></a></p>
                 </td>
             </tr>
         </table>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            // Organisers
+            $('#cpd-add-organiser').on('click', function(e) {
+                e.preventDefault();
+                var row = $('.cpd-organiser-row:first').clone();
+                row.find('select').val('');
+                row.find('.cpd-remove-organiser').remove();
+                row.append('<a href="#" class="cpd-remove-organiser" style="margin-left: 10px; color: #a00;"><?php _e('Remove', 'vet-cpd-directory'); ?></a>');
+                $('#cpd-organisers-container').append(row);
+            });
+            
+            $(document).on('click', '.cpd-remove-organiser', function(e) {
+                e.preventDefault();
+                $(this).closest('.cpd-organiser-row').remove();
+            });
+            
+            // Instructors
+            $('#cpd-add-instructor').on('click', function(e) {
+                e.preventDefault();
+                var row = $('.cpd-instructor-row:first').clone();
+                row.find('select').val('');
+                row.find('.cpd-remove-instructor').remove();
+                row.append('<a href="#" class="cpd-remove-instructor" style="margin-left: 10px; color: #a00;"><?php _e('Remove', 'vet-cpd-directory'); ?></a>');
+                $('#cpd-instructors-container').append(row);
+            });
+            
+            $(document).on('click', '.cpd-remove-instructor', function(e) {
+                e.preventDefault();
+                $(this).closest('.cpd-instructor-row').remove();
+            });
+        });
+        </script>
         <?php
     }
     
@@ -321,7 +440,7 @@ class VET_CPD_Meta_Boxes {
      * Render Person Details meta box
      */
     public static function render_person_details($post) {
-        $role_organizer = VET_CPD_Person::get_meta($post->ID, '_person_role_organizer');
+        $role_organiser = VET_CPD_Person::get_meta($post->ID, '_person_role_organizer');
         $role_instructor = VET_CPD_Person::get_meta($post->ID, '_person_role_instructor');
         $phone = VET_CPD_Person::get_meta($post->ID, '_person_phone');
         $website = VET_CPD_Person::get_meta($post->ID, '_person_website');
@@ -331,7 +450,7 @@ class VET_CPD_Meta_Boxes {
             <tr>
                 <th><?php _e('Role', 'vet-cpd-directory'); ?></th>
                 <td>
-                    <label><input type="checkbox" name="_person_role_organizer" value="1" <?php checked($role_organizer, '1'); ?>> <?php _e('Organizer', 'vet-cpd-directory'); ?></label><br>
+                    <label><input type="checkbox" name="_person_role_organizer" value="1" <?php checked($role_organiser, '1'); ?>> <?php _e('Organiser', 'vet-cpd-directory'); ?></label><br>
                     <label><input type="checkbox" name="_person_role_instructor" value="1" <?php checked($role_instructor, '1'); ?>> <?php _e('Instructor', 'vet-cpd-directory'); ?></label>
                 </td>
             </tr>
@@ -390,13 +509,14 @@ class VET_CPD_Meta_Boxes {
     private static function save_cpd_meta($post_id) {
         $fields = [
             '_cpd_provider_url',
-            '_cpd_date',
+            '_cpd_start_date',
+            '_cpd_end_date',
             '_cpd_all_day',
-            '_cpd_hours',
+            '_cpd_cost',
+            '_cpd_currency',
             '_cpd_show_map',
             '_cpd_show_map_link',
             '_cpd_online_url',
-            '_cpd_organizer',
             '_cpd_series',
             '_cpd_series_order',
         ];
@@ -411,10 +531,13 @@ class VET_CPD_Meta_Boxes {
         }
         
         // Arrays
-        $venues = isset($_POST['_cpd_venues']) ? array_map('intval', $_POST['_cpd_venues']) : [];
+        $venues = isset($_POST['_cpd_venues']) ? array_map('intval', array_filter($_POST['_cpd_venues'])) : [];
         update_post_meta($post_id, '_cpd_venues', $venues);
         
-        $instructors = isset($_POST['_cpd_instructors']) ? array_map('intval', $_POST['_cpd_instructors']) : [];
+        $organisers = isset($_POST['_cpd_organisers']) ? array_map('intval', array_filter($_POST['_cpd_organisers'])) : [];
+        update_post_meta($post_id, '_cpd_organisers', $organisers);
+        
+        $instructors = isset($_POST['_cpd_instructors']) ? array_map('intval', array_filter($_POST['_cpd_instructors'])) : [];
         update_post_meta($post_id, '_cpd_instructors', $instructors);
         
         // Apply auto-tags based on date

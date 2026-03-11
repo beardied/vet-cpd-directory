@@ -12,7 +12,7 @@
  * This script will:
  * - Create system tags (upcoming, on-demand, online, free)
  * - Migrate venues (tribe_venue → cpd_venue)
- * - Migrate organizers (tribe_organizer → cpd_person with organizer role)
+ * - Migrate organisers (tribe_organizer → cpd_person with organiser role)
  * - Migrate instructors (tribe_ext_instructor → cpd_person with instructor role)
  * - Migrate series (tribe_event_series → cpd_series)
  * - Migrate events (tribe_events → cpd_event with categories and tags)
@@ -154,7 +154,7 @@ foreach ($venues as $venue) {
 update_option('vet_cpd_venue_map', $venue_map);
 log_msg("✓ Venues migrated: {$venue_count}", 'success');
 
-// Step 3: Migrate organizers
+// Step 3: Migrate organisers
 log_msg('', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 log_msg('STEP 3: Migrating organisers...', 'info');
@@ -328,8 +328,9 @@ foreach ($events as $event) {
     }
     
     $start_date = get_post_meta($event->ID, '_EventStartDate', true);
-    $duration = get_post_meta($event->ID, '_EventDuration', true);
-    $cpd_hours = $duration ? round($duration / 3600, 1) : '';
+    $end_date = get_post_meta($event->ID, '_EventEndDate', true);
+    $cost = get_post_meta($event->ID, '_EventCost', true);
+    $currency = get_post_meta($event->ID, '_EventCurrencyCode', true) ?: 'GBP';
     
     $new_id = wp_insert_post([
         'post_title'   => $event->post_title,
@@ -346,9 +347,11 @@ foreach ($events as $event) {
     
     // Meta fields
     update_post_meta($new_id, '_cpd_provider_url', get_post_meta($event->ID, '_EventURL', true));
-    update_post_meta($new_id, '_cpd_date', $start_date);
+    update_post_meta($new_id, '_cpd_start_date', $start_date);
+    update_post_meta($new_id, '_cpd_end_date', $end_date);
     update_post_meta($new_id, '_cpd_all_day', get_post_meta($event->ID, '_EventAllDay', true) ?: '0');
-    update_post_meta($new_id, '_cpd_hours', $cpd_hours);
+    update_post_meta($new_id, '_cpd_cost', $cost);
+    update_post_meta($new_id, '_cpd_currency', $currency);
     update_post_meta($new_id, '_old_event_id', $event->ID);
     
     // Venue
@@ -358,14 +361,14 @@ foreach ($events as $event) {
         log_msg("    → Venue assigned");
     }
     
-    // Organizer
+    // Organisers - stored as array now
     $old_org = get_post_meta($event->ID, '_EventOrganizerID', true);
     if ($old_org && isset($organizer_map[$old_org])) {
-        update_post_meta($new_id, '_cpd_organizer', $organizer_map[$old_org]);
+        update_post_meta($new_id, '_cpd_organisers', [$organizer_map[$old_org]]);
         log_msg("    → Organiser assigned");
     }
     
-    // Instructors - CRITICAL FIX: Get ALL instructor IDs
+    // Instructors - Get ALL instructor IDs
     $old_instructor_ids = get_post_meta($event->ID, '_tribe_linked_post_tribe_ext_instructor', false);
     if (!empty($old_instructor_ids)) {
         $new_instructors = [];

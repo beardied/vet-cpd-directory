@@ -20,8 +20,9 @@ get_header();
         <div class="cpd-list">
             <?php while (have_posts()) : the_post(); ?>
                 <?php
-                $date = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_date');
-                $hours = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_hours');
+                $start_date = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_start_date');
+                $cost = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_cost');
+                $currency = VET_CPD_CPD::get_meta(get_the_ID(), '_cpd_currency');
                 $statuses = VET_CPD_Frontend::get_status(get_the_ID());
                 ?>
                 <article class="cpd-card">
@@ -35,16 +36,18 @@ get_header();
                         </h2>
                         
                         <div class="cpd-card-meta">
-                            <?php if ($date) : ?>
+                            <?php if ($start_date) : ?>
                                 <div class="cpd-card-date">
-                                    📅 <?php echo esc_html(VET_CPD_Frontend::format_date($date)); ?>
+                                    📅 <?php echo esc_html(VET_CPD_Frontend::format_date($start_date)); ?>
                                 </div>
                             <?php endif; ?>
                             
-                            <?php if ($hours) : ?>
-                                <span class="cpd-card-hours">
-                                    ⏱ <?php echo esc_html($hours); ?> <?php _e('hours', 'vet-cpd-directory'); ?>
+                            <?php if ($cost) : ?>
+                                <span class="cpd-card-cost">
+                                    💰 <?php echo esc_html($currency . ' ' . number_format($cost, 2)); ?>
                                 </span>
+                            <?php else : ?>
+                                <span class="cpd-card-cost free"><?php _e('Free', 'vet-cpd-directory'); ?></span>
                             <?php endif; ?>
                         </div>
                         
