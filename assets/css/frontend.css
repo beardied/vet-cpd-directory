@@ -275,6 +275,15 @@
     margin: 0 0 8px;
 }
 
+.cpd-person-info h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.cpd-person-info h3 a:hover {
+    color: #0073aa;
+}
+
 .cpd-person-bio {
     color: #555;
     margin-bottom: 10px;
@@ -425,21 +434,13 @@
 .cpd-nav-next a {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     text-decoration: none;
     color: #333;
 }
 
-.cpd-nav-prev a::before {
-    content: "←";
-    font-size: 1.5em;
-    color: #0073aa;
-    flex-shrink: 0;
-}
-
-.cpd-nav-next a::after {
-    content: "→";
-    font-size: 1.5em;
+.cpd-nav-arrow {
+    font-size: 1.4em;
     color: #0073aa;
     flex-shrink: 0;
 }

@@ -183,7 +183,7 @@ while (have_posts()) : the_post();
                             <?php echo get_the_post_thumbnail($instructor_id, 'thumbnail', ['class' => 'cpd-person-photo']); ?>
                         <?php endif; ?>
                         <div class="cpd-person-info">
-                            <h3><?php echo esc_html($instructor->post_title); ?></h3>
+                            <h3><a href="<?php echo get_permalink($instructor_id); ?>"><?php echo esc_html($instructor->post_title); ?></a></h3>
                             <div class="cpd-person-bio">
                                 <?php echo wp_trim_words($instructor->post_content, 30); ?>
                             </div>
@@ -292,7 +292,7 @@ while (have_posts()) : the_post();
                 <?php if ($prev_post) : ?>
                     <div class="cpd-nav-prev">
                         <a href="<?php echo get_permalink($prev_post->ID); ?>">
-                            <span class="cpd-nav-label">← <?php _e('Previous', 'vet-cpd-directory'); ?></span>
+                            <span class="cpd-nav-arrow">←</span>
                             <span class="cpd-nav-title"><?php echo esc_html($prev_post->post_title); ?></span>
                         </a>
                     </div>
@@ -303,8 +303,8 @@ while (have_posts()) : the_post();
                 <?php if ($next_post) : ?>
                     <div class="cpd-nav-next">
                         <a href="<?php echo get_permalink($next_post->ID); ?>">
-                            <span class="cpd-nav-label"><?php _e('Next', 'vet-cpd-directory'); ?> →</span>
                             <span class="cpd-nav-title"><?php echo esc_html($next_post->post_title); ?></span>
+                            <span class="cpd-nav-arrow">→</span>
                         </a>
                     </div>
                 <?php else : ?>
