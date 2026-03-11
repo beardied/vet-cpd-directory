@@ -6,7 +6,6 @@
 get_header();
 
 $term = get_queried_object();
-$is_category = is_tax(VET_CPD_Taxonomies::CATEGORY);
 ?>
 
 <div class="cpd-archive">
@@ -24,7 +23,7 @@ $is_category = is_tax(VET_CPD_Taxonomies::CATEGORY);
         
         <?php if (have_posts()) : ?>
             
-            <div class="cpd-event-grid">
+            <div class="cpd-event-list">
                 <?php while (have_posts()) : the_post(); 
                     $event_id = get_the_ID();
                     
@@ -71,48 +70,34 @@ $is_category = is_tax(VET_CPD_Taxonomies::CATEGORY);
                     }
                     ?>
                     
-                    <article class="cpd-event-card">
-                        <a href="<?php the_permalink(); ?>" class="cpd-card-link">
-                            <div class="cpd-card-image">
-                                <?php if (has_post_thumbnail()) : ?>
-                                    <?php the_post_thumbnail('medium_large'); ?>
-                                <?php else : ?>
-                                    <div class="cpd-card-placeholder">
-                                        <span class="cpd-icon">📚</span>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
+                    <article class="cpd-event-item">
+                        <a href="<?php the_permalink(); ?>" class="cpd-event-link">
+                            <?php if (has_post_thumbnail()) : ?>
+                                <div class="cpd-event-thumb">
+                                    <?php the_post_thumbnail('medium'); ?>
+                                </div>
+                            <?php endif; ?>
                             
-                            <div class="cpd-card-content">
+                            <div class="cpd-event-content">
                                 <?php if ($category) : ?>
-                                    <span class="cpd-card-category">
-                                        <?php echo esc_html($category->name); ?>
-                                    </span>
+                                    <span class="cpd-event-cat"><?php echo esc_html($category->name); ?></span>
                                 <?php endif; ?>
                                 
-                                <h2 class="cpd-card-title"><?php the_title(); ?></h2>
+                                <h2 class="cpd-event-title"><?php the_title(); ?></h2>
                                 
-                                <div class="cpd-card-meta">
+                                <div class="cpd-event-meta">
                                     <?php if ($date_display) : ?>
-                                        <span class="cpd-card-date">
-                                            <span class="cpd-icon">📅</span>
-                                            <?php echo esc_html($date_display); ?>
-                                        </span>
+                                        <span class="cpd-event-date">📅 <?php echo esc_html($date_display); ?></span>
                                     <?php endif; ?>
                                     
-                                    <span class="cpd-card-cost">
-                                        <span class="cpd-icon">💰</span>
-                                        <?php echo esc_html($cost_display); ?>
-                                    </span>
+                                    <span class="cpd-event-cost">💰 <?php echo esc_html($cost_display); ?></span>
                                 </div>
                                 
-                                <div class="cpd-card-excerpt">
-                                    <?php echo wp_trim_words(get_the_excerpt(), 20); ?>
+                                <div class="cpd-event-excerpt">
+                                    <?php echo wp_trim_words(get_the_excerpt(), 25); ?>
                                 </div>
                                 
-                                <span class="cpd-card-more">
-                                    <?php _e('Learn More', 'vet-cpd-directory'); ?> &rarr;
-                                </span>
+                                <span class="cpd-event-readmore"><?php _e('Learn More', 'vet-cpd-directory'); ?> →</span>
                             </div>
                         </a>
                     </article>
