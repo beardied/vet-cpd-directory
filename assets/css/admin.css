@@ -1,0 +1,52 @@
+/* Vet CPD Directory - Admin Styles */
+
+/* Meta box styling */
+#cpd_event_details .form-table th,
+#cpd_event_location .form-table th,
+#cpd_event_people .form-table th,
+#cpd_venue_details .form-table th,
+#cpd_person_details .form-table th {
+    width: 150px;
+    padding: 15px 10px 15px 0;
+}
+
+#cpd_event_details .form-table td,
+#cpd_event_location .form-table td,
+#cpd_event_people .form-table td,
+#cpd_venue_details .form-table td,
+#cpd_person_details .form-table td {
+    padding: 15px 10px;
+}
+
+/* Multi-select styling */
+select[multiple] {
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+
+/* Checkbox styling */
+#cpd_person_details input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Description text */
+.description {
+    color: #666;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* Post type icons in menu */
+#adminmenu .menu-icon-cpd_event .wp-menu-image:before {
+    content: '\f118'; /* dashicons-welcome-learn-more */
+}
+
+/* Column styling */
+.column-cpd_date,
+.column-cpd_hours {
+    width: 120px;
+}
+
+.column-cpd_organizer {
+    width: 150px;
+}
