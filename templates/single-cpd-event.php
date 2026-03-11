@@ -209,6 +209,97 @@ while (have_posts()) : the_post();
             </div>
         <?php endif; endif; endif; ?>
         
+        <!-- Related Events from same organiser -->
+        <?php if (!empty($organiser_ids)) : 
+            $related_events = get_posts([
+                'post_type'      => 'cpd_event',
+                'posts_per_page' => 3,
+                'post__not_in'   => [$event_id],
+                'meta_query'     => [
+                    [
+                        'key'     => '_cpd_organisers',
+                        'value'   => $organiser_ids[0],
+                        'compare' => 'LIKE',
+                    ],
+                ],
+            ]);
+            
+            if (!empty($related_events)) : 
+        ?>
+            <div class="cpd-section cpd-related">
+                <h2><?php _e('Related Events', 'vet-cpd-directory'); ?></h2>
+                <div class="cpd-related-grid">
+                    <?php foreach ($related_events as $related) : 
+                        $rel_date = VET_CPD_CPD::get_meta($related->ID, '_cpd_start_date');
+                        $rel_end = VET_CPD_CPD::get_meta($related->ID, '_cpd_end_date');
+                        $rel_all_day = VET_CPD_CPD::get_meta($related->ID, '_cpd_all_day');
+                        
+                        // Format date
+                        if ($rel_date) {
+                            if ($rel_all_day === '1') {
+                                $rel_date_display = date_i18n('j M Y', strtotime($rel_date));
+                            } else {
+                                $rel_date_display = date_i18n('j M Y @ g:i a', strtotime($rel_date));
+                            }
+                            
+                            if ($rel_end && $rel_end !== $rel_date) {
+                                if ($rel_all_day === '1') {
+                                    $rel_date_display .= ' - ' . date_i18n('j M Y', strtotime($rel_end));
+                                } else {
+                                    $rel_date_display .= ' - ' . date_i18n('j M Y @ g:i a', strtotime($rel_end));
+                                }
+                            }
+                        } else {
+                            $rel_date_display = '';
+                        }
+                    ?>
+                        <div class="cpd-related-item">
+                            <a href="<?php echo get_permalink($related->ID); ?>">
+                                <?php if (has_post_thumbnail($related->ID)) : ?>
+                                    <?php echo get_the_post_thumbnail($related->ID, 'medium', ['class' => 'cpd-related-img']); ?>
+                                <?php endif; ?>
+                                <h4><?php echo esc_html($related->post_title); ?></h4>
+                                <?php if ($rel_date_display) : ?>
+                                    <span class="cpd-related-date"><?php echo esc_html($rel_date_display); ?></span>
+                                <?php endif; ?>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; endif; ?>
+        
+        <!-- Previous/Next Navigation -->
+        <nav class="cpd-post-nav">
+            <?php
+            $prev_post = get_adjacent_post(false, '', true);
+            $next_post = get_adjacent_post(false, '', false);
+            ?>
+            <div class="cpd-nav-links">
+                <?php if ($prev_post) : ?>
+                    <div class="cpd-nav-prev">
+                        <a href="<?php echo get_permalink($prev_post->ID); ?>">
+                            <span class="cpd-nav-label">← <?php _e('Previous', 'vet-cpd-directory'); ?></span>
+                            <span class="cpd-nav-title"><?php echo esc_html($prev_post->post_title); ?></span>
+                        </a>
+                    </div>
+                <?php else : ?>
+                    <div class="cpd-nav-prev cpd-nav-empty"></div>
+                <?php endif; ?>
+                
+                <?php if ($next_post) : ?>
+                    <div class="cpd-nav-next">
+                        <a href="<?php echo get_permalink($next_post->ID); ?>">
+                            <span class="cpd-nav-label"><?php _e('Next', 'vet-cpd-directory'); ?> →</span>
+                            <span class="cpd-nav-title"><?php echo esc_html($next_post->post_title); ?></span>
+                        </a>
+                    </div>
+                <?php else : ?>
+                    <div class="cpd-nav-next cpd-nav-empty"></div>
+                <?php endif; ?>
+            </div>
+        </nav>
+        
         <footer class="cpd-footer">
             <?php
             $categories = get_the_term_list($event_id, 'cpd_category', '', ', ', '');
