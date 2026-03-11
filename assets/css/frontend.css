@@ -117,6 +117,221 @@
     border-color: #0073aa;
 }
 
+/* Single CPD Event */
+.cpd-single {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.cpd-header {
+    margin-bottom: 30px;
+}
+
+.cpd-featured-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.cpd-header h1 {
+    margin-bottom: 15px;
+    font-size: 2em;
+}
+
+.cpd-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    color: #666;
+    font-size: 0.95em;
+    align-items: center;
+}
+
+.cpd-date,
+.cpd-cost {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cpd-status {
+    display: flex;
+    gap: 8px;
+}
+
+.cpd-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.cpd-tag-upcoming {
+    background: #d4edda;
+    color: #155724;
+}
+
+.cpd-tag-on-demand {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.cpd-tag-online {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.cpd-tag-free {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.cpd-content {
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.cpd-section {
+    margin: 30px 0;
+    padding: 25px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.cpd-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+}
+
+.cpd-provider-button {
+    display: inline-block;
+    background: #0073aa;
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+.cpd-provider-button:hover {
+    background: #005177;
+    color: #fff;
+}
+
+.cpd-venue {
+    margin-bottom: 20px;
+}
+
+.cpd-venue h3 {
+    margin-bottom: 5px;
+}
+
+.cpd-venue-address {
+    color: #666;
+    font-style: italic;
+    margin: 0;
+}
+
+.cpd-online {
+    margin-top: 20px;
+}
+
+.cpd-online a {
+    color: #0073aa;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.cpd-person {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.cpd-person-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.cpd-person-info h3 {
+    margin: 0 0 8px;
+}
+
+.cpd-person-bio {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.cpd-person-contact {
+    font-size: 0.9em;
+}
+
+.cpd-person-contact a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.cpd-series-nav {
+    background: #f0f8ff;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 30px 0;
+}
+
+.cpd-series-nav h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.cpd-series-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cpd-series-nav li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.cpd-series-nav li:last-child {
+    border-bottom: none;
+}
+
+.cpd-series-nav .current {
+    font-weight: bold;
+}
+
+.cpd-series-nav a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.cpd-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.cpd-categories,
+.cpd-tags {
+    margin-bottom: 10px;
+}
+
+.cpd-categories a,
+.cpd-tags a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
     .cpd-list {
@@ -131,5 +346,14 @@
     
     .cpd-archive-title {
         font-size: 1.6em;
+    }
+    
+    .cpd-header-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .cpd-person {
+        flex-direction: column;
     }
 }
