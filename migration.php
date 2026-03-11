@@ -341,10 +341,51 @@ foreach ($series as $s) {
 update_option('vet_cpd_series_map', $series_map);
 log_msg("✓ Series migrated: {$series_count}", 'success');
 
-// Step 6: Migrate events
+// Step 6: Migrate all categories (even those without posts)
 log_msg('', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
-log_msg('STEP 6: Migrating events to CPDs...', 'info');
+log_msg('STEP 6: Migrating all categories...', 'info');
+log_msg('═══════════════════════════════════════════════════════════════', 'info');
+
+$all_categories = get_terms([
+    'taxonomy'   => 'tribe_events_cat',
+    'hide_empty' => false,
+    'posts_per_page' => -1,
+]);
+
+$system_slugs = ['online', 'on-demand', 'up-coming', 'free', 'physical-event'];
+$categories_created = 0;
+
+foreach ($all_categories as $cat) {
+    // Skip system tags that should be tags, not categories
+    if (in_array($cat->slug, $system_slugs)) {
+        log_msg("ℹ Skipping system tag: {$cat->name}");
+        continue;
+    }
+    
+    if (!term_exists($cat->slug, 'cpd_category')) {
+        $result = wp_insert_term($cat->name, 'cpd_category', [
+            'slug'        => $cat->slug,
+            'description' => $cat->description,
+        ]);
+        
+        if (!is_wp_error($result)) {
+            log_msg("✓ Created category: {$cat->name}", 'success');
+            $categories_created++;
+        } else {
+            log_msg("✗ ERROR creating category {$cat->name}: " . $result->get_error_message(), 'error');
+        }
+    } else {
+        log_msg("ℹ Category already exists: {$cat->name}");
+    }
+}
+
+log_msg("✓ Categories created: {$categories_created}", 'success');
+
+// Step 7: Migrate events
+log_msg('', 'info');
+log_msg('═══════════════════════════════════════════════════════════════', 'info');
+log_msg('STEP 7: Migrating events to CPDs...', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 
 // CRITICAL FIX: Use WP_Query with suppress_filters to get ALL events
@@ -365,7 +406,7 @@ $organizer_map = get_option('vet_cpd_organizer_map', []);
 $instructor_map = get_option('vet_cpd_instructor_map', []);
 
 $event_count = 0;
-$category_count = 0;
+
 $tag_assignment_count = 0;
 $cat_assignment_count = 0;
 
@@ -460,13 +501,6 @@ foreach ($events as $event) {
             } else {
                 // Subject categories stay as categories
                 $cat_slugs[] = $term->slug;
-                if (!term_exists($term->slug, 'cpd_category')) {
-                    $new_term = wp_insert_term($term->name, 'cpd_category', ['slug' => $term->slug]);
-                    if (!is_wp_error($new_term)) {
-                        log_msg("    → Created category: {$term->name}");
-                        $category_count++;
-                    }
-                }
             }
         }
         
@@ -501,7 +535,6 @@ foreach ($events as $event) {
 }
 
 log_msg("✓ Events migrated: {$event_count}", 'success');
-log_msg("✓ New categories created: {$category_count}", 'success');
 log_msg("✓ Events with categories assigned: {$cat_assignment_count}", 'success');
 log_msg("✓ Events with tags assigned: {$tag_assignment_count}", 'success');
 
@@ -514,7 +547,7 @@ echo '<tr><td>Organisers migrated:</td><td><strong>' . count($organizer_map) . '
 echo '<tr><td>Instructors migrated:</td><td><strong>' . count($instructor_map) . '</strong></td></tr>';
 echo '<tr><td>Series migrated:</td><td><strong>' . count($series_map) . '</strong></td></tr>';
 echo '<tr><td>Events migrated:</td><td><strong>' . $event_count . '</strong></td></tr>';
-echo '<tr><td>Categories created:</td><td><strong>' . $category_count . '</strong></td></tr>';
+echo '<tr><td>Categories imported:</td><td><strong>' . $categories_created . '</strong></td></tr>';
 echo '<tr><td>Events with categories:</td><td><strong>' . $cat_assignment_count . '</strong></td></tr>';
 echo '<tr><td>Events with tags:</td><td><strong>' . $tag_assignment_count . '</strong></td></tr>';
 echo '</table>';
