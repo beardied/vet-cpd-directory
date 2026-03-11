@@ -90,4 +90,16 @@ class VET_CPD_CPD {
         $default = isset($fields[$key]) ? $fields[$key] : '';
         return get_post_meta($post_id, $key, true) ?: $default;
     }
+    
+    /**
+     * Get all CPD meta values
+     */
+    public static function get_all_meta($post_id) {
+        $fields = self::get_meta_fields();
+        $meta = [];
+        foreach ($fields as $key => $default) {
+            $meta[$key] = get_post_meta($post_id, $key, true) ?: $default;
+        }
+        return $meta;
+    }
 }

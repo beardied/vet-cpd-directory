@@ -68,20 +68,27 @@ class VET_CPD_Admin {
      * Custom columns for CPD list
      */
     public static function cpd_columns($columns) {
-        // Remove default tags column to avoid duplication
+        // Remove default taxonomy columns to avoid duplication
         if (isset($columns['taxonomy-cpd_tag'])) {
             unset($columns['taxonomy-cpd_tag']);
+        }
+        if (isset($columns['taxonomy-cpd_category'])) {
+            unset($columns['taxonomy-cpd_category']);
         }
         
         $new_columns = [];
         foreach ($columns as $key => $value) {
             $new_columns[$key] = $value;
             if ($key === 'title') {
-                $new_columns['cpd_date'] = __('Start Date', 'vet-cpd-directory');
+                $new_columns['cpd_start_date'] = __('Start Date', 'vet-cpd-directory');
+                $new_columns['cpd_start_time'] = __('Start Time', 'vet-cpd-directory');
+                $new_columns['cpd_end_date'] = __('End Date', 'vet-cpd-directory');
+                $new_columns['cpd_end_time'] = __('End Time', 'vet-cpd-directory');
                 $new_columns['cpd_cost'] = __('Cost', 'vet-cpd-directory');
                 $new_columns['cpd_venues'] = __('Venues', 'vet-cpd-directory');
                 $new_columns['cpd_instructors'] = __('Instructors', 'vet-cpd-directory');
                 $new_columns['cpd_organisers'] = __('Organisers', 'vet-cpd-directory');
+                $new_columns['cpd_categories'] = __('Categories', 'vet-cpd-directory');
                 $new_columns['cpd_tags'] = __('Tags', 'vet-cpd-directory');
             }
         }
@@ -93,17 +100,46 @@ class VET_CPD_Admin {
      */
     public static function cpd_column_content($column, $post_id) {
         switch ($column) {
-            case 'cpd_date':
+            case 'cpd_start_date':
                 $date = VET_CPD_CPD::get_meta($post_id, '_cpd_start_date');
                 if ($date) {
                     echo esc_html(date_i18n(get_option('date_format'), strtotime($date)));
+                } else {
+                    echo '<em>' . __('—', 'vet-cpd-directory') . '</em>';
+                }
+                break;
+                
+            case 'cpd_start_time':
+                $date = VET_CPD_CPD::get_meta($post_id, '_cpd_start_date');
+                if ($date) {
+                    echo esc_html(date_i18n(get_option('time_format'), strtotime($date)));
+                } else {
+                    echo '<em>' . __('—', 'vet-cpd-directory') . '</em>';
+                }
+                break;
+                
+            case 'cpd_end_date':
+                $date = VET_CPD_CPD::get_meta($post_id, '_cpd_end_date');
+                if ($date) {
+                    echo esc_html(date_i18n(get_option('date_format'), strtotime($date)));
+                } else {
+                    echo '<em>' . __('—', 'vet-cpd-directory') . '</em>';
+                }
+                break;
+                
+            case 'cpd_end_time':
+                $date = VET_CPD_CPD::get_meta($post_id, '_cpd_end_date');
+                if ($date) {
+                    echo esc_html(date_i18n(get_option('time_format'), strtotime($date)));
+                } else {
+                    echo '<em>' . __('—', 'vet-cpd-directory') . '</em>';
                 }
                 break;
                 
             case 'cpd_cost':
                 $cost = VET_CPD_CPD::get_meta($post_id, '_cpd_cost');
                 $currency = VET_CPD_CPD::get_meta($post_id, '_cpd_currency') ?: 'GBP';
-                if ($cost) {
+                if ($cost && $cost !== '0') {
                     $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
                     echo esc_html($symbol . $cost);
                 } else {
@@ -159,6 +195,15 @@ class VET_CPD_Admin {
                 }
                 break;
                 
+            case 'cpd_categories':
+                $cats = get_the_term_list($post_id, 'cpd_category', '', ', ', '');
+                if ($cats) {
+                    echo $cats;
+                } else {
+                    echo '<em>' . __('—', 'vet-cpd-directory') . '</em>';
+                }
+                break;
+                
             case 'cpd_tags':
                 $tags = get_the_term_list($post_id, 'cpd_tag', '', ', ', '');
                 if ($tags) {
@@ -174,7 +219,8 @@ class VET_CPD_Admin {
      * Sortable columns
      */
     public static function cpd_sortable_columns($columns) {
-        $columns['cpd_date'] = '_cpd_start_date';
+        $columns['cpd_start_date'] = '_cpd_start_date';
+        $columns['cpd_end_date'] = '_cpd_end_date';
         $columns['cpd_cost'] = '_cpd_cost';
         return $columns;
     }
