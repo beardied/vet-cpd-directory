@@ -22,7 +22,7 @@ class VET_CPD_CPD {
             'new_item'              => __('New CPD Event', 'vet-cpd-directory'),
             'edit_item'             => __('Edit CPD Event', 'vet-cpd-directory'),
             'view_item'             => __('View CPD Event', 'vet-cpd-directory'),
-            'all_items'             => __('All CPD Events', 'vet-cpd-directory'),
+            'all_items'             => __('CPD Events', 'vet-cpd-directory'),
             'search_items'          => __('Search CPD Events', 'vet-cpd-directory'),
             'parent_item_colon'     => __('Parent CPD Events:', 'vet-cpd-directory'),
             'not_found'             => __('No CPD events found.', 'vet-cpd-directory'),

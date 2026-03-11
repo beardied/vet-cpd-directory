@@ -22,7 +22,7 @@ class VET_CPD_Series {
             'new_item'              => __('New Series', 'vet-cpd-directory'),
             'edit_item'             => __('Edit Series', 'vet-cpd-directory'),
             'view_item'             => __('View Series', 'vet-cpd-directory'),
-            'all_items'             => __('All Series', 'vet-cpd-directory'),
+            'all_items'             => __('Series', 'vet-cpd-directory'),
             'search_items'          => __('Search Series', 'vet-cpd-directory'),
             'not_found'             => __('No series found.', 'vet-cpd-directory'),
             'not_found_in_trash'    => __('No series found in Trash.', 'vet-cpd-directory'),

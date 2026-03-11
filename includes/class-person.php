@@ -9,6 +9,7 @@ class VET_CPD_Person {
     
     public static function init() {
         add_action('init', [__CLASS__, 'register']);
+        add_action('admin_menu', [__CLASS__, 'add_role_submenus']);
     }
     
     public static function register() {
@@ -22,7 +23,7 @@ class VET_CPD_Person {
             'new_item'              => __('New Person', 'vet-cpd-directory'),
             'edit_item'             => __('Edit Person', 'vet-cpd-directory'),
             'view_item'             => __('View Person', 'vet-cpd-directory'),
-            'all_items'             => __('All People', 'vet-cpd-directory'),
+            'all_items'             => __('People', 'vet-cpd-directory'),
             'search_items'          => __('Search People', 'vet-cpd-directory'),
             'not_found'             => __('No people found.', 'vet-cpd-directory'),
             'not_found_in_trash'    => __('No people found in Trash.', 'vet-cpd-directory'),
@@ -44,6 +45,29 @@ class VET_CPD_Person {
         ];
         
         register_post_type(self::POST_TYPE, $args);
+    }
+    
+    /**
+     * Add separate submenus for Instructors and Organisers
+     */
+    public static function add_role_submenus() {
+        // Instructors submenu
+        add_submenu_page(
+            'edit.php?post_type=cpd_event',
+            __('Instructors', 'vet-cpd-directory'),
+            __('Instructors', 'vet-cpd-directory'),
+            'edit_posts',
+            'edit.php?post_type=cpd_person&role=instructor'
+        );
+        
+        // Organisers submenu
+        add_submenu_page(
+            'edit.php?post_type=cpd_event',
+            __('Organisers', 'vet-cpd-directory'),
+            __('Organisers', 'vet-cpd-directory'),
+            'edit_posts',
+            'edit.php?post_type=cpd_person&role=organiser'
+        );
     }
     
     /**

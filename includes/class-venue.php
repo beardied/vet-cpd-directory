@@ -22,7 +22,7 @@ class VET_CPD_Venue {
             'new_item'              => __('New Venue', 'vet-cpd-directory'),
             'edit_item'             => __('Edit Venue', 'vet-cpd-directory'),
             'view_item'             => __('View Venue', 'vet-cpd-directory'),
-            'all_items'             => __('All Venues', 'vet-cpd-directory'),
+            'all_items'             => __('Venues', 'vet-cpd-directory'),
             'search_items'          => __('Search Venues', 'vet-cpd-directory'),
             'not_found'             => __('No venues found.', 'vet-cpd-directory'),
             'not_found_in_trash'    => __('No venues found in Trash.', 'vet-cpd-directory'),

@@ -1,9 +1,10 @@
 <?php
 /**
  * Plugin Name: Vet CPD Directory
- * Description: A veterinary Continuing Professional Development directory plugin. Replaces The Events Calendar for CPD listings.
+ * Description: Veterinary CPD Directory - Manage veterinary Continuing Professional Development courses, venues, instructors, and organisers
  * Version: 1.0.0
- * Author: Custom Development
+ * Author: OrangeWidow
+ * Author URI: https://orangewidow.com
  * License: GPL v2 or later
  * Text Domain: vet-cpd-directory
  * Domain Path: /languages
