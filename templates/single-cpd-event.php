@@ -104,14 +104,27 @@ while (have_posts()) : the_post();
                         if (!$venue) continue;
                         
                         $is_online = strtolower($venue->post_title) === 'online';
+                        $venue_address = VET_CPD_Venue::get_full_address($venue_id);
                     ?>
                         <div class="cpd-venue">
                             <h3><?php echo esc_html($venue->post_title); ?></h3>
                             
-                            <?php if (!$is_online) : ?>
+                            <?php if (!$is_online && $venue_address) : ?>
                                 <p class="cpd-venue-address">
-                                    <?php echo esc_html(VET_CPD_Venue::get_full_address($venue_id)); ?>
+                                    <?php echo esc_html($venue_address); ?>
                                 </p>
+                                
+                                <!-- Show map for physical venues -->
+                                <div class="cpd-map">
+                                    <?php
+                                    $map_address = urlencode($venue_address);
+                                    $map_url = 'https://maps.google.com/maps?q=' . $map_address . '&t=m&z=15&ie=UTF8&iwloc=&output=embed';
+                                    ?>
+                                    <iframe width="100%" height="300" frameborder="0" scrolling="no" 
+                                            marginheight="0" marginwidth="0" 
+                                            src="<?php echo esc_url($map_url); ?>">
+                                    </iframe>
+                                </div>
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
