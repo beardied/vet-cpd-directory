@@ -18,12 +18,29 @@ $meta = VET_CPD_CPD::get_all_meta($event_id);
 $start_date = $meta['_cpd_start_date'] ?? '';
 $end_date = $meta['_cpd_end_date'] ?? '';
 $all_day = $meta['_cpd_all_day'] ?? '0';
-$date_display = VET_CPD_Template::get_formatted_date($start_date, $end_date, $all_day === '1');
+
+// Format date display
+$date_display = '';
+if ($start_date) {
+    $start_formatted = date_i18n(get_option('date_format') . ($all_day !== '1' ? ' ' . get_option('time_format') : ''), strtotime($start_date));
+    if ($end_date && $end_date !== $start_date) {
+        $end_formatted = date_i18n(get_option('date_format') . ($all_day !== '1' ? ' ' . get_option('time_format') : ''), strtotime($end_date));
+        $date_display = $start_formatted . ' - ' . $end_formatted;
+    } else {
+        $date_display = $start_formatted;
+    }
+}
 
 // Get cost
 $cost = $meta['_cpd_cost'] ?? '';
 $currency = $meta['_cpd_currency'] ?? 'GBP';
-$cost_display = VET_CPD_Template::format_cost($cost, $currency);
+$cost_display = '';
+if ($cost !== '' && $cost !== '0') {
+    $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
+    $cost_display = $symbol . $cost;
+} else {
+    $cost_display = __('Free', 'vet-cpd-directory');
+}
 
 // Get venues
 $venue_ids = isset($meta['_cpd_venues']) && is_array($meta['_cpd_venues']) ? $meta['_cpd_venues'] : [];
@@ -80,12 +97,10 @@ $provider_url = $meta['_cpd_provider_url'] ?? '';
                         </div>
                     <?php endif; ?>
                     
-                    <?php if ($cost !== '') : ?>
-                        <div class="cpd-meta-item">
-                            <span class="cpd-icon">💰</span>
-                            <span><?php echo esc_html($cost_display); ?></span>
-                        </div>
-                    <?php endif; ?>
+                    <div class="cpd-meta-item">
+                        <span class="cpd-icon">💰</span>
+                        <span><?php echo esc_html($cost_display); ?></span>
+                    </div>
                     
                     <?php if ($provider_url) : ?>
                         <div class="cpd-meta-item">
@@ -116,45 +131,34 @@ $provider_url = $meta['_cpd_provider_url'] ?? '';
                             $venue = get_post($venue_id);
                             if (!$venue) continue;
                             
-                            $venue_meta = VET_CPD_Venue::get_all_meta($venue_id);
-                            $address = VET_CPD_Venue::get_address_display($venue_id);
-                            
                             // Check if this is an "Online" venue
                             $is_online = strtolower($venue->post_title) === 'online';
+                            
+                            // Get venue meta
+                            $venue_address = get_post_meta($venue_id, '_venue_address', true);
+                            $venue_city = get_post_meta($venue_id, '_venue_city', true);
+                            $venue_country = get_post_meta($venue_id, '_venue_country', true);
+                            $venue_postal = get_post_meta($venue_id, '_venue_postal_code', true);
                             ?>
                             <div class="cpd-venue <?php echo $is_online ? 'cpd-venue-online' : 'cpd-venue-physical'; ?>">
                                 <h3><?php echo esc_html($venue->post_title); ?></h3>
                                 
-                                <?php if ($address) : ?>
-                                    <p class="cpd-venue-address"><?php echo esc_html($address); ?></p>
+                                <?php if (!$is_online && ($venue_address || $venue_city)) : ?>
+                                    <p class="cpd-venue-address">
+                                        <?php 
+                                        $parts = array_filter([$venue_address, $venue_city, $venue_postal, $venue_country]);
+                                        echo esc_html(implode(', ', $parts));
+                                        ?>
+                                    </p>
                                 <?php endif; ?>
                                 
-                                <?php if ($is_online && $meta['_cpd_online_url']) : ?>
+                                <?php if ($is_online && !empty($meta['_cpd_online_url'])) : ?>
                                     <p class="cpd-online-url">
                                         <a href="<?php echo esc_url($meta['_cpd_online_url']); ?>" target="_blank" rel="noopener">
                                             <?php _e('Join Online Event', 'vet-cpd-directory'); ?> &rarr;
                                         </a>
                                     </p>
                                 <?php endif; ?>
-                                
-                                <?php 
-                                // Only show map for physical venues (not Online)
-                                if (!$is_online) : 
-                                    $map_url = VET_CPD_Venue::get_map_url($venue_id);
-                                    if ($map_url) : 
-                                        ?>
-                                        <div class="cpd-venue-map">
-                                            <iframe 
-                                                width="100%" 
-                                                height="300" 
-                                                frameborder="0" 
-                                                style="border:0" 
-                                                src="<?php echo esc_url($map_url); ?>" 
-                                                allowfullscreen>
-                                            </iframe>
-                                        </div>
-                                    <?php endif; 
-                                endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -169,7 +173,9 @@ $provider_url = $meta['_cpd_provider_url'] ?? '';
                                 $organiser = get_post($organiser_id);
                                 if (!$organiser) continue;
                                 
-                                $person_meta = VET_CPD_Person::get_all_meta($organiser_id);
+                                $phone = get_post_meta($organiser_id, '_organiser_phone', true);
+                                $website = get_post_meta($organiser_id, '_organiser_website', true);
+                                $email = get_post_meta($organiser_id, '_organiser_email', true);
                                 ?>
                                 <div class="cpd-person-card">
                                     <div class="cpd-person-avatar">
@@ -187,33 +193,32 @@ $provider_url = $meta['_cpd_provider_url'] ?? '';
                                         </h3>
                                         <p class="cpd-person-role"><?php _e('Organiser', 'vet-cpd-directory'); ?></p>
                                         
-                                        <?php if (!empty($person_meta['_person_phone'])) : ?>
+                                        <?php if ($phone) : ?>
                                             <p class="cpd-person-phone">
                                                 <span class="cpd-icon">📞</span>
-                                                <a href="tel:<?php echo esc_attr($person_meta['_person_phone']); ?>">
-                                                    <?php echo esc_html($person_meta['_person_phone']); ?>
+                                                <a href="tel:<?php echo esc_attr($phone); ?>">
+                                                    <?php echo esc_html($phone); ?>
                                                 </a>
                                             </p>
                                         <?php endif; ?>
                                         
-                                        <?php if (!empty($person_meta['_person_email'])) : ?>
+                                        <?php if ($email) : ?>
                                             <p class="cpd-person-email">
                                                 <span class="cpd-icon">✉️</span>
-                                                <a href="mailto:<?php echo esc_attr($person_meta['_person_email']); ?>">
-                                                    <?php echo esc_html($person_meta['_person_email']); ?>
+                                                <a href="mailto:<?php echo esc_attr($email); ?>">
+                                                    <?php echo esc_html($email); ?>
                                                 </a>
                                             </p>
                                         <?php endif; ?>
                                         
-                                        <?php if (!empty($person_meta['_person_website'])) : 
-                                            $website_url = $person_meta['_person_website'];
-                                            $website_display = parse_url($website_url, PHP_URL_HOST);
-                                            $website_display = str_replace('www.', '', $website_display);
+                                        <?php if ($website) : 
+                                            $website_display = parse_url($website, PHP_URL_HOST);
+                                            $website_display = $website_display ? str_replace('www.', '', $website_display) : $website;
                                             ?>
                                             <p class="cpd-person-website">
                                                 <span class="cpd-icon">🌐</span>
                                                 <?php _e('Website:', 'vet-cpd-directory'); ?>
-                                                <a href="<?php echo esc_url($website_url); ?>" target="_blank" rel="noopener">
+                                                <a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener">
                                                     <?php echo esc_html($website_display); ?>
                                                 </a>
                                             </p>
@@ -234,7 +239,8 @@ $provider_url = $meta['_cpd_provider_url'] ?? '';
                                 $instructor = get_post($instructor_id);
                                 if (!$instructor) continue;
                                 
-                                $person_meta = VET_CPD_Person::get_all_meta($instructor_id);
+                                $website = get_post_meta($instructor_id, '_instructor_website', true);
+                                $email = get_post_meta($instructor_id, '_instructor_email', true);
                                 ?>
                                 <div class="cpd-person-card">
                                     <div class="cpd-person-avatar">
@@ -252,24 +258,23 @@ $provider_url = $meta['_cpd_provider_url'] ?? '';
                                         </h3>
                                         <p class="cpd-person-role"><?php _e('Instructor', 'vet-cpd-directory'); ?></p>
                                         
-                                        <?php if (!empty($person_meta['_person_email'])) : ?>
+                                        <?php if ($email) : ?>
                                             <p class="cpd-person-email">
                                                 <span class="cpd-icon">✉️</span>
-                                                <a href="mailto:<?php echo esc_attr($person_meta['_person_email']); ?>">
-                                                    <?php echo esc_html($person_meta['_person_email']); ?>
+                                                <a href="mailto:<?php echo esc_attr($email); ?>">
+                                                    <?php echo esc_html($email); ?>
                                                 </a>
                                             </p>
                                         <?php endif; ?>
                                         
-                                        <?php if (!empty($person_meta['_person_website'])) : 
-                                            $website_url = $person_meta['_person_website'];
-                                            $website_display = parse_url($website_url, PHP_URL_HOST);
-                                            $website_display = str_replace('www.', '', $website_display);
+                                        <?php if ($website) : 
+                                            $website_display = parse_url($website, PHP_URL_HOST);
+                                            $website_display = $website_display ? str_replace('www.', '', $website_display) : $website;
                                             ?>
                                             <p class="cpd-person-website">
                                                 <span class="cpd-icon">🌐</span>
                                                 <?php _e('Website:', 'vet-cpd-directory'); ?>
-                                                <a href="<?php echo esc_url($website_url); ?>" target="_blank" rel="noopener">
+                                                <a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener">
                                                     <?php echo esc_html($website_display); ?>
                                                 </a>
                                             </p>
@@ -283,18 +288,19 @@ $provider_url = $meta['_cpd_provider_url'] ?? '';
                 
                 <!-- Related Events from same organiser -->
                 <?php if (!empty($organiser_ids)) : 
-                    $related_query = new WP_Query([
+                    $related_args = [
                         'post_type'      => 'cpd_event',
                         'posts_per_page' => 3,
                         'post__not_in'   => [$event_id],
                         'meta_query'     => [
                             [
                                 'key'     => '_cpd_organisers',
-                                'value'   => '"' . implode('" OR "', $organiser_ids) . '"',
+                                'value'   => $organiser_ids[0],
                                 'compare' => 'LIKE',
                             ],
                         ],
-                    ]);
+                    ];
+                    $related_query = new WP_Query($related_args);
                     
                     if ($related_query->have_posts()) : 
                         ?>
@@ -410,16 +416,16 @@ $provider_url = $meta['_cpd_provider_url'] ?? '';
                 <?php endif; ?>
                 
                 <?php 
-                $types = get_the_terms($event_id, 'cpd_type');
-                if ($types && !is_wp_error($types)) : 
+                $tags = get_the_terms($event_id, 'cpd_tag');
+                if ($tags && !is_wp_error($tags)) : 
                     ?>
-                    <div class="cpd-sidebar-widget cpd-widget-types">
-                        <h3><?php _e('Types', 'vet-cpd-directory'); ?></h3>
-                        <ul class="cpd-taxonomy-list cpd-type-list">
-                            <?php foreach ($types as $type) : ?>
+                    <div class="cpd-sidebar-widget cpd-widget-tags">
+                        <h3><?php _e('Tags', 'vet-cpd-directory'); ?></h3>
+                        <ul class="cpd-taxonomy-list cpd-tag-list">
+                            <?php foreach ($tags as $tag) : ?>
                                 <li>
-                                    <span class="cpd-type-badge cpd-type-<?php echo esc_attr($type->slug); ?>">
-                                        <?php echo esc_html($type->name); ?>
+                                    <span class="cpd-tag-badge cpd-tag-<?php echo esc_attr($tag->slug); ?>">
+                                        <?php echo esc_html($tag->name); ?>
                                     </span>
                                 </li>
                             <?php endforeach; ?>

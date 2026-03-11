@@ -75,8 +75,8 @@ log_msg('═══════════════════════�
 
 $system_tags = ['upcoming', 'on-demand', 'online', 'free'];
 foreach ($system_tags as $tag) {
-    if (!term_exists($tag, 'cpd_type')) {
-        $result = wp_insert_term($tag, 'cpd_type', ['slug' => $tag]);
+    if (!term_exists($tag, 'cpd_tag')) {
+        $result = wp_insert_term($tag, 'cpd_tag', ['slug' => $tag]);
         if (!is_wp_error($result)) {
             log_msg("✓ Created tag: {$tag}", 'success');
         } else {
@@ -112,10 +112,18 @@ foreach ($venues as $venue) {
         continue;
     }
     
+    // Preserve original post status
+    $post_status = $venue->post_status;
+    
     $new_id = wp_insert_post([
-        'post_title'  => $venue->post_title,
-        'post_type'   => 'cpd_venue',
-        'post_status' => 'publish',
+        'post_title'   => $venue->post_title,
+        'post_type'    => 'cpd_venue',
+        'post_status'  => $post_status,
+        'post_content' => $venue->post_content,
+        'post_date'    => $venue->post_date,
+        'post_date_gmt'=> $venue->post_date_gmt,
+        'post_modified'=> $venue->post_modified,
+        'post_modified_gmt' => $venue->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
@@ -142,9 +150,14 @@ foreach ($venues as $venue) {
         }
     }
     
+    // Preserve featured image
+    if (has_post_thumbnail($venue->ID)) {
+        set_post_thumbnail($new_id, get_post_thumbnail_id($venue->ID));
+    }
+    
     $venue_map[$venue->ID] = $new_id;
     $venue_count++;
-    log_msg("✓ Migrated: {$venue->post_title} ({$venue->ID} → {$new_id})", 'success');
+    log_msg("✓ Migrated: {$venue->post_title} ({$venue->ID} → {$new_id}) [{$post_status}]", 'success');
 }
 
 update_option('vet_cpd_venue_map', $venue_map);
@@ -174,32 +187,38 @@ foreach ($organizers as $org) {
         continue;
     }
     
+    // Preserve original post status
+    $post_status = $org->post_status;
+    
     $new_id = wp_insert_post([
         'post_title'   => $org->post_title,
         'post_content' => $org->post_content,
-        'post_type'    => 'cpd_person',
-        'post_status'  => 'publish',
+        'post_type'    => 'cpd_organiser',
+        'post_status'  => $post_status,
+        'post_date'    => $org->post_date,
+        'post_date_gmt'=> $org->post_date_gmt,
+        'post_modified'=> $org->post_modified,
+        'post_modified_gmt' => $org->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
-        log_msg("✗ ERROR creating person '{$org->post_title}': " . $new_id->get_error_message(), 'error');
+        log_msg("✗ ERROR creating organiser '{$org->post_title}': " . $new_id->get_error_message(), 'error');
         continue;
     }
     
-    update_post_meta($new_id, '_person_role_organizer', '1');
-    update_post_meta($new_id, '_person_role_instructor', '0');
-    update_post_meta($new_id, '_person_phone', get_post_meta($org->ID, '_OrganizerPhone', true));
-    update_post_meta($new_id, '_person_website', get_post_meta($org->ID, '_OrganizerWebsite', true));
-    update_post_meta($new_id, '_person_email', get_post_meta($org->ID, '_OrganizerEmail', true));
+    update_post_meta($new_id, '_organiser_phone', get_post_meta($org->ID, '_OrganizerPhone', true));
+    update_post_meta($new_id, '_organiser_website', get_post_meta($org->ID, '_OrganizerWebsite', true));
+    update_post_meta($new_id, '_organiser_email', get_post_meta($org->ID, '_OrganizerEmail', true));
     update_post_meta($new_id, '_old_organizer_id', $org->ID);
     
+    // Preserve featured image
     if (has_post_thumbnail($org->ID)) {
         set_post_thumbnail($new_id, get_post_thumbnail_id($org->ID));
     }
     
     $organizer_map[$org->ID] = $new_id;
     $organizer_count++;
-    log_msg("✓ Migrated: {$org->post_title} ({$org->ID} → {$new_id})", 'success');
+    log_msg("✓ Migrated: {$org->post_title} ({$org->ID} → {$new_id}) [{$post_status}]", 'success');
 }
 
 update_option('vet_cpd_organizer_map', $organizer_map);
@@ -229,32 +248,38 @@ foreach ($instructors as $inst) {
         continue;
     }
     
+    // Preserve original post status
+    $post_status = $inst->post_status;
+    
     $new_id = wp_insert_post([
         'post_title'   => $inst->post_title,
         'post_content' => $inst->post_content,
-        'post_type'    => 'cpd_person',
-        'post_status'  => 'publish',
+        'post_type'    => 'cpd_instructor',
+        'post_status'  => $post_status,
+        'post_date'    => $inst->post_date,
+        'post_date_gmt'=> $inst->post_date_gmt,
+        'post_modified'=> $inst->post_modified,
+        'post_modified_gmt' => $inst->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
-        log_msg("✗ ERROR creating person '{$inst->post_title}': " . $new_id->get_error_message(), 'error');
+        log_msg("✗ ERROR creating instructor '{$inst->post_title}': " . $new_id->get_error_message(), 'error');
         continue;
     }
     
-    update_post_meta($new_id, '_person_role_organizer', '0');
-    update_post_meta($new_id, '_person_role_instructor', '1');
-    update_post_meta($new_id, '_person_phone', get_post_meta($inst->ID, '_tribe_ext_instructor_phone', true));
-    update_post_meta($new_id, '_person_website', get_post_meta($inst->ID, '_tribe_ext_instructor_website', true));
-    update_post_meta($new_id, '_person_email', get_post_meta($inst->ID, '_tribe_ext_instructor_email_address', true));
+    update_post_meta($new_id, '_instructor_phone', get_post_meta($inst->ID, '_tribe_ext_instructor_phone', true));
+    update_post_meta($new_id, '_instructor_website', get_post_meta($inst->ID, '_tribe_ext_instructor_website', true));
+    update_post_meta($new_id, '_instructor_email', get_post_meta($inst->ID, '_tribe_ext_instructor_email_address', true));
     update_post_meta($new_id, '_old_instructor_id', $inst->ID);
     
+    // Preserve featured image
     if (has_post_thumbnail($inst->ID)) {
         set_post_thumbnail($new_id, get_post_thumbnail_id($inst->ID));
     }
     
     $instructor_map[$inst->ID] = $new_id;
     $instructor_count++;
-    log_msg("✓ Migrated: {$inst->post_title} ({$inst->ID} → {$new_id})", 'success');
+    log_msg("✓ Migrated: {$inst->post_title} ({$inst->ID} → {$new_id}) [{$post_status}]", 'success');
 }
 
 update_option('vet_cpd_instructor_map', $instructor_map);
@@ -284,11 +309,18 @@ foreach ($series as $s) {
         continue;
     }
     
+    // Preserve original post status
+    $post_status = $s->post_status;
+    
     $new_id = wp_insert_post([
         'post_title'   => $s->post_title,
         'post_content' => $s->post_content,
         'post_type'    => 'cpd_series',
-        'post_status'  => 'publish',
+        'post_status'  => $post_status,
+        'post_date'    => $s->post_date,
+        'post_date_gmt'=> $s->post_date_gmt,
+        'post_modified'=> $s->post_modified,
+        'post_modified_gmt' => $s->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
@@ -296,13 +328,14 @@ foreach ($series as $s) {
         continue;
     }
     
+    // Preserve featured image
     if (has_post_thumbnail($s->ID)) {
         set_post_thumbnail($new_id, get_post_thumbnail_id($s->ID));
     }
     
     $series_map[$s->ID] = $new_id;
     $series_count++;
-    log_msg("✓ Migrated: {$s->post_title} ({$s->ID} → {$new_id})", 'success');
+    log_msg("✓ Migrated: {$s->post_title} ({$s->ID} → {$new_id}) [{$post_status}]", 'success');
 }
 
 update_option('vet_cpd_series_map', $series_map);
@@ -355,12 +388,18 @@ foreach ($events as $event) {
     $cost = get_post_meta($event->ID, '_EventCost', true);
     $currency = get_post_meta($event->ID, '_EventCurrencyCode', true) ?: 'GBP';
     
+    // Preserve original post status and dates
+    $post_status = $event->post_status;
+    
     $new_id = wp_insert_post([
         'post_title'   => $event->post_title,
         'post_content' => $event->post_content,
         'post_type'    => 'cpd_event',
-        'post_status'  => $event->post_status,
+        'post_status'  => $post_status,
         'post_date'    => $event->post_date,
+        'post_date_gmt'=> $event->post_date_gmt,
+        'post_modified'=> $event->post_modified,
+        'post_modified_gmt' => $event->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
@@ -406,18 +445,18 @@ foreach ($events as $event) {
         }
     }
     
-    // Categories and tags (now cpd_type)
+    // Categories and tags (cpd_tag taxonomy)
     $terms = get_the_terms($event->ID, 'tribe_events_cat');
     if ($terms && !is_wp_error($terms)) {
         $cat_slugs = [];
         $tag_slugs = [];
         
         foreach ($terms as $term) {
-            // Status categories become types (tags)
+            // Status categories become tags
             if (in_array($term->slug, ['online', 'on-demand', 'up-coming', 'free'])) {
                 $new_slug = ($term->slug === 'up-coming') ? 'upcoming' : $term->slug;
                 $tag_slugs[] = $new_slug;
-                log_msg("    → Category '{$term->name}' → Type '{$new_slug}'");
+                log_msg("    → Category '{$term->name}' → Tag '{$new_slug}'");
             } else {
                 // Subject categories stay as categories
                 $cat_slugs[] = $term->slug;
@@ -442,11 +481,11 @@ foreach ($events as $event) {
         }
         
         if (!empty($tag_slugs)) {
-            $result = wp_set_object_terms($new_id, $tag_slugs, 'cpd_type', true);
+            $result = wp_set_object_terms($new_id, $tag_slugs, 'cpd_tag', true);
             if (is_wp_error($result)) {
-                log_msg("    ✗ ERROR setting types: " . $result->get_error_message(), 'error');
+                log_msg("    ✗ ERROR setting tags: " . $result->get_error_message(), 'error');
             } else {
-                log_msg("    ✓ Types set: " . implode(', ', $tag_slugs));
+                log_msg("    ✓ Tags set: " . implode(', ', $tag_slugs));
                 $tag_assignment_count++;
             }
         }
@@ -458,13 +497,13 @@ foreach ($events as $event) {
     }
     
     $event_count++;
-    log_msg("✓ Migrated: {$event->post_title}", 'success');
+    log_msg("✓ Migrated: {$event->post_title} [{$post_status}]", 'success');
 }
 
 log_msg("✓ Events migrated: {$event_count}", 'success');
 log_msg("✓ New categories created: {$category_count}", 'success');
 log_msg("✓ Events with categories assigned: {$cat_assignment_count}", 'success');
-log_msg("✓ Events with types assigned: {$tag_assignment_count}", 'success');
+log_msg("✓ Events with tags assigned: {$tag_assignment_count}", 'success');
 
 // Summary
 echo '<div class="summary">';
@@ -477,15 +516,15 @@ echo '<tr><td>Series migrated:</td><td><strong>' . count($series_map) . '</stron
 echo '<tr><td>Events migrated:</td><td><strong>' . $event_count . '</strong></td></tr>';
 echo '<tr><td>Categories created:</td><td><strong>' . $category_count . '</strong></td></tr>';
 echo '<tr><td>Events with categories:</td><td><strong>' . $cat_assignment_count . '</strong></td></tr>';
-echo '<tr><td>Events with types:</td><td><strong>' . $tag_assignment_count . '</strong></td></tr>';
+echo '<tr><td>Events with tags:</td><td><strong>' . $tag_assignment_count . '</strong></td></tr>';
 echo '</table>';
 echo '</div>';
 
 echo '<h3>📋 Next steps:</h3>';
 echo '<ol>';
 echo '<li>Visit <a href="/cpd/" target="_blank">/cpd/</a> to verify events are displaying</li>';
-echo '<li>Check a few individual CPD events to verify categories and types are set</li>';
-echo '<li>Test the category and type archive pages</li>';
+echo '<li>Check a few individual CPD events to verify categories and tags are set</li>';
+echo '<li>Test the category and tag archive pages</li>';
 echo '<li>Deactivate The Events Calendar plugins once verified</li>';
 echo '<li><strong>Delete this migration.php file when done</strong></li>';
 echo '</ol>';

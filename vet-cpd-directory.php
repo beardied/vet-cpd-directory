@@ -47,15 +47,14 @@ add_action('plugins_loaded', function() {
     // Initialize CPTs
     VET_CPD_CPD::init();
     VET_CPD_Venue::init();
-    VET_CPD_Person::init();
+    VET_CPD_Organiser::init();
+    VET_CPD_Instructor::init();
     VET_CPD_Series::init();
     VET_CPD_Taxonomies::init();
     VET_CPD_Meta_Boxes::init();
     VET_CPD_Auto_Tag::init();
     VET_CPD_Frontend::init();
     VET_CPD_Admin::init();
-    
-    // Load template helper (no init needed, just autoload)
     
     // Load WP-CLI commands
     if (defined('WP_CLI') && WP_CLI) {
@@ -68,7 +67,8 @@ register_activation_hook(__FILE__, function() {
     // Register post types and flush rewrite rules
     VET_CPD_CPD::register();
     VET_CPD_Venue::register();
-    VET_CPD_Person::register();
+    VET_CPD_Organiser::register();
+    VET_CPD_Instructor::register();
     VET_CPD_Series::register();
     VET_CPD_Taxonomies::register();
     flush_rewrite_rules();

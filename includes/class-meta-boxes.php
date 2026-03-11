@@ -64,12 +64,22 @@ class VET_CPD_Meta_Boxes {
             'high'
         );
         
-        // Person meta box
+        // Organiser meta box
         add_meta_box(
-            'cpd_person_details',
-            __('Person Details', 'vet-cpd-directory'),
-            [__CLASS__, 'render_person_details'],
-            VET_CPD_Person::POST_TYPE,
+            'cpd_organiser_details',
+            __('Organiser Details', 'vet-cpd-directory'),
+            [__CLASS__, 'render_organiser_details'],
+            VET_CPD_Organiser::POST_TYPE,
+            'normal',
+            'high'
+        );
+        
+        // Instructor meta box
+        add_meta_box(
+            'cpd_instructor_details',
+            __('Instructor Details', 'vet-cpd-directory'),
+            [__CLASS__, 'render_instructor_details'],
+            VET_CPD_Instructor::POST_TYPE,
             'normal',
             'high'
         );
@@ -154,12 +164,7 @@ class VET_CPD_Meta_Boxes {
         $show_map_link = VET_CPD_CPD::get_meta($post->ID, '_cpd_show_map_link');
         $online_url = VET_CPD_CPD::get_meta($post->ID, '_cpd_online_url');
         
-        $all_venues = get_posts([
-            'post_type'      => VET_CPD_Venue::POST_TYPE,
-            'posts_per_page' => -1,
-            'orderby'        => 'title',
-            'order'          => 'ASC',
-        ]);
+        $all_venues = VET_CPD_Venue::get_all();
         ?>
         <table class="form-table">
             <tr>
@@ -239,8 +244,8 @@ class VET_CPD_Meta_Boxes {
         $organisers = VET_CPD_CPD::get_meta($post->ID, '_cpd_organisers');
         $instructors = VET_CPD_CPD::get_meta($post->ID, '_cpd_instructors');
         
-        $all_organisers = VET_CPD_Person::get_by_role('organizer');
-        $all_instructors = VET_CPD_Person::get_by_role('instructor');
+        $all_organisers = VET_CPD_Organiser::get_all();
+        $all_instructors = VET_CPD_Instructor::get_all();
         ?>
         <table class="form-table">
             <tr>
@@ -255,9 +260,9 @@ class VET_CPD_Meta_Boxes {
                             <div class="cpd-organiser-row" style="margin-bottom: 8px;">
                                 <select name="_cpd_organisers[]" style="width: 70%;">
                                     <option value=""><?php _e('-- Select Organiser --', 'vet-cpd-directory'); ?></option>
-                                    <?php foreach ($all_organisers as $person) : ?>
-                                        <option value="<?php echo $person->ID; ?>" <?php selected($organiser_id, $person->ID); ?>>
-                                            <?php echo esc_html($person->post_title); ?>
+                                    <?php foreach ($all_organisers as $organiser) : ?>
+                                        <option value="<?php echo $organiser->ID; ?>" <?php selected($organiser_id, $organiser->ID); ?>>
+                                            <?php echo esc_html($organiser->post_title); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -282,9 +287,9 @@ class VET_CPD_Meta_Boxes {
                             <div class="cpd-instructor-row" style="margin-bottom: 8px;">
                                 <select name="_cpd_instructors[]" style="width: 70%;">
                                     <option value=""><?php _e('-- Select Instructor --', 'vet-cpd-directory'); ?></option>
-                                    <?php foreach ($all_instructors as $person) : ?>
-                                        <option value="<?php echo $person->ID; ?>" <?php selected($instructor_id, $person->ID); ?>>
-                                            <?php echo esc_html($person->post_title); ?>
+                                    <?php foreach ($all_instructors as $instructor) : ?>
+                                        <option value="<?php echo $instructor->ID; ?>" <?php selected($instructor_id, $instructor->ID); ?>>
+                                            <?php echo esc_html($instructor->post_title); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -437,34 +442,54 @@ class VET_CPD_Meta_Boxes {
     }
     
     /**
-     * Render Person Details meta box
+     * Render Organiser Details meta box
      */
-    public static function render_person_details($post) {
-        $role_organiser = VET_CPD_Person::get_meta($post->ID, '_person_role_organizer');
-        $role_instructor = VET_CPD_Person::get_meta($post->ID, '_person_role_instructor');
-        $phone = VET_CPD_Person::get_meta($post->ID, '_person_phone');
-        $website = VET_CPD_Person::get_meta($post->ID, '_person_website');
-        $email = VET_CPD_Person::get_meta($post->ID, '_person_email');
+    public static function render_organiser_details($post) {
+        $fields = VET_CPD_Organiser::get_meta_fields();
+        $values = [];
+        foreach ($fields as $key => $default) {
+            $values[$key] = VET_CPD_Organiser::get_meta($post->ID, $key);
+        }
         ?>
         <table class="form-table">
             <tr>
-                <th><?php _e('Role', 'vet-cpd-directory'); ?></th>
-                <td>
-                    <label><input type="checkbox" name="_person_role_organizer" value="1" <?php checked($role_organiser, '1'); ?>> <?php _e('Organiser', 'vet-cpd-directory'); ?></label><br>
-                    <label><input type="checkbox" name="_person_role_instructor" value="1" <?php checked($role_instructor, '1'); ?>> <?php _e('Instructor', 'vet-cpd-directory'); ?></label>
-                </td>
+                <th><label for="_organiser_phone"><?php _e('Phone', 'vet-cpd-directory'); ?></label></th>
+                <td><input type="text" id="_organiser_phone" name="_organiser_phone" value="<?php echo esc_attr($values['_organiser_phone']); ?>" class="regular-text"></td>
             </tr>
             <tr>
-                <th><label for="_person_phone"><?php _e('Phone', 'vet-cpd-directory'); ?></label></th>
-                <td><input type="text" id="_person_phone" name="_person_phone" value="<?php echo esc_attr($phone); ?>" class="regular-text"></td>
+                <th><label for="_organiser_website"><?php _e('Website', 'vet-cpd-directory'); ?></label></th>
+                <td><input type="url" id="_organiser_website" name="_organiser_website" value="<?php echo esc_url($values['_organiser_website']); ?>" class="widefat"></td>
             </tr>
             <tr>
-                <th><label for="_person_website"><?php _e('Website', 'vet-cpd-directory'); ?></label></th>
-                <td><input type="url" id="_person_website" name="_person_website" value="<?php echo esc_url($website); ?>" class="widefat"></td>
+                <th><label for="_organiser_email"><?php _e('Email', 'vet-cpd-directory'); ?></label></th>
+                <td><input type="email" id="_organiser_email" name="_organiser_email" value="<?php echo esc_attr($values['_organiser_email']); ?>" class="regular-text"></td>
+            </tr>
+        </table>
+        <?php
+    }
+    
+    /**
+     * Render Instructor Details meta box
+     */
+    public static function render_instructor_details($post) {
+        $fields = VET_CPD_Instructor::get_meta_fields();
+        $values = [];
+        foreach ($fields as $key => $default) {
+            $values[$key] = VET_CPD_Instructor::get_meta($post->ID, $key);
+        }
+        ?>
+        <table class="form-table">
+            <tr>
+                <th><label for="_instructor_phone"><?php _e('Phone', 'vet-cpd-directory'); ?></label></th>
+                <td><input type="text" id="_instructor_phone" name="_instructor_phone" value="<?php echo esc_attr($values['_instructor_phone']); ?>" class="regular-text"></td>
             </tr>
             <tr>
-                <th><label for="_person_email"><?php _e('Email', 'vet-cpd-directory'); ?></label></th>
-                <td><input type="email" id="_person_email" name="_person_email" value="<?php echo esc_attr($email); ?>" class="regular-text"></td>
+                <th><label for="_instructor_website"><?php _e('Website', 'vet-cpd-directory'); ?></label></th>
+                <td><input type="url" id="_instructor_website" name="_instructor_website" value="<?php echo esc_url($values['_instructor_website']); ?>" class="widefat"></td>
+            </tr>
+            <tr>
+                <th><label for="_instructor_email"><?php _e('Email', 'vet-cpd-directory'); ?></label></th>
+                <td><input type="email" id="_instructor_email" name="_instructor_email" value="<?php echo esc_attr($values['_instructor_email']); ?>" class="regular-text"></td>
             </tr>
         </table>
         <?php
@@ -497,8 +522,11 @@ class VET_CPD_Meta_Boxes {
             case VET_CPD_Venue::POST_TYPE:
                 self::save_venue_meta($post_id);
                 break;
-            case VET_CPD_Person::POST_TYPE:
-                self::save_person_meta($post_id);
+            case VET_CPD_Organiser::POST_TYPE:
+                self::save_organiser_meta($post_id);
+                break;
+            case VET_CPD_Instructor::POST_TYPE:
+                self::save_instructor_meta($post_id);
                 break;
         }
     }
@@ -574,15 +602,33 @@ class VET_CPD_Meta_Boxes {
     }
     
     /**
-     * Save Person meta
+     * Save Organiser meta
      */
-    private static function save_person_meta($post_id) {
+    private static function save_organiser_meta($post_id) {
         $fields = [
-            '_person_role_organizer',
-            '_person_role_instructor',
-            '_person_phone',
-            '_person_website',
-            '_person_email',
+            '_organiser_phone',
+            '_organiser_website',
+            '_organiser_email',
+        ];
+        
+        foreach ($fields as $field) {
+            if (isset($_POST[$field])) {
+                $value = sanitize_text_field($_POST[$field]);
+                update_post_meta($post_id, $field, $value);
+            } else {
+                delete_post_meta($post_id, $field);
+            }
+        }
+    }
+    
+    /**
+     * Save Instructor meta
+     */
+    private static function save_instructor_meta($post_id) {
+        $fields = [
+            '_instructor_phone',
+            '_instructor_website',
+            '_instructor_email',
         ];
         
         foreach ($fields as $field) {
@@ -599,7 +645,7 @@ class VET_CPD_Meta_Boxes {
      * Enqueue admin assets
      */
     public static function enqueue_assets($hook) {
-        if (!in_array(get_current_screen()->post_type, [VET_CPD_CPD::POST_TYPE, VET_CPD_Venue::POST_TYPE, VET_CPD_Person::POST_TYPE, VET_CPD_Series::POST_TYPE])) {
+        if (!in_array(get_current_screen()->post_type, [VET_CPD_CPD::POST_TYPE, VET_CPD_Venue::POST_TYPE, VET_CPD_Organiser::POST_TYPE, VET_CPD_Instructor::POST_TYPE, VET_CPD_Series::POST_TYPE])) {
             return;
         }
         

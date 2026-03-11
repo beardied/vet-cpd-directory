@@ -16,6 +16,10 @@ class VET_CPD_Admin {
         add_filter('manage_cpd_event_posts_columns', [__CLASS__, 'cpd_columns']);
         add_action('manage_cpd_event_posts_custom_column', [__CLASS__, 'cpd_column_content'], 10, 2);
         add_filter('manage_edit-cpd_event_sortable_columns', [__CLASS__, 'cpd_sortable_columns']);
+        
+        // Custom columns for Tags
+        add_filter('manage_edit-cpd_tag_columns', [__CLASS__, 'tag_columns']);
+        add_filter('manage_cpd_tag_custom_column', [__CLASS__, 'tag_column_content'], 10, 3);
     }
     
     /**
@@ -40,14 +44,14 @@ class VET_CPD_Admin {
         ?>
         <div class="wrap">
             <h1><?php _e('CPD Directory Settings', 'vet-cpd-directory'); ?></h1>
-            <p><?php _e('Use the menu items to manage CPD Events, Venues, People, and Series.', 'vet-cpd-directory'); ?></p>
+            <p><?php _e('Use the menu items to manage CPD Events, Venues, Organisers, Instructors, and Series.', 'vet-cpd-directory'); ?></p>
             
             <h2><?php _e('Permalink Settings', 'vet-cpd-directory'); ?></h2>
             <p><?php _e('Archive pages are automatically available at:', 'vet-cpd-directory'); ?></p>
             <ul style="list-style:disc;margin-left:20px;">
                 <li><code>/cpd/</code> - <?php _e('All CPD Events', 'vet-cpd-directory'); ?></li>
                 <li><code>/cpd-category/{category-name}/</code> - <?php _e('Events by category', 'vet-cpd-directory'); ?></li>
-                <li><code>/cpd-type/{type-name}/</code> - <?php _e('Events by type (upcoming, on-demand, online, free)', 'vet-cpd-directory'); ?></li>
+                <li><code>/cpd-type/{tag-name}/</code> - <?php _e('Events by tag (upcoming, on-demand, online, free)', 'vet-cpd-directory'); ?></li>
                 <li><code>/cpd-venue/{venue-name}/</code> - <?php _e('Events by venue', 'vet-cpd-directory'); ?></li>
             </ul>
             <p><?php _e('Make sure to visit Settings > Permalinks and click "Save Changes" after activating this plugin.', 'vet-cpd-directory'); ?></p>
@@ -73,9 +77,9 @@ class VET_CPD_Admin {
             $new_columns[$key] = $value;
             if ($key === 'title') {
                 $new_columns['cpd_date'] = __('Start Date', 'vet-cpd-directory');
-                $new_columns['cpd_end_date'] = __('End Date', 'vet-cpd-directory');
                 $new_columns['cpd_cost'] = __('Cost', 'vet-cpd-directory');
                 $new_columns['cpd_organisers'] = __('Organisers', 'vet-cpd-directory');
+                $new_columns['cpd_tags'] = __('Tags', 'vet-cpd-directory');
             }
         }
         return $new_columns;
@@ -88,13 +92,6 @@ class VET_CPD_Admin {
         switch ($column) {
             case 'cpd_date':
                 $date = VET_CPD_CPD::get_meta($post_id, '_cpd_start_date');
-                if ($date) {
-                    echo esc_html(date_i18n(get_option('date_format'), strtotime($date)));
-                }
-                break;
-                
-            case 'cpd_end_date':
-                $date = VET_CPD_CPD::get_meta($post_id, '_cpd_end_date');
                 if ($date) {
                     echo esc_html(date_i18n(get_option('date_format'), strtotime($date)));
                 }
@@ -124,6 +121,15 @@ class VET_CPD_Admin {
                     echo implode(', ', $links);
                 }
                 break;
+                
+            case 'cpd_tags':
+                $tags = get_the_term_list($post_id, 'cpd_tag', '', ', ', '');
+                if ($tags) {
+                    echo $tags;
+                } else {
+                    echo '<em>' . __('—', 'vet-cpd-directory') . '</em>';
+                }
+                break;
         }
     }
     
@@ -132,8 +138,22 @@ class VET_CPD_Admin {
      */
     public static function cpd_sortable_columns($columns) {
         $columns['cpd_date'] = '_cpd_start_date';
-        $columns['cpd_end_date'] = '_cpd_end_date';
         $columns['cpd_cost'] = '_cpd_cost';
         return $columns;
+    }
+    
+    /**
+     * Custom columns for Tags taxonomy
+     */
+    public static function tag_columns($columns) {
+        // Ensure Tags column shows properly
+        return $columns;
+    }
+    
+    /**
+     * Tag column content
+     */
+    public static function tag_column_content($content, $column_name, $term_id) {
+        return $content;
     }
 }

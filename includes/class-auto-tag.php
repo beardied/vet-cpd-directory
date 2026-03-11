@@ -27,7 +27,7 @@ class VET_CPD_Auto_Tag {
             return;
         }
         
-        $date = VET_CPD_CPD::get_meta($post_id, '_cpd_date');
+        $date = VET_CPD_CPD::get_meta($post_id, '_cpd_start_date');
         if (empty($date)) {
             return;
         }

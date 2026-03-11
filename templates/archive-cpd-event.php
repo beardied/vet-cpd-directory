@@ -13,8 +13,8 @@ $archive_title = post_type_archive_title('', false);
 
 if (is_tax('cpd_category')) {
     $archive_title = sprintf(__('Category: %s', 'vet-cpd-directory'), $current_term->name);
-} elseif (is_tax('cpd_type')) {
-    $archive_title = sprintf(__('Type: %s', 'vet-cpd-directory'), $current_term->name);
+} elseif (is_tax('cpd_tag')) {
+    $archive_title = sprintf(__('Tag: %s', 'vet-cpd-directory'), $current_term->name);
 }
 
 ?>
@@ -32,45 +32,6 @@ if (is_tax('cpd_category')) {
                 </div>
             <?php endif; ?>
         </header>
-        
-        <!-- Filters -->
-        <div class="cpd-filters">
-            <form method="get" class="cpd-filter-form">
-                <div class="cpd-filter-group">
-                    <label for="cpd_category"><?php _e('Category', 'vet-cpd-directory'); ?></label>
-                    <?php
-                    wp_dropdown_categories([
-                        'taxonomy'        => 'cpd_category',
-                        'name'            => 'cpd_category',
-                        'id'              => 'cpd_category',
-                        'value_field'     => 'slug',
-                        'show_option_all' => __('All Categories', 'vet-cpd-directory'),
-                        'selected'        => isset($_GET['cpd_category']) ? $_GET['cpd_category'] : '',
-                    ]);
-                    ?>
-                </div>
-                
-                <div class="cpd-filter-group">
-                    <label for="cpd_type"><?php _e('Type', 'vet-cpd-directory'); ?></label>
-                    <?php
-                    wp_dropdown_categories([
-                        'taxonomy'        => 'cpd_type',
-                        'name'            => 'cpd_type',
-                        'id'              => 'cpd_type',
-                        'value_field'     => 'slug',
-                        'show_option_all' => __('All Types', 'vet-cpd-directory'),
-                        'selected'        => isset($_GET['cpd_type']) ? $_GET['cpd_type'] : '',
-                    ]);
-                    ?>
-                </div>
-                
-                <div class="cpd-filter-group cpd-filter-submit">
-                    <button type="submit" class="cpd-button">
-                        <?php _e('Filter', 'vet-cpd-directory'); ?>
-                    </button>
-                </div>
-            </form>
-        </div>
         
         <div class="cpd-archive-content">
             
@@ -94,19 +55,31 @@ if (is_tax('cpd_category')) {
                             $categories = get_the_terms($event_id, 'cpd_category');
                             $category = ($categories && !is_wp_error($categories)) ? $categories[0] : null;
                             
-                            // Format date
+                            // Format date with time
                             if ($start_date) {
-                                if ($end_date && $end_date !== $start_date) {
-                                    $date_display = date_i18n('M j', strtotime($start_date)) . ' - ' . date_i18n('M j, Y', strtotime($end_date));
+                                $date_format = get_option('date_format');
+                                $time_format = get_option('time_format');
+                                
+                                if ($all_day === '1') {
+                                    $date_display = date_i18n($date_format, strtotime($start_date));
                                 } else {
-                                    $date_display = date_i18n('F j, Y', strtotime($start_date));
+                                    $date_display = date_i18n($date_format . ' ' . $time_format, strtotime($start_date));
+                                }
+                                
+                                if ($end_date && $end_date !== $start_date) {
+                                    $date_display .= ' - ';
+                                    if ($all_day === '1') {
+                                        $date_display .= date_i18n($date_format, strtotime($end_date));
+                                    } else {
+                                        $date_display .= date_i18n($date_format . ' ' . $time_format, strtotime($end_date));
+                                    }
                                 }
                             } else {
                                 $date_display = '';
                             }
                             
                             // Format cost
-                            if ($cost !== '') {
+                            if ($cost !== '' && $cost !== '0') {
                                 $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
                                 $cost_display = $symbol . $cost;
                             } else {
@@ -219,21 +192,21 @@ if (is_tax('cpd_category')) {
                         </ul>
                     </div>
                     
-                    <!-- Default Widget: Types -->
+                    <!-- Default Widget: Tags -->
                     <div class="cpd-widget">
-                        <h3 class="cpd-widget-title"><?php _e('Types', 'vet-cpd-directory'); ?></h3>
-                        <ul class="cpd-widget-list cpd-type-list">
+                        <h3 class="cpd-widget-title"><?php _e('Tags', 'vet-cpd-directory'); ?></h3>
+                        <ul class="cpd-widget-list cpd-tag-list">
                             <?php
-                            $types = get_terms([
-                                'taxonomy'   => 'cpd_type',
+                            $tags = get_terms([
+                                'taxonomy'   => 'cpd_tag',
                                 'hide_empty' => true,
                             ]);
-                            foreach ($types as $type) :
+                            foreach ($tags as $tag) :
                                 ?>
                                 <li>
-                                    <a href="<?php echo esc_url(get_term_link($type)); ?>" class="cpd-type-badge cpd-type-<?php echo esc_attr($type->slug); ?>">
-                                        <?php echo esc_html($type->name); ?>
-                                        <span class="cpd-count">(<?php echo intval($type->count); ?>)</span>
+                                    <a href="<?php echo esc_url(get_term_link($tag)); ?>" class="cpd-tag-badge cpd-tag-<?php echo esc_attr($tag->slug); ?>">
+                                        <?php echo esc_html($tag->name); ?>
+                                        <span class="cpd-count">(<?php echo intval($tag->count); ?>)</span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>

@@ -6,7 +6,7 @@
 class VET_CPD_Taxonomies {
     
     const CATEGORY = 'cpd_category';
-    const TAG = 'cpd_type';
+    const TAG = 'cpd_tag';  // Keep internal name as cpd_tag
     
     public static function init() {
         add_action('init', [__CLASS__, 'register']);
@@ -42,23 +42,24 @@ class VET_CPD_Taxonomies {
         
         register_taxonomy(self::CATEGORY, [VET_CPD_CPD::POST_TYPE], $cat_args);
         
-        // Types (flat) - Status tags like upcoming, on-demand, online, free
+        // Tags (flat) - Status tags like upcoming, on-demand, online, free
+        // Only the URL is cpd-type, everything else stays as "Tags"
         $tag_labels = [
-            'name'                       => _x('Types', 'Taxonomy general name', 'vet-cpd-directory'),
-            'singular_name'              => _x('Type', 'Taxonomy singular name', 'vet-cpd-directory'),
-            'search_items'               => __('Search Types', 'vet-cpd-directory'),
-            'all_items'                  => __('All Types', 'vet-cpd-directory'),
+            'name'                       => _x('Tags', 'Taxonomy general name', 'vet-cpd-directory'),
+            'singular_name'              => _x('Tag', 'Taxonomy singular name', 'vet-cpd-directory'),
+            'search_items'               => __('Search Tags', 'vet-cpd-directory'),
+            'all_items'                  => __('All Tags', 'vet-cpd-directory'),
             'parent_item'                => null,
             'parent_item_colon'          => null,
-            'edit_item'                  => __('Edit Type', 'vet-cpd-directory'),
-            'update_item'                => __('Update Type', 'vet-cpd-directory'),
-            'add_new_item'               => __('Add New Type', 'vet-cpd-directory'),
-            'new_item_name'              => __('New Type Name', 'vet-cpd-directory'),
-            'separate_items_with_commas' => __('Separate types with commas', 'vet-cpd-directory'),
-            'add_or_remove_items'        => __('Add or remove types', 'vet-cpd-directory'),
-            'choose_from_most_used'      => __('Choose from the most used types', 'vet-cpd-directory'),
-            'not_found'                  => __('No types found.', 'vet-cpd-directory'),
-            'menu_name'                  => __('Types', 'vet-cpd-directory'),
+            'edit_item'                  => __('Edit Tag', 'vet-cpd-directory'),
+            'update_item'                => __('Update Tag', 'vet-cpd-directory'),
+            'add_new_item'               => __('Add New Tag', 'vet-cpd-directory'),
+            'new_item_name'              => __('New Tag Name', 'vet-cpd-directory'),
+            'separate_items_with_commas' => __('Separate tags with commas', 'vet-cpd-directory'),
+            'add_or_remove_items'        => __('Add or remove tags', 'vet-cpd-directory'),
+            'choose_from_most_used'      => __('Choose from the most used tags', 'vet-cpd-directory'),
+            'not_found'                  => __('No tags found.', 'vet-cpd-directory'),
+            'menu_name'                  => __('Tags', 'vet-cpd-directory'),
         ];
         
         $tag_args = [
@@ -69,7 +70,7 @@ class VET_CPD_Taxonomies {
             'show_admin_column' => true,
             'show_in_nav_menus' => true,
             'show_tagcloud'     => true,
-            'rewrite'           => ['slug' => 'cpd-type'],
+            'rewrite'           => ['slug' => 'cpd-type'],  // URL is cpd-type
             'show_in_rest'      => true,
         ];
         
