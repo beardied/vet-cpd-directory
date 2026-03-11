@@ -42,33 +42,15 @@ class VET_CPD_Admin {
             <h1><?php _e('CPD Directory Settings', 'vet-cpd-directory'); ?></h1>
             <p><?php _e('Use the menu items to manage CPD Events, Venues, People, and Series.', 'vet-cpd-directory'); ?></p>
             
-            <h2><?php _e('Shortcodes', 'vet-cpd-directory'); ?></h2>
-            <table class="widefat">
-                <thead>
-                    <tr>
-                        <th><?php _e('Shortcode', 'vet-cpd-directory'); ?></th>
-                        <th><?php _e('Description', 'vet-cpd-directory'); ?></th>
-                        <th><?php _e('Example', 'vet-cpd-directory'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>[cpd_list]</code></td>
-                        <td><?php _e('Display list of CPD events', 'vet-cpd-directory'); ?></td>
-                        <td><code>[cpd_list tag="free" category="canine"]</code></td>
-                    </tr>
-                    <tr>
-                        <td><code>[cpd_upcoming]</code></td>
-                        <td><?php _e('Display upcoming CPD events', 'vet-cpd-directory'); ?></td>
-                        <td><code>[cpd_upcoming limit="10"]</code></td>
-                    </tr>
-                    <tr>
-                        <td><code>[cpd_on_demand]</code></td>
-                        <td><?php _e('Display on-demand CPD events', 'vet-cpd-directory'); ?></td>
-                        <td><code>[cpd_on_demand category="feline"]</code></td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2><?php _e('Permalink Settings', 'vet-cpd-directory'); ?></h2>
+            <p><?php _e('Archive pages are automatically available at:', 'vet-cpd-directory'); ?></p>
+            <ul style="list-style:disc;margin-left:20px;">
+                <li><code>/cpd/</code> - <?php _e('All CPD Events', 'vet-cpd-directory'); ?></li>
+                <li><code>/cpd-category/{category-name}/</code> - <?php _e('Events by category', 'vet-cpd-directory'); ?></li>
+                <li><code>/cpd-type/{type-name}/</code> - <?php _e('Events by type (upcoming, on-demand, online, free)', 'vet-cpd-directory'); ?></li>
+                <li><code>/cpd-venue/{venue-name}/</code> - <?php _e('Events by venue', 'vet-cpd-directory'); ?></li>
+            </ul>
+            <p><?php _e('Make sure to visit Settings > Permalinks and click "Save Changes" after activating this plugin.', 'vet-cpd-directory'); ?></p>
         </div>
         <?php
     }
@@ -90,9 +72,10 @@ class VET_CPD_Admin {
         foreach ($columns as $key => $value) {
             $new_columns[$key] = $value;
             if ($key === 'title') {
-                $new_columns['cpd_date'] = __('Date', 'vet-cpd-directory');
-                $new_columns['cpd_hours'] = __('Hours', 'vet-cpd-directory');
-                $new_columns['cpd_organizer'] = __('Organizer', 'vet-cpd-directory');
+                $new_columns['cpd_date'] = __('Start Date', 'vet-cpd-directory');
+                $new_columns['cpd_end_date'] = __('End Date', 'vet-cpd-directory');
+                $new_columns['cpd_cost'] = __('Cost', 'vet-cpd-directory');
+                $new_columns['cpd_organisers'] = __('Organisers', 'vet-cpd-directory');
             }
         }
         return $new_columns;
@@ -104,26 +87,41 @@ class VET_CPD_Admin {
     public static function cpd_column_content($column, $post_id) {
         switch ($column) {
             case 'cpd_date':
-                $date = VET_CPD_CPD::get_meta($post_id, '_cpd_date');
+                $date = VET_CPD_CPD::get_meta($post_id, '_cpd_start_date');
                 if ($date) {
-                    echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($date)));
+                    echo esc_html(date_i18n(get_option('date_format'), strtotime($date)));
                 }
                 break;
                 
-            case 'cpd_hours':
-                $hours = VET_CPD_CPD::get_meta($post_id, '_cpd_hours');
-                if ($hours) {
-                    echo esc_html($hours) . ' ' . __('hrs', 'vet-cpd-directory');
+            case 'cpd_end_date':
+                $date = VET_CPD_CPD::get_meta($post_id, '_cpd_end_date');
+                if ($date) {
+                    echo esc_html(date_i18n(get_option('date_format'), strtotime($date)));
                 }
                 break;
                 
-            case 'cpd_organizer':
-                $organizer_id = VET_CPD_CPD::get_meta($post_id, '_cpd_organizer');
-                if ($organizer_id) {
-                    $organizer = get_post($organizer_id);
-                    if ($organizer) {
-                        echo '<a href="' . get_edit_post_link($organizer_id) . '">' . esc_html($organizer->post_title) . '</a>';
+            case 'cpd_cost':
+                $cost = VET_CPD_CPD::get_meta($post_id, '_cpd_cost');
+                $currency = VET_CPD_CPD::get_meta($post_id, '_cpd_currency') ?: 'GBP';
+                if ($cost) {
+                    $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
+                    echo esc_html($symbol . $cost);
+                } else {
+                    echo '<em>' . __('Free', 'vet-cpd-directory') . '</em>';
+                }
+                break;
+                
+            case 'cpd_organisers':
+                $organiser_ids = VET_CPD_CPD::get_meta($post_id, '_cpd_organisers');
+                if (is_array($organiser_ids) && !empty($organiser_ids)) {
+                    $links = [];
+                    foreach ($organiser_ids as $organiser_id) {
+                        $organiser = get_post($organiser_id);
+                        if ($organiser) {
+                            $links[] = '<a href="' . get_edit_post_link($organiser_id) . '">' . esc_html($organiser->post_title) . '</a>';
+                        }
                     }
+                    echo implode(', ', $links);
                 }
                 break;
         }
@@ -133,8 +131,9 @@ class VET_CPD_Admin {
      * Sortable columns
      */
     public static function cpd_sortable_columns($columns) {
-        $columns['cpd_date'] = '_cpd_date';
-        $columns['cpd_hours'] = '_cpd_hours';
+        $columns['cpd_date'] = '_cpd_start_date';
+        $columns['cpd_end_date'] = '_cpd_end_date';
+        $columns['cpd_cost'] = '_cpd_cost';
         return $columns;
     }
 }

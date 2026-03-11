@@ -8,15 +8,6 @@
  * 1. Place this file in the plugin root folder (wp-content/plugins/vet-cpd-directory/)
  * 2. Visit as admin: https://yoursite.com/wp-content/plugins/vet-cpd-directory/migration.php
  * 3. Or run via WP-CLI: wp eval-file wp-content/plugins/vet-cpd-directory/migration.php
- * 
- * This script will:
- * - Create system tags (upcoming, on-demand, online, free)
- * - Migrate venues (tribe_venue → cpd_venue)
- * - Migrate organisers (tribe_organizer → cpd_person with organiser role)
- * - Migrate instructors (tribe_ext_instructor → cpd_person with instructor role)
- * - Migrate series (tribe_event_series → cpd_series)
- * - Migrate events (tribe_events → cpd_event with categories and tags)
- * - Fix shortcodes in posts/pages
  */
 
 // Bootstrap WordPress
@@ -84,8 +75,8 @@ log_msg('═══════════════════════�
 
 $system_tags = ['upcoming', 'on-demand', 'online', 'free'];
 foreach ($system_tags as $tag) {
-    if (!term_exists($tag, 'cpd_tag')) {
-        $result = wp_insert_term($tag, 'cpd_tag', ['slug' => $tag]);
+    if (!term_exists($tag, 'cpd_type')) {
+        $result = wp_insert_term($tag, 'cpd_type', ['slug' => $tag]);
         if (!is_wp_error($result)) {
             log_msg("✓ Created tag: {$tag}", 'success');
         } else {
@@ -102,14 +93,20 @@ log_msg('═══════════════════════�
 log_msg('STEP 2: Migrating venues...', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 
-$venues = get_posts(['post_type' => 'tribe_venue', 'posts_per_page' => -1, 'post_status' => 'any']);
+// Use WP_Query for better control
+$venue_query = new WP_Query([
+    'post_type'      => 'tribe_venue',
+    'posts_per_page' => -1,
+    'post_status'    => 'any',
+    'fields'         => 'all',
+]);
+$venues = $venue_query->posts;
 log_msg("Found " . count($venues) . " venues to migrate");
 
 $venue_map = get_option('vet_cpd_venue_map', []);
 $venue_count = 0;
 
 foreach ($venues as $venue) {
-    // Check if already migrated
     if (isset($venue_map[$venue->ID])) {
         log_msg("ℹ Skipping (already migrated): {$venue->post_title}");
         continue;
@@ -126,7 +123,6 @@ foreach ($venues as $venue) {
         continue;
     }
     
-    // Copy meta fields
     $meta_mapping = [
         '_venue_address'     => '_VenueAddress',
         '_venue_city'        => '_VenueCity',
@@ -160,7 +156,13 @@ log_msg('═══════════════════════�
 log_msg('STEP 3: Migrating organisers...', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 
-$organizers = get_posts(['post_type' => 'tribe_organizer', 'posts_per_page' => -1, 'post_status' => 'any']);
+$organizer_query = new WP_Query([
+    'post_type'      => 'tribe_organizer',
+    'posts_per_page' => -1,
+    'post_status'    => 'any',
+    'fields'         => 'all',
+]);
+$organizers = $organizer_query->posts;
 log_msg("Found " . count($organizers) . " organisers to migrate");
 
 $organizer_map = get_option('vet_cpd_organizer_map', []);
@@ -209,7 +211,13 @@ log_msg('═══════════════════════�
 log_msg('STEP 4: Migrating instructors...', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 
-$instructors = get_posts(['post_type' => 'tribe_ext_instructor', 'posts_per_page' => -1, 'post_status' => 'any']);
+$instructor_query = new WP_Query([
+    'post_type'      => 'tribe_ext_instructor',
+    'posts_per_page' => -1,
+    'post_status'    => 'any',
+    'fields'         => 'all',
+]);
+$instructors = $instructor_query->posts;
 log_msg("Found " . count($instructors) . " instructors to migrate");
 
 $instructor_map = get_option('vet_cpd_instructor_map', []);
@@ -258,7 +266,13 @@ log_msg('═══════════════════════�
 log_msg('STEP 5: Migrating series...', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 
-$series = get_posts(['post_type' => 'tribe_event_series', 'posts_per_page' => -1, 'post_status' => 'any']);
+$series_query = new WP_Query([
+    'post_type'      => 'tribe_event_series',
+    'posts_per_page' => -1,
+    'post_status'    => 'any',
+    'fields'         => 'all',
+]);
+$series = $series_query->posts;
 log_msg("Found " . count($series) . " series to migrate");
 
 $series_map = get_option('vet_cpd_series_map', []);
@@ -300,7 +314,16 @@ log_msg('═══════════════════════�
 log_msg('STEP 6: Migrating events to CPDs...', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 
-$events = get_posts(['post_type' => 'tribe_events', 'posts_per_page' => -1, 'post_status' => 'any']);
+// CRITICAL FIX: Use WP_Query with suppress_filters to get ALL events
+$event_query = new WP_Query([
+    'post_type'      => 'tribe_events',
+    'posts_per_page' => -1,
+    'post_status'    => 'any',
+    'fields'         => 'all',
+    'suppress_filters' => true, // Prevent other plugins from filtering
+]);
+$events = $event_query->posts;
+
 log_msg("Found " . count($events) . " events to migrate");
 
 // Reload mappings
@@ -361,7 +384,7 @@ foreach ($events as $event) {
         log_msg("    → Venue assigned");
     }
     
-    // Organisers - stored as array now
+    // Organisers
     $old_org = get_post_meta($event->ID, '_EventOrganizerID', true);
     if ($old_org && isset($organizer_map[$old_org])) {
         update_post_meta($new_id, '_cpd_organisers', [$organizer_map[$old_org]]);
@@ -383,22 +406,21 @@ foreach ($events as $event) {
         }
     }
     
-    // Categories and tags
+    // Categories and tags (now cpd_type)
     $terms = get_the_terms($event->ID, 'tribe_events_cat');
     if ($terms && !is_wp_error($terms)) {
         $cat_slugs = [];
         $tag_slugs = [];
         
         foreach ($terms as $term) {
-            // Status categories become tags
+            // Status categories become types (tags)
             if (in_array($term->slug, ['online', 'on-demand', 'up-coming', 'free'])) {
                 $new_slug = ($term->slug === 'up-coming') ? 'upcoming' : $term->slug;
                 $tag_slugs[] = $new_slug;
-                log_msg("    → Category '{$term->name}' → Tag '{$new_slug}'");
+                log_msg("    → Category '{$term->name}' → Type '{$new_slug}'");
             } else {
                 // Subject categories stay as categories
                 $cat_slugs[] = $term->slug;
-                // Create category if not exists
                 if (!term_exists($term->slug, 'cpd_category')) {
                     $new_term = wp_insert_term($term->name, 'cpd_category', ['slug' => $term->slug]);
                     if (!is_wp_error($new_term)) {
@@ -420,16 +442,14 @@ foreach ($events as $event) {
         }
         
         if (!empty($tag_slugs)) {
-            $result = wp_set_object_terms($new_id, $tag_slugs, 'cpd_tag', true);
+            $result = wp_set_object_terms($new_id, $tag_slugs, 'cpd_type', true);
             if (is_wp_error($result)) {
-                log_msg("    ✗ ERROR setting tags: " . $result->get_error_message(), 'error');
+                log_msg("    ✗ ERROR setting types: " . $result->get_error_message(), 'error');
             } else {
-                log_msg("    ✓ Tags set: " . implode(', ', $tag_slugs));
+                log_msg("    ✓ Types set: " . implode(', ', $tag_slugs));
                 $tag_assignment_count++;
             }
         }
-    } else {
-        log_msg("    ⚠ No categories/tags found for this event");
     }
     
     // Featured image
@@ -444,47 +464,7 @@ foreach ($events as $event) {
 log_msg("✓ Events migrated: {$event_count}", 'success');
 log_msg("✓ New categories created: {$category_count}", 'success');
 log_msg("✓ Events with categories assigned: {$cat_assignment_count}", 'success');
-log_msg("✓ Events with tags assigned: {$tag_assignment_count}", 'success');
-
-// Step 7: Fix shortcodes
-log_msg('', 'info');
-log_msg('═══════════════════════════════════════════════════════════════', 'info');
-log_msg('STEP 7: Fixing shortcodes...', 'info');
-log_msg('═══════════════════════════════════════════════════════════════', 'info');
-
-global $wpdb;
-$posts = $wpdb->get_results("SELECT ID, post_title, post_content FROM {$wpdb->posts} WHERE post_content LIKE '%tribe_events%' AND post_status = 'publish'");
-log_msg("Found " . count($posts) . " posts with tribe_events shortcodes");
-
-$replacements = [
-    '/\[tribe_events\s+category=["\']on-demand["\']\s*\]/i' => '[cpd_list tag="on-demand"]',
-    '/\[tribe_events\s+category=["\']up-coming["\']\s*\]/i' => '[cpd_list tag="upcoming"]',
-    '/\[tribe_events\s+category=["\']upcoming["\']\s*\]/i' => '[cpd_list tag="upcoming"]',
-    '/\[tribe_events\s+category=["\']free["\']\s*\]/i' => '[cpd_list tag="free"]',
-    '/\[tribe_events\s+category=["\']online["\']\s*\]/i' => '[cpd_list tag="online"]',
-    '/\[tribe_events\s*\]/i' => '[cpd_list]',
-];
-
-$shortcode_count = 0;
-foreach ($posts as $post) {
-    $content = $post->post_content;
-    $changed = false;
-    
-    foreach ($replacements as $pattern => $replacement) {
-        if (preg_match($pattern, $content)) {
-            $content = preg_replace($pattern, $replacement, $content);
-            $changed = true;
-        }
-    }
-    
-    if ($changed) {
-        wp_update_post(['ID' => $post->ID, 'post_content' => $content]);
-        $shortcode_count++;
-        log_msg("✓ Updated: {$post->post_title}", 'success');
-    }
-}
-
-log_msg("✓ Shortcodes fixed: {$shortcode_count}", 'success');
+log_msg("✓ Events with types assigned: {$tag_assignment_count}", 'success');
 
 // Summary
 echo '<div class="summary">';
@@ -497,16 +477,15 @@ echo '<tr><td>Series migrated:</td><td><strong>' . count($series_map) . '</stron
 echo '<tr><td>Events migrated:</td><td><strong>' . $event_count . '</strong></td></tr>';
 echo '<tr><td>Categories created:</td><td><strong>' . $category_count . '</strong></td></tr>';
 echo '<tr><td>Events with categories:</td><td><strong>' . $cat_assignment_count . '</strong></td></tr>';
-echo '<tr><td>Events with tags:</td><td><strong>' . $tag_assignment_count . '</strong></td></tr>';
-echo '<tr><td>Shortcodes fixed:</td><td><strong>' . $shortcode_count . '</strong></td></tr>';
+echo '<tr><td>Events with types:</td><td><strong>' . $tag_assignment_count . '</strong></td></tr>';
 echo '</table>';
 echo '</div>';
 
 echo '<h3>📋 Next steps:</h3>';
 echo '<ol>';
 echo '<li>Visit <a href="/cpd/" target="_blank">/cpd/</a> to verify events are displaying</li>';
-echo '<li>Check a few individual CPD events to verify categories and tags are set</li>';
-echo '<li>Test the shortcodes on Free CPD, On Demand CPD, Upcoming CPD pages</li>';
+echo '<li>Check a few individual CPD events to verify categories and types are set</li>';
+echo '<li>Test the category and type archive pages</li>';
 echo '<li>Deactivate The Events Calendar plugins once verified</li>';
 echo '<li><strong>Delete this migration.php file when done</strong></li>';
 echo '</ol>';

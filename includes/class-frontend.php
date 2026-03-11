@@ -12,12 +12,23 @@ class VET_CPD_Frontend {
         // Enqueue assets
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
         
-        // Register shortcodes
-        add_shortcode('cpd_list', [__CLASS__, 'shortcode_list']);
-        add_shortcode('cpd_upcoming', [__CLASS__, 'shortcode_upcoming']);
-        add_shortcode('cpd_on_demand', [__CLASS__, 'shortcode_on_demand']);
-        add_shortcode('cpd_free', [__CLASS__, 'shortcode_free']);
-        add_shortcode('cpd_online', [__CLASS__, 'shortcode_online']);
+        // Register widget area
+        add_action('widgets_init', [__CLASS__, 'register_widget_area']);
+    }
+    
+    /**
+     * Register CPD sidebar widget area
+     */
+    public static function register_widget_area() {
+        register_sidebar([
+            'name'          => __('CPD Sidebar', 'vet-cpd-directory'),
+            'id'            => 'cpd-sidebar',
+            'description'   => __('Widgets displayed in the CPD archive and event pages sidebar.', 'vet-cpd-directory'),
+            'before_widget' => '<div id="%1$s" class="cpd-widget %2$s">',
+            'after_widget'  => '</div>',
+            'before_title'  => '<h3 class="cpd-widget-title">',
+            'after_title'   => '</h3>',
+        ]);
     }
     
     /**
@@ -65,106 +76,6 @@ class VET_CPD_Frontend {
         }
         
         wp_enqueue_style('vet-cpd-frontend', VET_CPD_PLUGIN_URL . 'assets/css/frontend.css', [], VET_CPD_VERSION);
-    }
-    
-    /**
-     * Shortcode: [cpd_list]
-     */
-    public static function shortcode_list($atts) {
-        $atts = shortcode_atts([
-            'limit'      => 10,
-            'category'   => '',
-            'tag'        => '',
-            'orderby'    => 'meta_value',
-            'meta_key'   => '_cpd_date',
-            'order'      => 'ASC',
-        ], $atts, 'cpd_list');
-        
-        $args = [
-            'post_type'      => VET_CPD_CPD::POST_TYPE,
-            'posts_per_page' => intval($atts['limit']),
-            'orderby'        => $atts['orderby'],
-            'order'          => $atts['order'],
-        ];
-        
-        if ($atts['orderby'] === 'meta_value') {
-            $args['meta_key'] = $atts['meta_key'];
-            $args['meta_type'] = 'DATETIME';
-        }
-        
-        if (!empty($atts['category'])) {
-            $args['tax_query'][] = [
-                'taxonomy' => VET_CPD_Taxonomies::CATEGORY,
-                'field'    => 'slug',
-                'terms'    => explode(',', $atts['category']),
-            ];
-        }
-        
-        if (!empty($atts['tag'])) {
-            $args['tax_query'][] = [
-                'taxonomy' => VET_CPD_Taxonomies::TAG,
-                'field'    => 'slug',
-                'terms'    => explode(',', $atts['tag']),
-            ];
-        }
-        
-        $cpds = get_posts($args);
-        
-        ob_start();
-        include self::locate_template('shortcode-cpd-list.php');
-        return ob_get_clean();
-    }
-    
-    /**
-     * Shortcode: [cpd_upcoming]
-     */
-    public static function shortcode_upcoming($atts) {
-        $atts = shortcode_atts([
-            'limit'    => 10,
-            'category' => '',
-        ], $atts, 'cpd_upcoming');
-        
-        $atts['tag'] = 'upcoming';
-        return self::shortcode_list($atts);
-    }
-    
-    /**
-     * Shortcode: [cpd_on_demand]
-     */
-    public static function shortcode_on_demand($atts) {
-        $atts = shortcode_atts([
-            'limit'    => 10,
-            'category' => '',
-        ], $atts, 'cpd_on_demand');
-        
-        $atts['tag'] = 'on-demand';
-        return self::shortcode_list($atts);
-    }
-    
-    /**
-     * Shortcode: [cpd_free]
-     */
-    public static function shortcode_free($atts) {
-        $atts = shortcode_atts([
-            'limit'    => 10,
-            'category' => '',
-        ], $atts, 'cpd_free');
-        
-        $atts['tag'] = 'free';
-        return self::shortcode_list($atts);
-    }
-    
-    /**
-     * Shortcode: [cpd_online]
-     */
-    public static function shortcode_online($atts) {
-        $atts = shortcode_atts([
-            'limit'    => 10,
-            'category' => '',
-        ], $atts, 'cpd_online');
-        
-        $atts['tag'] = 'online';
-        return self::shortcode_list($atts);
     }
     
     /**

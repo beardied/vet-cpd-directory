@@ -55,6 +55,8 @@ add_action('plugins_loaded', function() {
     VET_CPD_Frontend::init();
     VET_CPD_Admin::init();
     
+    // Load template helper (no init needed, just autoload)
+    
     // Load WP-CLI commands
     if (defined('WP_CLI') && WP_CLI) {
         require_once VET_CPD_PLUGIN_DIR . 'includes/class-cli-commands.php';
