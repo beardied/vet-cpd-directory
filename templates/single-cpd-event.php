@@ -153,7 +153,7 @@ while (have_posts()) : the_post();
                             <?php echo get_the_post_thumbnail($organiser_id, 'thumbnail', ['class' => 'cpd-person-photo']); ?>
                         <?php endif; ?>
                         <div class="cpd-person-info">
-                            <h3><?php echo esc_html($organiser->post_title); ?></h3>
+                            <h3><a href="<?php echo get_permalink($organiser_id); ?>"><?php echo esc_html($organiser->post_title); ?></a></h3>
                             <div class="cpd-person-bio">
                                 <?php echo wp_trim_words($organiser->post_content, 30); ?>
                             </div>
