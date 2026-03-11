@@ -15,15 +15,13 @@ $term = get_queried_object();
             <h1 class="cpd-archive-title"><?php echo esc_html(ucwords(strtolower($term->name))); ?></h1>
             
             <?php if ($term->description) : ?>
-                <div class="cpd-archive-description">
-                    <?php echo esc_html($term->description); ?>
-                </div>
+                <p class="cpd-archive-desc"><?php echo esc_html($term->description); ?></p>
             <?php endif; ?>
         </header>
         
         <?php if (have_posts()) : ?>
             
-            <div class="cpd-grid">
+            <div class="cpd-list">
                 <?php while (have_posts()) : the_post(); 
                     $event_id = get_the_ID();
                     
@@ -33,10 +31,6 @@ $term = get_queried_object();
                     $cost = VET_CPD_CPD::get_meta($event_id, '_cpd_cost');
                     $currency = VET_CPD_CPD::get_meta($event_id, '_cpd_currency') ?: 'GBP';
                     $all_day = VET_CPD_CPD::get_meta($event_id, '_cpd_all_day');
-                    
-                    // Get categories
-                    $categories = get_the_terms($event_id, 'cpd_category');
-                    $category = ($categories && !is_wp_error($categories)) ? $categories[0] : null;
                     
                     // Format date
                     if ($start_date) {
@@ -60,33 +54,25 @@ $term = get_queried_object();
                     
                     <article class="cpd-card">
                         <a href="<?php the_permalink(); ?>" class="cpd-card-link">
-                            <div class="cpd-card-image-wrap">
-                                <?php if (has_post_thumbnail()) : ?>
-                                    <?php the_post_thumbnail('medium_large', ['class' => 'cpd-card-img']); ?>
-                                <?php else : ?>
-                                    <div class="cpd-card-noimg">📚</div>
-                                <?php endif; ?>
-                            </div>
+                            <?php if (has_post_thumbnail()) : ?>
+                                <?php the_post_thumbnail('medium_large', ['class' => 'cpd-card-image']); ?>
+                            <?php endif; ?>
                             
-                            <div class="cpd-card-body">
-                                <?php if ($category) : ?>
-                                    <span class="cpd-card-cat"><?php echo esc_html($category->name); ?></span>
-                                <?php endif; ?>
-                                
+                            <div class="cpd-card-content">
                                 <h2 class="cpd-card-title"><?php the_title(); ?></h2>
                                 
                                 <div class="cpd-card-meta">
                                     <?php if ($date_display) : ?>
                                         <span class="cpd-card-date">📅 <?php echo esc_html($date_display); ?></span>
                                     <?php endif; ?>
-                                    <span class="cpd-card-price">💰 <?php echo esc_html($cost_display); ?></span>
+                                    <span class="cpd-card-cost">💰 <?php echo esc_html($cost_display); ?></span>
                                 </div>
                                 
                                 <div class="cpd-card-excerpt">
-                                    <?php echo wp_trim_words(get_the_excerpt(), 15); ?>
+                                    <?php echo wp_trim_words(get_the_excerpt(), 20); ?>
                                 </div>
                                 
-                                <span class="cpd-card-btn">Learn More →</span>
+                                <span class="cpd-card-more">Learn More →</span>
                             </div>
                         </a>
                     </article>
@@ -97,20 +83,15 @@ $term = get_queried_object();
             <div class="cpd-pagination">
                 <?php
                 the_posts_pagination([
-                    'mid_size'           => 2,
-                    'prev_text'          => __('← Previous', 'vet-cpd-directory'),
-                    'next_text'          => __('Next →', 'vet-cpd-directory'),
+                    'mid_size'  => 2,
+                    'prev_text' => __('« Previous', 'vet-cpd-directory'),
+                    'next_text' => __('Next »', 'vet-cpd-directory'),
                 ]);
                 ?>
             </div>
             
         <?php else : ?>
-            
-            <div class="cpd-no-results">
-                <p><?php _e('No CPD events found.', 'vet-cpd-directory'); ?></p>
-                <p><a href="<?php echo esc_url(get_post_type_archive_link('cpd_event')); ?>" class="cpd-btn"><?php _e('View All Events', 'vet-cpd-directory'); ?></a></p>
-            </div>
-            
+            <p><?php _e('No CPD events found.', 'vet-cpd-directory'); ?></p>
         <?php endif; ?>
         
     </div>
