@@ -74,6 +74,31 @@ while (have_posts()) : the_post();
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
+            
+            <?php
+            // Build full address for map
+            $map_address = implode(', ', array_filter([$address, $city, $state, $postal, $country]));
+            if ($map_address) :
+            ?>
+                <div class="cpd-venue-map">
+                    <h2><?php _e('Map', 'vet-cpd-directory'); ?></h2>
+                    <iframe
+                        width="100%"
+                        height="400"
+                        frameborder="0"
+                        scrolling="no"
+                        marginheight="0"
+                        marginwidth="0"
+                        src="https://maps.google.com/maps?q=<?php echo urlencode($map_address); ?>&t=m&z=15&output=embed&iwloc=near"
+                        allowfullscreen
+                    ></iframe>
+                    <p class="cpd-map-link">
+                        <a href="https://maps.google.com/maps?q=<?php echo urlencode($map_address); ?>" target="_blank" rel="noopener">
+                            <?php _e('View larger map', 'vet-cpd-directory'); ?> &rarr;
+                        </a>
+                    </p>
+                </div>
+            <?php endif; ?>
         </div>
         
         <!-- Venue Events Shortcode -->

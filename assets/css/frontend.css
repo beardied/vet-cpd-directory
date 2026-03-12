@@ -1279,3 +1279,40 @@
         text-align: left;
     }
 }
+
+/* Venue Map Styling */
+.cpd-venue-map {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.cpd-venue-map h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    color: #333;
+}
+
+.cpd-venue-map iframe {
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.cpd-map-link {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+.cpd-map-link a {
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cpd-map-link a:hover {
+    text-decoration: underline;
+}
