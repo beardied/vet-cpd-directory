@@ -44,15 +44,31 @@ class VET_CPD_Frontend {
             $template = self::locate_template('single-cpd-event.php');
         } elseif (is_singular(VET_CPD_Series::POST_TYPE)) {
             $template = self::locate_template('single-cpd-series.php');
+        } elseif (is_singular('cpd_venue')) {
+            $template = self::locate_template('single-cpd-venue.php');
+        } elseif (is_singular('cpd_organiser')) {
+            $template = self::locate_template('single-cpd-organiser.php');
+        } elseif (is_singular('cpd_instructor')) {
+            $template = self::locate_template('single-cpd-instructor.php');
         } elseif (is_post_type_archive(VET_CPD_CPD::POST_TYPE)) {
             $template = self::locate_template('archive-cpd-event.php');
         } elseif (is_post_type_archive(VET_CPD_Series::POST_TYPE)) {
             $template = self::locate_template('archive-cpd-series.php');
         } elseif (is_tax(VET_CPD_Taxonomies::CATEGORY) || is_tax(VET_CPD_Taxonomies::TAG)) {
             $template = self::locate_template('taxonomy-cpd.php');
+        } elseif (self::is_cpd_category_base()) {
+            $template = self::locate_template('taxonomy-cpd-category-index.php');
         }
         
         return $template;
+    }
+    
+    /**
+     * Check if we're on the cpd-category base page (/cpd-category/)
+     */
+    public static function is_cpd_category_base() {
+        $uri = trim($_SERVER['REQUEST_URI'], '/');
+        return $uri === 'cpd-category' || $uri === 'cpd-category/';
     }
     
     /**
