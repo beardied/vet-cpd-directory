@@ -613,7 +613,7 @@ foreach ($events as $event) {
         
         foreach ($terms as $term) {
             // Status categories become tags
-            if (in_array($term->slug, ['online', 'on-demand', 'up-coming', 'free'])) {
+            if (in_array($term->slug, ['online', 'on-demand', 'up-coming', 'free', 'physical-event'])) {
                 $new_slug = ($term->slug === 'up-coming') ? 'upcoming' : $term->slug;
                 $tag_slugs[] = $new_slug;
                 log_msg("    → Category '{$term->name}' → Tag '{$new_slug}'");

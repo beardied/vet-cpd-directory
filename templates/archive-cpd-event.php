@@ -58,8 +58,10 @@ if (is_tax('cpd_category')) {
                         $date_display = '';
                     }
                     
-                    // Format cost
-                    if ($cost !== '' && $cost !== '0') {
+                    // Format cost (show "Past Event" for past physical events)
+                    if (VET_CPD_Frontend::is_past_physical_event($event_id)) {
+                        $cost_display = __('Past Event', 'vet-cpd-directory');
+                    } elseif ($cost !== '' && $cost !== '0') {
                         $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
                         $cost_display = $symbol . $cost;
                     } else {

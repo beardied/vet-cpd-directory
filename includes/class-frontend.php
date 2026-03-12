@@ -303,8 +303,10 @@ class VET_CPD_Frontend {
             $date_display = '';
         }
         
-        // Format cost
-        if ($cost !== '' && $cost !== '0') {
+        // Format cost (show "Past Event" for past physical events)
+        if (self::is_past_physical_event($event_id)) {
+            $cost_display = __('Past Event', 'vet-cpd-directory');
+        } elseif ($cost !== '' && $cost !== '0') {
             $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
             $cost_display = $symbol . $cost;
         } else {
@@ -384,10 +386,32 @@ class VET_CPD_Frontend {
         
         $statuses = [];
         foreach ($terms as $term) {
-            if (in_array($term->slug, ['upcoming', 'on-demand', 'online', 'free'])) {
+            if (in_array($term->slug, ['upcoming', 'on-demand', 'online', 'free', 'physical-event'])) {
                 $statuses[] = $term->name;
             }
         }
         return $statuses;
+    }
+    
+    /**
+     * Helper: Check if event is a past physical event
+     * Past physical events show "Past Event" instead of price
+     */
+    public static function is_past_physical_event($post_id) {
+        // Check if it has physical-event tag
+        if (!has_term('physical-event', VET_CPD_Taxonomies::TAG, $post_id)) {
+            return false;
+        }
+        
+        // Check if event date is in the past
+        $start_date = VET_CPD_CPD::get_meta($post_id, '_cpd_start_date');
+        if (empty($start_date)) {
+            return false;
+        }
+        
+        $event_timestamp = strtotime($start_date);
+        $now = current_time('timestamp');
+        
+        return $event_timestamp < $now;
     }
 }

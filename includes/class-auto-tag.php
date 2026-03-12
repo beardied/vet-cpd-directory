@@ -7,6 +7,7 @@ class VET_CPD_Auto_Tag {
     
     const TAG_UPCOMING = 'upcoming';
     const TAG_ON_DEMAND = 'on-demand';
+    const TAG_PHYSICAL = 'physical-event';
     
     public static function init() {
         // Apply tags on save
@@ -21,6 +22,7 @@ class VET_CPD_Auto_Tag {
     
     /**
      * Apply appropriate tags based on CPD date
+     * Physical events: don't add on-demand tag when past, keep physical-event tag
      */
     public static function apply_tags($post_id) {
         if (get_post_type($post_id) !== VET_CPD_CPD::POST_TYPE) {
@@ -35,16 +37,23 @@ class VET_CPD_Auto_Tag {
         $cpd_timestamp = strtotime($date);
         $now = current_time('timestamp');
         
-        // Remove old status tags
-        wp_remove_object_terms($post_id, [self::TAG_UPCOMING, self::TAG_ON_DEMAND], VET_CPD_Taxonomies::TAG);
+        // Check if this is a physical event
+        $is_physical = has_term(self::TAG_PHYSICAL, VET_CPD_Taxonomies::TAG, $post_id);
         
-        // Apply appropriate tag
+        // Remove upcoming tag (always remove it, will re-add if still future)
+        wp_remove_object_terms($post_id, self::TAG_UPCOMING, VET_CPD_Taxonomies::TAG);
+        
+        // Apply appropriate tag based on date and type
         if ($cpd_timestamp > $now) {
-            // Future event
+            // Future event - add upcoming tag
             wp_set_object_terms($post_id, self::TAG_UPCOMING, VET_CPD_Taxonomies::TAG, true);
         } else {
             // Past event
-            wp_set_object_terms($post_id, self::TAG_ON_DEMAND, VET_CPD_Taxonomies::TAG, true);
+            if (!$is_physical) {
+                // Non-physical past events get on-demand tag
+                wp_set_object_terms($post_id, self::TAG_ON_DEMAND, VET_CPD_Taxonomies::TAG, true);
+            }
+            // Physical events don't get on-demand tag, keep physical-event tag as-is
         }
     }
     

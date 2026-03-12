@@ -9,8 +9,18 @@ class VET_CPD_Meta_Boxes {
         add_action('add_meta_boxes', [__CLASS__, 'add_meta_boxes']);
         add_action('save_post', [__CLASS__, 'save_meta'], 10, 2);
         
+        // Remove default tags meta box and add custom one
+        add_action('add_meta_boxes', [__CLASS__, 'remove_default_tags_box'], 20);
+        
         // Enqueue admin assets
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
+    }
+    
+    /**
+     * Remove default tags meta box for CPD events
+     */
+    public static function remove_default_tags_box() {
+        remove_meta_box('tagsdiv-cpd_tag', VET_CPD_CPD::POST_TYPE, 'side');
     }
     
     /**
@@ -49,6 +59,16 @@ class VET_CPD_Meta_Boxes {
             'cpd_event_series',
             __('Series', 'vet-cpd-directory'),
             [__CLASS__, 'render_cpd_series'],
+            VET_CPD_CPD::POST_TYPE,
+            'side',
+            'default'
+        );
+        
+        // Custom Tags meta box (checkboxes instead of default input)
+        add_meta_box(
+            'cpd_event_tags',
+            __('Tags', 'vet-cpd-directory'),
+            [__CLASS__, 'render_cpd_tags'],
             VET_CPD_CPD::POST_TYPE,
             'side',
             'default'
@@ -109,7 +129,7 @@ class VET_CPD_Meta_Boxes {
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="_cpd_provider_url"><?php _e('Provider URL', 'vet-cpd-directory'); ?></label></th>
+                <th><label for="_cpd_provider_url"><?php _e('Event URL', 'vet-cpd-directory'); ?></label></th>
                 <td>
                     <input type="url" id="_cpd_provider_url" name="_cpd_provider_url" 
                            value="<?php echo esc_url($provider_url); ?>" class="widefat">
@@ -162,7 +182,6 @@ class VET_CPD_Meta_Boxes {
         $venues = VET_CPD_CPD::get_meta($post->ID, '_cpd_venues');
         $show_map = VET_CPD_CPD::get_meta($post->ID, '_cpd_show_map');
         $show_map_link = VET_CPD_CPD::get_meta($post->ID, '_cpd_show_map_link');
-        $online_url = VET_CPD_CPD::get_meta($post->ID, '_cpd_online_url');
         
         $all_venues = VET_CPD_Venue::get_all();
         ?>
@@ -205,14 +224,6 @@ class VET_CPD_Meta_Boxes {
                         <input type="checkbox" name="_cpd_show_map_link" value="1" <?php checked($show_map_link, '1'); ?>>
                         <?php _e('Show map link', 'vet-cpd-directory'); ?>
                     </label>
-                </td>
-            </tr>
-            <tr>
-                <th><label for="_cpd_online_url"><?php _e('Online URL', 'vet-cpd-directory'); ?></label></th>
-                <td>
-                    <input type="url" id="_cpd_online_url" name="_cpd_online_url" 
-                           value="<?php echo esc_url($online_url); ?>" class="widefat">
-                    <p class="description"><?php _e('For online/virtual CPDs', 'vet-cpd-directory'); ?></p>
                 </td>
             </tr>
         </table>
@@ -370,6 +381,97 @@ class VET_CPD_Meta_Boxes {
             <input type="number" id="_cpd_series_order" name="_cpd_series_order" 
                    value="<?php echo esc_attr($series_order); ?>" class="small-text" min="1">
         </p>
+        <?php
+    }
+    
+    /**
+     * Render CPD Tags meta box (checkboxes like categories)
+     */
+    public static function render_cpd_tags($post) {
+        // Get all tags
+        $all_tags = get_terms([
+            'taxonomy'   => VET_CPD_Taxonomies::TAG,
+            'hide_empty' => false,
+        ]);
+        
+        // Get assigned tags
+        $assigned_tag_ids = wp_get_post_terms($post->ID, VET_CPD_Taxonomies::TAG, ['fields' => 'ids']);
+        
+        // Separate system tags and custom tags
+        $system_tags = ['upcoming', 'on-demand', 'online', 'free', 'physical-event'];
+        $system_tag_objs = [];
+        $custom_tag_objs = [];
+        
+        foreach ($all_tags as $tag) {
+            if (in_array($tag->slug, $system_tags)) {
+                $system_tag_objs[] = $tag;
+            } else {
+                $custom_tag_objs[] = $tag;
+            }
+        }
+        
+        wp_nonce_field('cpd_save_tags', 'cpd_tags_nonce');
+        ?>
+        <style>
+            .cpd-tags-section { margin-bottom: 15px; }
+            .cpd-tags-section h4 { margin: 0 0 8px; font-size: 12px; color: #555; }
+            .cpd-tags-list { max-height: 120px; overflow-y: auto; background: #f9f9f9; padding: 8px; border: 1px solid #ddd; }
+            .cpd-tag-item { margin-bottom: 4px; }
+            .cpd-tag-item label { display: block; padding: 2px 0; }
+            .cpd-tag-item input[type="checkbox"] { margin-right: 6px; }
+            .cpd-system-tags { background: #f0f6fc; border-color: #c5d9ed; }
+            .cpd-tag-info { font-size: 11px; color: #666; font-style: italic; margin-top: 4px; }
+        </style>
+        
+        <div class="cpd-tags-section">
+            <h4><?php _e('System Tags (auto-managed)', 'vet-cpd-directory'); ?></h4>
+            <div class="cpd-tags-list cpd-system-tags">
+                <?php foreach ($system_tag_objs as $tag) : ?>
+                    <div class="cpd-tag-item">
+                        <label>
+                            <input type="checkbox" name="cpd_tags[]" value="<?php echo esc_attr($tag->term_id); ?>" 
+                                <?php checked(in_array($tag->term_id, $assigned_tag_ids)); ?>>
+                            <?php echo esc_html($tag->name); ?>
+                            <?php if ($tag->slug === 'upcoming' || $tag->slug === 'on-demand') : ?>
+                                <span class="cpd-tag-info">(auto-applied)</span>
+                            <?php endif; ?>
+                        </label>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (empty($system_tag_objs)) : ?>
+                    <em><?php _e('System tags not created yet.', 'vet-cpd-directory'); ?></em>
+                <?php endif; ?>
+            </div>
+            <p class="cpd-tag-info">
+                <?php _e('Note: "upcoming" and "on-demand" are automatically managed based on event dates.', 'vet-cpd-directory'); ?>
+            </p>
+        </div>
+        
+        <div class="cpd-tags-section">
+            <h4><?php _e('Custom Tags', 'vet-cpd-directory'); ?></h4>
+            <div class="cpd-tags-list">
+                <?php foreach ($custom_tag_objs as $tag) : ?>
+                    <div class="cpd-tag-item">
+                        <label>
+                            <input type="checkbox" name="cpd_tags[]" value="<?php echo esc_attr($tag->term_id); ?>" 
+                                <?php checked(in_array($tag->term_id, $assigned_tag_ids)); ?>>
+                            <?php echo esc_html($tag->name); ?>
+                        </label>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (empty($custom_tag_objs)) : ?>
+                    <em><?php _e('No custom tags created yet.', 'vet-cpd-directory'); ?></em>
+                <?php endif; ?>
+            </div>
+        </div>
+        
+        <div class="cpd-tags-section">
+            <h4><?php _e('Add New Tag', 'vet-cpd-directory'); ?></h4>
+            <input type="text" id="cpd_new_tag" name="cpd_new_tag" style="width: 100%;" placeholder="<?php esc_attr_e('Enter tag name...', 'vet-cpd-directory'); ?>">
+            <p class="cpd-tag-info">
+                <?php _e('Enter a new tag name above and it will be added when you save.', 'vet-cpd-directory'); ?>
+            </p>
+        </div>
         <?php
     }
     
@@ -544,7 +646,6 @@ class VET_CPD_Meta_Boxes {
             '_cpd_currency',
             '_cpd_show_map',
             '_cpd_show_map_link',
-            '_cpd_online_url',
             '_cpd_series',
             '_cpd_series_order',
         ];
@@ -568,8 +669,46 @@ class VET_CPD_Meta_Boxes {
         $instructors = isset($_POST['_cpd_instructors']) ? array_map('intval', array_filter($_POST['_cpd_instructors'])) : [];
         update_post_meta($post_id, '_cpd_instructors', $instructors);
         
-        // Apply auto-tags based on date
+        // Save tags from checkboxes
+        self::save_cpd_tags($post_id);
+        
+        // Apply auto-tags based on date (runs after to ensure upcoming/on-demand are correct)
         VET_CPD_Auto_Tag::apply_tags($post_id);
+    }
+    
+    /**
+     * Save CPD tags from checkboxes
+     */
+    private static function save_cpd_tags($post_id) {
+        // Verify nonce
+        if (!isset($_POST['cpd_tags_nonce']) || !wp_verify_nonce($_POST['cpd_tags_nonce'], 'cpd_save_tags')) {
+            return;
+        }
+        
+        $tag_ids = isset($_POST['cpd_tags']) ? array_map('intval', $_POST['cpd_tags']) : [];
+        
+        // Handle new tag creation
+        if (!empty($_POST['cpd_new_tag'])) {
+            $new_tag_name = sanitize_text_field($_POST['cpd_new_tag']);
+            $existing = term_exists($new_tag_name, VET_CPD_Taxonomies::TAG);
+            
+            if ($existing) {
+                // Tag exists, add its ID
+                $tag_ids[] = intval($existing['term_id']);
+            } else {
+                // Create new tag
+                $new_term = wp_insert_term($new_tag_name, VET_CPD_Taxonomies::TAG);
+                if (!is_wp_error($new_term)) {
+                    $tag_ids[] = intval($new_term['term_id']);
+                }
+            }
+        }
+        
+        // Remove duplicates
+        $tag_ids = array_unique($tag_ids);
+        
+        // Apply terms (this replaces all existing terms)
+        wp_set_object_terms($post_id, $tag_ids, VET_CPD_Taxonomies::TAG, false);
     }
     
     /**

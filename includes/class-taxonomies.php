@@ -83,7 +83,7 @@ class VET_CPD_Taxonomies {
      * Create system-managed tags
      */
     private static function create_system_tags() {
-        $system_tags = ['upcoming', 'on-demand', 'online', 'free'];
+        $system_tags = ['upcoming', 'on-demand', 'online', 'free', 'physical-event'];
         
         foreach ($system_tags as $tag) {
             if (!term_exists($tag, self::TAG)) {

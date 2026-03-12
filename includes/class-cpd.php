@@ -74,7 +74,6 @@ class VET_CPD_CPD {
             '_cpd_venues'           => [],
             '_cpd_show_map'         => '1',
             '_cpd_show_map_link'    => '1',
-            '_cpd_online_url'       => '',
             '_cpd_organisers'       => [],
             '_cpd_instructors'      => [],
             '_cpd_series'           => '',

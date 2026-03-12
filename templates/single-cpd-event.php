@@ -16,7 +16,6 @@ while (have_posts()) : the_post();
     $currency = VET_CPD_CPD::get_meta($event_id, '_cpd_currency') ?: 'GBP';
     $provider_url = VET_CPD_CPD::get_meta($event_id, '_cpd_provider_url');
     $venue_ids = VET_CPD_CPD::get_meta($event_id, '_cpd_venues');
-    $online_url = VET_CPD_CPD::get_meta($event_id, '_cpd_online_url');
     $organiser_ids = VET_CPD_CPD::get_meta($event_id, '_cpd_organisers');
     $instructor_ids = VET_CPD_CPD::get_meta($event_id, '_cpd_instructors');
     $series_id = VET_CPD_CPD::get_meta($event_id, '_cpd_series');
@@ -42,8 +41,10 @@ while (have_posts()) : the_post();
         }
     }
     
-    // Format cost
-    if ($cost !== '' && $cost !== '0') {
+    // Format cost (show "Past Event" for past physical events)
+    if (VET_CPD_Frontend::is_past_physical_event($event_id)) {
+        $cost_display = __('Past Event', 'vet-cpd-directory');
+    } elseif ($cost !== '' && $cost !== '0') {
         $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
         $cost_display = $symbol . $cost;
     } else {
