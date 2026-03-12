@@ -73,6 +73,24 @@ function fix_post_dates($post_id, $original_post) {
     clean_post_cache($post_id);
 }
 
+/**
+ * Helper: Fix post author after WordPress overrides it
+ */
+function fix_post_author($post_id, $original_author_id) {
+    global $wpdb;
+    
+    $wpdb->update(
+        $wpdb->posts,
+        ['post_author' => $original_author_id],
+        ['ID' => $post_id],
+        ['%d'],
+        ['%d']
+    );
+    
+    // Clean cache
+    clean_post_cache($post_id);
+}
+
 // Check if running via WP-CLI
 $is_cli = defined('WP_CLI') && WP_CLI;
 $log_messages = [];
@@ -145,6 +163,7 @@ foreach ($venues as $venue) {
         'post_type'    => 'cpd_venue',
         'post_status'  => $post_status,
         'post_content' => $venue->post_content,
+        'post_author'  => $venue->post_author,
     ]);
     
     if (is_wp_error($new_id)) {
@@ -152,8 +171,9 @@ foreach ($venues as $venue) {
         continue;
     }
     
-    // Fix dates (WordPress overrides them)
+    // Fix dates and author (WordPress overrides them)
     fix_post_dates($new_id, $venue);
+    fix_post_author($new_id, $venue->post_author);
     
     $meta_mapping = [
         '_venue_address'     => '_VenueAddress',
@@ -219,6 +239,7 @@ foreach ($organizers as $org) {
         'post_content' => $org->post_content,
         'post_type'    => 'cpd_organiser',
         'post_status'  => $post_status,
+        'post_author'  => $org->post_author,
     ]);
     
     if (is_wp_error($new_id)) {
@@ -226,8 +247,9 @@ foreach ($organizers as $org) {
         continue;
     }
     
-    // Fix dates (WordPress overrides them)
+    // Fix dates and author (WordPress overrides them)
     fix_post_dates($new_id, $org);
+    fix_post_author($new_id, $org->post_author);
     
     update_post_meta($new_id, '_organiser_phone', get_post_meta($org->ID, '_OrganizerPhone', true));
     update_post_meta($new_id, '_organiser_website', get_post_meta($org->ID, '_OrganizerWebsite', true));
@@ -279,6 +301,7 @@ foreach ($instructors as $inst) {
         'post_content' => $inst->post_content,
         'post_type'    => 'cpd_instructor',
         'post_status'  => $post_status,
+        'post_author'  => $inst->post_author,
     ]);
     
     if (is_wp_error($new_id)) {
@@ -286,8 +309,9 @@ foreach ($instructors as $inst) {
         continue;
     }
     
-    // Fix dates (WordPress overrides them)
+    // Fix dates and author (WordPress overrides them)
     fix_post_dates($new_id, $inst);
+    fix_post_author($new_id, $inst->post_author);
     
     update_post_meta($new_id, '_instructor_phone', get_post_meta($inst->ID, '_tribe_ext_instructor_phone', true));
     update_post_meta($new_id, '_instructor_website', get_post_meta($inst->ID, '_tribe_ext_instructor_website', true));
@@ -339,6 +363,7 @@ foreach ($series as $s) {
         'post_content' => $s->post_content,
         'post_type'    => 'cpd_series',
         'post_status'  => $post_status,
+        'post_author'  => $s->post_author,
     ]);
     
     if (is_wp_error($new_id)) {
@@ -346,8 +371,9 @@ foreach ($series as $s) {
         continue;
     }
     
-    // Fix dates (WordPress overrides them)
+    // Fix dates and author (WordPress overrides them)
     fix_post_dates($new_id, $s);
+    fix_post_author($new_id, $s->post_author);
     
     // Preserve featured image
     if (has_post_thumbnail($s->ID)) {
@@ -365,7 +391,7 @@ log_msg("✓ Series migrated: {$series_count}", 'success');
 // Step 6: Migrate all categories (even those without posts)
 log_msg('', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
-log_msg('STEP 6: Migrating all categories...', 'info');
+log_msg('STEP 6: Migrating all categories with hierarchy...', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 
 $all_categories = get_terms([
@@ -377,6 +403,9 @@ $all_categories = get_terms([
 $system_slugs = ['online', 'on-demand', 'up-coming', 'free', 'physical-event'];
 $categories_created = 0;
 
+// First pass: Create all parent categories (parent = 0)
+$cat_map = []; // Map old term_id => new term_id
+
 foreach ($all_categories as $cat) {
     // Skip system tags that should be tags, not categories
     if (in_array($cat->slug, $system_slugs)) {
@@ -384,20 +413,69 @@ foreach ($all_categories as $cat) {
         continue;
     }
     
+    // Skip child categories for now (parent != 0)
+    if ($cat->parent != 0) {
+        continue;
+    }
+    
     if (!term_exists($cat->slug, 'cpd_category')) {
         $result = wp_insert_term($cat->name, 'cpd_category', [
             'slug'        => $cat->slug,
             'description' => $cat->description,
+            'parent'      => 0,
         ]);
         
         if (!is_wp_error($result)) {
-            log_msg("✓ Created category: {$cat->name}", 'success');
+            log_msg("✓ Created parent category: {$cat->name}", 'success');
             $categories_created++;
+            $cat_map[$cat->term_id] = $result['term_id'];
         } else {
             log_msg("✗ ERROR creating category {$cat->name}: " . $result->get_error_message(), 'error');
         }
     } else {
         log_msg("ℹ Category already exists: {$cat->name}");
+        $existing = get_term_by('slug', $cat->slug, 'cpd_category');
+        if ($existing) {
+            $cat_map[$cat->term_id] = $existing->term_id;
+        }
+    }
+}
+
+// Second pass: Create child categories
+foreach ($all_categories as $cat) {
+    // Skip system tags
+    if (in_array($cat->slug, $system_slugs)) {
+        continue;
+    }
+    
+    // Skip parent categories (already created)
+    if ($cat->parent == 0) {
+        continue;
+    }
+    
+    // Find the new parent term_id
+    $new_parent_id = isset($cat_map[$cat->parent]) ? $cat_map[$cat->parent] : 0;
+    
+    if (!term_exists($cat->slug, 'cpd_category')) {
+        $result = wp_insert_term($cat->name, 'cpd_category', [
+            'slug'        => $cat->slug,
+            'description' => $cat->description,
+            'parent'      => $new_parent_id,
+        ]);
+        
+        if (!is_wp_error($result)) {
+            log_msg("✓ Created child category: {$cat->name} (parent: {$new_parent_id})", 'success');
+            $categories_created++;
+            $cat_map[$cat->term_id] = $result['term_id'];
+        } else {
+            log_msg("✗ ERROR creating category {$cat->name}: " . $result->get_error_message(), 'error');
+        }
+    } else {
+        log_msg("ℹ Category already exists: {$cat->name}");
+        $existing = get_term_by('slug', $cat->slug, 'cpd_category');
+        if ($existing) {
+            $cat_map[$cat->term_id] = $existing->term_id;
+        }
     }
 }
 
@@ -451,14 +529,31 @@ foreach ($events as $event) {
     $cost = get_post_meta($event->ID, '_EventCost', true);
     $currency = get_post_meta($event->ID, '_EventCurrencyCode', true) ?: 'GBP';
     
-    // Preserve original post status and dates
+    // CRITICAL FIX: Ensure dates are preserved even if time portion is missing
+    // If _EventStartDate exists but is just a date (no time), ensure it's still migrated
+    if (!empty($start_date)) {
+        // If date doesn't have time component, add default time
+        if (strlen($start_date) <= 10) {
+            $start_date .= ' 00:00:00';
+        }
+    }
+    if (!empty($end_date)) {
+        // If date doesn't have time component, add default time
+        if (strlen($end_date) <= 10) {
+            $end_date .= ' 00:00:00';
+        }
+    }
+    
+    // Preserve original post status, author, and dates
     $post_status = $event->post_status;
+    $post_author = $event->post_author;
     
     $new_id = wp_insert_post([
         'post_title'   => $event->post_title,
         'post_content' => $event->post_content,
         'post_type'    => 'cpd_event',
         'post_status'  => $post_status,
+        'post_author'  => $post_author,
     ]);
     
     if (is_wp_error($new_id)) {
@@ -477,6 +572,9 @@ foreach ($events as $event) {
     update_post_meta($new_id, '_cpd_cost', $cost);
     update_post_meta($new_id, '_cpd_currency', $currency);
     update_post_meta($new_id, '_old_event_id', $event->ID);
+    
+    // Fix author (WordPress might override it)
+    fix_post_author($new_id, $post_author);
     
     // Venue
     $old_venue = get_post_meta($event->ID, '_EventVenueID', true);
