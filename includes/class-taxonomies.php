@@ -17,8 +17,13 @@ class VET_CPD_Taxonomies {
      * Add CPD Categories meta box to nav menus
      */
     public static function add_nav_menu_meta_box() {
+        // Only add if we have taxonomies registered
+        if (!taxonomy_exists(self::CATEGORY)) {
+            return;
+        }
+        
         add_meta_box(
-            'cpd_categories_nav_box',
+            'add-cpd-category',
             __('CPD Categories', 'vet-cpd-directory'),
             [__CLASS__, 'nav_menu_meta_box_callback'],
             'nav-menus',
@@ -27,7 +32,7 @@ class VET_CPD_Taxonomies {
         );
         
         add_meta_box(
-            'cpd_tags_nav_box',
+            'add-cpd-tag',
             __('CPD Tags', 'vet-cpd-directory'),
             [__CLASS__, 'nav_menu_tags_meta_box_callback'],
             'nav-menus',
@@ -39,94 +44,116 @@ class VET_CPD_Taxonomies {
     /**
      * Render CPD Categories nav menu meta box
      */
-    public static function nav_menu_meta_box_callback() {
-        $categories = self::get_categories(['hide_empty' => false]);
+    public static function nav_menu_meta_box_callback($object) {
+        $categories = get_terms([
+            'taxonomy'   => self::CATEGORY,
+            'hide_empty' => false,
+            'orderby'    => 'name',
+            'order'      => 'ASC',
+        ]);
         
-        if (empty($categories)) {
+        if (empty($categories) || is_wp_error($categories)) {
             echo '<p>' . __('No categories found.', 'vet-cpd-directory') . '</p>';
             return;
         }
+        
+        // Use the standard WordPress walker format
+        $walker = new Walker_Nav_Menu_Checklist();
+        
+        // Prepare items for the walker
+        $items = [];
+        foreach ($categories as $category) {
+            $items[] = (object) [
+                'ID'               => $category->term_id,
+                'db_id'            => 0,
+                'menu_item_parent' => 0,
+                'object_id'        => $category->term_id,
+                'post_parent'      => 0,
+                'type'             => 'taxonomy',
+                'object'           => self::CATEGORY,
+                'title'            => $category->name,
+                'url'              => get_term_link($category),
+                'attr_title'       => '',
+                'target'           => '',
+                'classes'          => [],
+                'xfn'              => '',
+                'description'      => $category->description,
+            ];
+        }
         ?>
-        <div id="cpd-category-tabs" class="posttypediv">
-            <ul class="cpd-category-tabs add-menu-item-tabs">
-                <li class="tabs">
-                    <a href="#cpd-category-all" class="nav-tab-link"><?php _e('View All', 'vet-cpd-directory'); ?></a>
-                </li>
+        <div id="cpd-category-all" class="tabs-panel tabs-panel-view-all tabs-panel-active">
+            <ul id="cpd-categorychecklist" class="categorychecklist form-no-clear">
+                <?php echo walk_nav_menu_tree($items, 0, (object) ['walker' => $walker]); ?>
             </ul>
-            
-            <div id="cpd-category-all" class="tabs-panel tabs-panel-active">
-                <ul class="categorychecklist form-no-clear">
-                    <?php 
-                    $i = -1;
-                    foreach ($categories as $category) : 
-                        $i++;
-                    ?>
-                        <li>
-                            <label class="menu-item-title">
-                                <input type="checkbox" class="menu-item-checkbox" name="menu-item[<?php echo esc_attr($i); ?>][menu-item-object-id]" value="<?php echo esc_attr($category->term_id); ?>">
-                                <input type="hidden" name="menu-item[<?php echo esc_attr($i); ?>][menu-item-type]" value="taxonomy">
-                                <input type="hidden" name="menu-item[<?php echo esc_attr($i); ?>][menu-item-object]" value="cpd_category">
-                                <input type="hidden" name="menu-item[<?php echo esc_attr($i); ?>][menu-item-url]" value="<?php echo esc_url(get_term_link($category)); ?>">
-                                <?php echo esc_html($category->name); ?>
-                            </label>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-            
-            <p class="button-controls wp-clearfix">
-                <span class="add-to-menu">
-                    <input type="submit" class="button-secondary submit-add-to-menu right" value="<?php esc_attr_e('Add to Menu', 'vet-cpd-directory'); ?>" name="add-cpd-category-menu-item">
-                </span>
-            </p>
         </div>
+        
+        <p class="button-controls wp-clearfix" data-items-type="taxonomy-cpd_category">
+            <span class="list-controls">
+                <input type="checkbox" id="cpd-category-tab" class="select-all">
+                <label for="cpd-category-tab"><?php _e('Select All', 'vet-cpd-directory'); ?></label>
+            </span>
+            <span class="add-to-menu">
+                <input type="submit" class="button-secondary submit-add-to-menu right" value="<?php esc_attr_e('Add to Menu', 'vet-cpd-directory'); ?>" name="add-taxonomy-cpd_category-menu-item" id="submit-taxonomy-cpd_category">
+                <span class="spinner"></span>
+            </span>
+        </p>
         <?php
     }
     
     /**
      * Render CPD Tags nav menu meta box
      */
-    public static function nav_menu_tags_meta_box_callback() {
-        $tags = self::get_tags(['hide_empty' => false]);
+    public static function nav_menu_tags_meta_box_callback($object) {
+        $tags = get_terms([
+            'taxonomy'   => self::TAG,
+            'hide_empty' => false,
+            'orderby'    => 'name',
+            'order'      => 'ASC',
+        ]);
         
-        if (empty($tags)) {
+        if (empty($tags) || is_wp_error($tags)) {
             echo '<p>' . __('No tags found.', 'vet-cpd-directory') . '</p>';
             return;
         }
+        
+        $walker = new Walker_Nav_Menu_Checklist();
+        
+        $items = [];
+        foreach ($tags as $tag) {
+            $items[] = (object) [
+                'ID'               => $tag->term_id,
+                'db_id'            => 0,
+                'menu_item_parent' => 0,
+                'object_id'        => $tag->term_id,
+                'post_parent'      => 0,
+                'type'             => 'taxonomy',
+                'object'           => self::TAG,
+                'title'            => $tag->name,
+                'url'              => get_term_link($tag),
+                'attr_title'       => '',
+                'target'           => '',
+                'classes'          => [],
+                'xfn'              => '',
+                'description'      => $tag->description,
+            ];
+        }
         ?>
-        <div id="cpd-tag-tabs" class="posttypediv">
-            <ul class="cpd-tag-tabs add-menu-item-tabs">
-                <li class="tabs">
-                    <a href="#cpd-tag-all" class="nav-tab-link"><?php _e('View All', 'vet-cpd-directory'); ?></a>
-                </li>
+        <div id="cpd-tag-all" class="tabs-panel tabs-panel-view-all tabs-panel-active">
+            <ul id="cpd-tagchecklist" class="categorychecklist form-no-clear">
+                <?php echo walk_nav_menu_tree($items, 0, (object) ['walker' => $walker]); ?>
             </ul>
-            
-            <div id="cpd-tag-all" class="tabs-panel tabs-panel-active">
-                <ul class="categorychecklist form-no-clear">
-                    <?php 
-                    $i = -1000; // Use different offset to avoid conflicts
-                    foreach ($tags as $tag) : 
-                        $i++;
-                    ?>
-                        <li>
-                            <label class="menu-item-title">
-                                <input type="checkbox" class="menu-item-checkbox" name="menu-item[<?php echo esc_attr($i); ?>][menu-item-object-id]" value="<?php echo esc_attr($tag->term_id); ?>">
-                                <input type="hidden" name="menu-item[<?php echo esc_attr($i); ?>][menu-item-type]" value="taxonomy">
-                                <input type="hidden" name="menu-item[<?php echo esc_attr($i); ?>][menu-item-object]" value="cpd_tag">
-                                <input type="hidden" name="menu-item[<?php echo esc_attr($i); ?>][menu-item-url]" value="<?php echo esc_url(get_term_link($tag)); ?>">
-                                <?php echo esc_html($tag->name); ?>
-                            </label>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-            
-            <p class="button-controls wp-clearfix">
-                <span class="add-to-menu">
-                    <input type="submit" class="button-secondary submit-add-to-menu right" value="<?php esc_attr_e('Add to Menu', 'vet-cpd-directory'); ?>" name="add-cpd-tag-menu-item">
-                </span>
-            </p>
         </div>
+        
+        <p class="button-controls wp-clearfix" data-items-type="taxonomy-cpd_tag">
+            <span class="list-controls">
+                <input type="checkbox" id="cpd-tag-tab" class="select-all">
+                <label for="cpd-tag-tab"><?php _e('Select All', 'vet-cpd-directory'); ?></label>
+            </span>
+            <span class="add-to-menu">
+                <input type="submit" class="button-secondary submit-add-to-menu right" value="<?php esc_attr_e('Add to Menu', 'vet-cpd-directory'); ?>" name="add-taxonomy-cpd_tag-menu-item" id="submit-taxonomy-cpd_tag">
+                <span class="spinner"></span>
+            </span>
+        </p>
         <?php
     }
     
