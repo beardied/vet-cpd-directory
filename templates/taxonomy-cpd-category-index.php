@@ -6,6 +6,7 @@
 
 get_header();
 
+// Get all parent categories
 $categories = get_terms([
     'taxonomy'   => 'cpd_category',
     'hide_empty' => false,
@@ -15,7 +16,7 @@ $categories = get_terms([
 ]);
 ?>
 
-<div class="cpd-archive">
+<div class="cpd-archive cpd-categories-archive">
     <div class="cpd-container">
         
         <header class="cpd-archive-header">
@@ -37,25 +38,27 @@ $categories = get_terms([
                     ]);
                     ?>
                     
-                    <div class="cpd-category-card">
-                        <h2 class="cpd-category-title">
-                            <a href="<?php echo esc_url(get_term_link($category)); ?>">
-                                <?php echo esc_html(ucwords(strtolower($category->name))); ?>
-                            </a>
-                        </h2>
+                    <article class="cpd-category-card">
+                        <header class="cpd-category-header">
+                            <h2 class="cpd-category-title">
+                                <a href="<?php echo esc_url(get_term_link($category)); ?>">
+                                    <?php echo esc_html(ucwords(strtolower($category->name))); ?>
+                                </a>
+                            </h2>
+                            
+                            <span class="cpd-category-count">
+                                <?php 
+                                printf(
+                                    _n('%s event', '%s events', $category->count, 'vet-cpd-directory'),
+                                    number_format_i18n($category->count)
+                                ); 
+                                ?>
+                            </span>
+                        </header>
                         
                         <?php if ($category->description) : ?>
                             <p class="cpd-category-desc"><?php echo esc_html($category->description); ?></p>
                         <?php endif; ?>
-                        
-                        <span class="cpd-category-count">
-                            <?php 
-                            printf(
-                                _n('%s event', '%s events', $category->count, 'vet-cpd-directory'),
-                                number_format_i18n($category->count)
-                            ); 
-                            ?>
-                        </span>
                         
                         <?php if (!empty($children) && !is_wp_error($children)) : ?>
                             <div class="cpd-category-children">
@@ -72,13 +75,21 @@ $categories = get_terms([
                                 </ul>
                             </div>
                         <?php endif; ?>
-                    </div>
+                        
+                        <footer class="cpd-category-footer">
+                            <a href="<?php echo esc_url(get_term_link($category)); ?>" class="cpd-category-link">
+                                <?php _e('View Events →', 'vet-cpd-directory'); ?>
+                            </a>
+                        </footer>
+                    </article>
                     
                 <?php endforeach; ?>
             </div>
             
         <?php else : ?>
-            <p><?php _e('No categories found.', 'vet-cpd-directory'); ?></p>
+            <div class="cpd-no-results">
+                <p><?php _e('No categories found.', 'vet-cpd-directory'); ?></p>
+            </div>
         <?php endif; ?>
         
     </div>

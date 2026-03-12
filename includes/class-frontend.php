@@ -19,6 +19,31 @@ class VET_CPD_Frontend {
         add_shortcode('cpd_venue_events', [__CLASS__, 'shortcode_venue_events']);
         add_shortcode('cpd_instructor_events', [__CLASS__, 'shortcode_instructor_events']);
         add_shortcode('cpd_organiser_events', [__CLASS__, 'shortcode_organiser_events']);
+        
+        // Fix page title for category index
+        add_filter('wp_title', [__CLASS__, 'fix_category_index_title'], 10, 2);
+        add_filter('document_title_parts', [__CLASS__, 'fix_category_index_doc_title']);
+    }
+    
+    /**
+     * Fix page title for CPD category index
+     */
+    public static function fix_category_index_title($title, $sep) {
+        if (self::is_cpd_category_base()) {
+            return 'CPD Categories ' . $sep . ' ' . get_bloginfo('name');
+        }
+        return $title;
+    }
+    
+    /**
+     * Fix document title parts for CPD category index
+     */
+    public static function fix_category_index_doc_title($title_parts) {
+        if (self::is_cpd_category_base()) {
+            $title_parts['title'] = 'CPD Categories';
+            unset($title_parts['page']);
+        }
+        return $title_parts;
     }
     
     /**

@@ -697,3 +697,343 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Single Venue, Organiser, Instructor Pages - Match CPD Event Styling */
+
+.cpd-venue-single,
+.cpd-organiser-single,
+.cpd-instructor-single {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.cpd-venue-single .cpd-header,
+.cpd-organiser-single .cpd-header,
+.cpd-instructor-single .cpd-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.cpd-venue-single .cpd-header h1,
+.cpd-organiser-single .cpd-header h1,
+.cpd-instructor-single .cpd-header h1 {
+    margin-bottom: 15px;
+    font-size: 2em;
+}
+
+.cpd-organiser-photo,
+.cpd-instructor-photo {
+    margin-bottom: 20px;
+}
+
+.cpd-organiser-photo .cpd-person-photo,
+.cpd-instructor-photo .cpd-person-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+    border: 4px solid #f0f0f0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.cpd-venue-single .cpd-content,
+.cpd-organiser-single .cpd-content,
+.cpd-instructor-single .cpd-content {
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.cpd-venue-details,
+.cpd-organiser-contact,
+.cpd-instructor-contact {
+    margin: 30px 0;
+    padding: 25px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #0073aa;
+}
+
+.cpd-venue-details h2,
+.cpd-organiser-contact h2,
+.cpd-instructor-contact h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    color: #333;
+}
+
+.cpd-venue-details p,
+.cpd-organiser-contact p,
+.cpd-instructor-contact p {
+    margin-bottom: 12px;
+}
+
+.cpd-venue-details strong,
+.cpd-organiser-contact strong,
+.cpd-instructor-contact strong {
+    color: #555;
+    display: inline-block;
+    min-width: 100px;
+}
+
+.cpd-venue-details a,
+.cpd-organiser-contact a,
+.cpd-instructor-contact a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.cpd-venue-details a:hover,
+.cpd-organiser-contact a:hover,
+.cpd-instructor-contact a:hover {
+    text-decoration: underline;
+}
+
+/* Shortcode events styling on single pages */
+.cpd-venue-single .cpd-shortcode-events,
+.cpd-organiser-single .cpd-shortcode-events,
+.cpd-instructor-single .cpd-shortcode-events {
+    margin: 40px 0;
+    padding: 30px 0;
+    border-top: 2px solid #eee;
+    border-bottom: 2px solid #eee;
+}
+
+.cpd-venue-single .cpd-shortcode-events h3,
+.cpd-organiser-single .cpd-shortcode-events h3,
+.cpd-instructor-single .cpd-shortcode-events h3 {
+    font-size: 1.5em;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+/* Ensure shortcode cards match archive styling */
+.cpd-shortcode-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.cpd-shortcode-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+}
+
+/* Responsive for single pages */
+@media (max-width: 768px) {
+    .cpd-venue-single,
+    .cpd-organiser-single,
+    .cpd-instructor-single {
+        padding: 15px;
+    }
+    
+    .cpd-venue-single .cpd-header h1,
+    .cpd-organiser-single .cpd-header h1,
+    .cpd-instructor-single .cpd-header h1 {
+        font-size: 1.6em;
+    }
+    
+    .cpd-venue-details,
+    .cpd-organiser-contact,
+    .cpd-instructor-contact {
+        padding: 20px;
+    }
+}
+
+/* CPD Category Index Page - Improved Styling */
+
+.cpd-categories-archive {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.cpd-categories-archive .cpd-archive-header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.cpd-categories-archive .cpd-archive-title {
+    font-size: 2.5em;
+    margin: 0 0 15px;
+    color: #333;
+}
+
+.cpd-categories-archive .cpd-archive-desc {
+    color: #666;
+    font-size: 1.2em;
+    margin: 0;
+}
+
+.cpd-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.cpd-category-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.cpd-category-card:hover {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    transform: translateY(-5px);
+    border-color: #0073aa;
+}
+
+.cpd-category-header {
+    background: linear-gradient(135deg, #0073aa 0%, #005a87 100%);
+    color: #fff;
+    padding: 25px;
+    text-align: center;
+}
+
+.cpd-category-title {
+    font-size: 1.5em;
+    margin: 0 0 10px;
+    color: #fff;
+}
+
+.cpd-category-title a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.cpd-category-title a:hover {
+    text-decoration: underline;
+}
+
+.cpd-category-count {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+.cpd-category-desc {
+    color: #666;
+    margin: 20px 25px;
+    font-size: 0.95em;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.cpd-category-children {
+    margin: 0 25px 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.cpd-category-children h3 {
+    font-size: 0.95em;
+    margin: 0 0 15px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cpd-category-children ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cpd-category-children li {
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.cpd-category-children li:last-child {
+    border-bottom: none;
+}
+
+.cpd-category-children a {
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cpd-category-children a:hover {
+    text-decoration: underline;
+    color: #005a87;
+}
+
+.cpd-child-count {
+    color: #999;
+    font-size: 0.85em;
+    margin-left: 5px;
+}
+
+.cpd-category-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.cpd-category-link {
+    display: inline-block;
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: color 0.2s;
+}
+
+.cpd-category-link:hover {
+    color: #005a87;
+}
+
+.cpd-no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .cpd-categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+    
+    .cpd-categories-archive .cpd-archive-title {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 600px) {
+    .cpd-categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .cpd-categories-archive {
+        padding: 20px 15px;
+    }
+    
+    .cpd-categories-archive .cpd-archive-title {
+        font-size: 1.7em;
+    }
+}
