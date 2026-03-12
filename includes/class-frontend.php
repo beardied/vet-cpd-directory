@@ -6,6 +6,9 @@
 class VET_CPD_Frontend {
     
     public static function init() {
+        // Handle 301 redirects from old TEC URLs to new Vet CPD URLs
+        add_action('template_redirect', [__CLASS__, 'handle_old_url_redirects']);
+        
         // Template loading
         add_filter('template_include', [__CLASS__, 'template_loader']);
         
@@ -23,6 +26,45 @@ class VET_CPD_Frontend {
         // Fix page title for category index
         add_filter('wp_title', [__CLASS__, 'fix_category_index_title'], 10, 2);
         add_filter('document_title_parts', [__CLASS__, 'fix_category_index_doc_title']);
+    }
+    
+    /**
+     * Handle 301 redirects from old The Events Calendar URLs to new Vet CPD URLs
+     * Maps old TEC URLs to the new plugin structure
+     */
+    public static function handle_old_url_redirects() {
+        // Only run on frontend
+        if (is_admin()) {
+            return;
+        }
+        
+        $path = $_SERVER['REQUEST_URI'];
+        
+        // 1. Simple Matches - exact URL redirects
+        $static_redirects = [
+            '/up-coming-cpd/' => '/cpd-type/upcoming/',
+            '/free-cpd/'      => '/cpd-type/free/',
+            '/upcomingcpd/category/on-demand/' => '/cpd-type/on-demand/',
+        ];
+        
+        if (isset($static_redirects[$path])) {
+            wp_redirect(home_url($static_redirects[$path]), 301);
+            exit;
+        }
+        
+        // 2. Catch-all for Categories (/upcomingcpd/category/on-demand/something -> /cpd-category/something)
+        if (strpos($path, '/upcomingcpd/category/on-demand/') === 0) {
+            $new_path = str_replace('/upcomingcpd/category/on-demand/', '/cpd-category/', $path);
+            wp_redirect(home_url($new_path), 301);
+            exit;
+        }
+        
+        // 3. Catch-all for Events (/event/post-name -> /cpd/post-name)
+        if (strpos($path, '/event/') === 0) {
+            $new_path = str_replace('/event/', '/cpd/', $path);
+            wp_redirect(home_url($new_path), 301);
+            exit;
+        }
     }
     
     /**
