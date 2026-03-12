@@ -16,10 +16,6 @@ class VET_CPD_Admin {
         add_filter('manage_cpd_event_posts_columns', [__CLASS__, 'cpd_columns']);
         add_action('manage_cpd_event_posts_custom_column', [__CLASS__, 'cpd_column_content'], 10, 2);
         add_filter('manage_edit-cpd_event_sortable_columns', [__CLASS__, 'cpd_sortable_columns']);
-        
-        // Bulk edit author support
-        add_action('bulk_edit_custom_box', [__CLASS__, 'bulk_edit_author_field'], 10, 2);
-        add_action('save_post', [__CLASS__, 'bulk_edit_save_author'], 10, 2);
     }
     
     /**
@@ -279,68 +275,5 @@ class VET_CPD_Admin {
         return $columns;
     }
     
-    /**
-     * Add author dropdown to bulk edit
-     */
-    public static function bulk_edit_author_field($column_name, $post_type) {
-        if ($post_type !== 'cpd_event') {
-            return;
-        }
-        
-        // Only show in the 'author' column position (which comes after tags)
-        if ($column_name !== 'cpd_tags') {
-            return;
-        }
-        ?>
-        <fieldset class="inline-edit-col-right" style="margin-top: 20px;">
-            <div class="inline-edit-col">
-                <label>
-                    <span class="title"><?php _e('Author', 'vet-cpd-directory'); ?></span>
-                    <?php
-                    wp_dropdown_users([
-                        'name'             => 'post_author',
-                        'id'               => 'bulk_cpd_author',
-                        'show_option_none' => __('— No Change —', 'vet-cpd-directory'),
-                        'option_none_value'=> -1,
-                        'class'            => 'authors',
-                    ]);
-                    ?>
-                </label>
-            </div>
-        </fieldset>
-        <?php
-    }
-    
-    /**
-     * Save bulk edit author changes
-     */
-    public static function bulk_edit_save_author($post_id, $post) {
-        // Check if this is a bulk edit request
-        if (!isset($_REQUEST['bulk_edit']) || empty($_REQUEST['post_author'])) {
-            return;
-        }
-        
-        // Only for CPD events
-        if ($post->post_type !== 'cpd_event') {
-            return;
-        }
-        
-        // Check permissions
-        if (!current_user_can('edit_post', $post_id)) {
-            return;
-        }
-        
-        $author_id = intval($_REQUEST['post_author']);
-        
-        // -1 means no change
-        if ($author_id === -1) {
-            return;
-        }
-        
-        // Update the post author
-        wp_update_post([
-            'ID'          => $post_id,
-            'post_author' => $author_id,
-        ]);
-    }
+
 }
