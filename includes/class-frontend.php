@@ -86,22 +86,27 @@ class VET_CPD_Frontend {
     /**
      * Shortcode: [cpd_venue_events]
      * Display events for a specific venue
-     * Usage: [cpd_venue_events venue_id="123" limit="5"]
+     * Usage: [cpd_venue_events venue_id="123"] or auto-detect on venue page
      */
     public static function shortcode_venue_events($atts) {
         $atts = shortcode_atts([
             'venue_id' => 0,
-            'limit'    => 5,
         ], $atts, 'cpd_venue_events');
         
         $venue_id = intval($atts['venue_id']);
+        
+        // Auto-detect venue ID if on a venue page
+        if (!$venue_id && is_singular('cpd_venue')) {
+            $venue_id = get_the_ID();
+        }
+        
         if (!$venue_id) {
-            return '<p>' . __('Please specify a venue ID.', 'vet-cpd-directory') . '</p>';
+            return '<p>' . __('Please specify a venue ID or use on a venue page.', 'vet-cpd-directory') . '</p>';
         }
         
         $events = get_posts([
             'post_type'      => 'cpd_event',
-            'posts_per_page' => intval($atts['limit']),
+            'posts_per_page' => -1, // No limit - show all
             'meta_query'     => [
                 [
                     'key'     => '_cpd_venues',
@@ -121,34 +126,8 @@ class VET_CPD_Frontend {
             <h3><?php _e('Events at this venue', 'vet-cpd-directory'); ?></h3>
             <div class="cpd-events-list">
                 <?php foreach ($events as $event) : 
-                    $event_id = $event->ID;
-                    $start_date = VET_CPD_CPD::get_meta($event_id, '_cpd_start_date');
-                    $cost = VET_CPD_CPD::get_meta($event_id, '_cpd_cost');
-                    $currency = VET_CPD_CPD::get_meta($event_id, '_cpd_currency') ?: 'GBP';
-                    
-                    // Format cost
-                    if ($cost !== '' && $cost !== '0') {
-                        $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
-                        $cost_display = $symbol . $cost;
-                    } else {
-                        $cost_display = __('Free', 'vet-cpd-directory');
-                    }
-                    ?>
-                    <div class="cpd-event-item">
-                        <?php if (has_post_thumbnail($event_id)) : ?>
-                            <div class="cpd-event-thumb">
-                                <?php echo get_the_post_thumbnail($event_id, 'thumbnail'); ?>
-                            </div>
-                        <?php endif; ?>
-                        <div class="cpd-event-info">
-                            <h4><a href="<?php echo esc_url(get_permalink($event_id)); ?>"><?php echo esc_html($event->post_title); ?></a></h4>
-                            <?php if ($start_date) : ?>
-                                <span class="cpd-event-date">📅 <?php echo esc_html(date_i18n(get_option('date_format'), strtotime($start_date))); ?></span>
-                            <?php endif; ?>
-                            <span class="cpd-event-cost">💰 <?php echo esc_html($cost_display); ?></span>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                    echo self::render_event_card($event);
+                endforeach; ?>
             </div>
         </div>
         <?php
@@ -158,22 +137,27 @@ class VET_CPD_Frontend {
     /**
      * Shortcode: [cpd_instructor_events]
      * Display events for a specific instructor
-     * Usage: [cpd_instructor_events instructor_id="123" limit="5"]
+     * Usage: [cpd_instructor_events instructor_id="123"] or auto-detect on instructor page
      */
     public static function shortcode_instructor_events($atts) {
         $atts = shortcode_atts([
             'instructor_id' => 0,
-            'limit'         => 5,
         ], $atts, 'cpd_instructor_events');
         
         $instructor_id = intval($atts['instructor_id']);
+        
+        // Auto-detect instructor ID if on an instructor page
+        if (!$instructor_id && is_singular('cpd_instructor')) {
+            $instructor_id = get_the_ID();
+        }
+        
         if (!$instructor_id) {
-            return '<p>' . __('Please specify an instructor ID.', 'vet-cpd-directory') . '</p>';
+            return '<p>' . __('Please specify an instructor ID or use on an instructor page.', 'vet-cpd-directory') . '</p>';
         }
         
         $events = get_posts([
             'post_type'      => 'cpd_event',
-            'posts_per_page' => intval($atts['limit']),
+            'posts_per_page' => -1, // No limit - show all
             'meta_query'     => [
                 [
                     'key'     => '_cpd_instructors',
@@ -193,34 +177,8 @@ class VET_CPD_Frontend {
             <h3><?php _e('Events by this instructor', 'vet-cpd-directory'); ?></h3>
             <div class="cpd-events-list">
                 <?php foreach ($events as $event) : 
-                    $event_id = $event->ID;
-                    $start_date = VET_CPD_CPD::get_meta($event_id, '_cpd_start_date');
-                    $cost = VET_CPD_CPD::get_meta($event_id, '_cpd_cost');
-                    $currency = VET_CPD_CPD::get_meta($event_id, '_cpd_currency') ?: 'GBP';
-                    
-                    // Format cost
-                    if ($cost !== '' && $cost !== '0') {
-                        $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
-                        $cost_display = $symbol . $cost;
-                    } else {
-                        $cost_display = __('Free', 'vet-cpd-directory');
-                    }
-                    ?>
-                    <div class="cpd-event-item">
-                        <?php if (has_post_thumbnail($event_id)) : ?>
-                            <div class="cpd-event-thumb">
-                                <?php echo get_the_post_thumbnail($event_id, 'thumbnail'); ?>
-                            </div>
-                        <?php endif; ?>
-                        <div class="cpd-event-info">
-                            <h4><a href="<?php echo esc_url(get_permalink($event_id)); ?>"><?php echo esc_html($event->post_title); ?></a></h4>
-                            <?php if ($start_date) : ?>
-                                <span class="cpd-event-date">📅 <?php echo esc_html(date_i18n(get_option('date_format'), strtotime($start_date))); ?></span>
-                            <?php endif; ?>
-                            <span class="cpd-event-cost">💰 <?php echo esc_html($cost_display); ?></span>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                    echo self::render_event_card($event);
+                endforeach; ?>
             </div>
         </div>
         <?php
@@ -230,22 +188,27 @@ class VET_CPD_Frontend {
     /**
      * Shortcode: [cpd_organiser_events]
      * Display events for a specific organiser
-     * Usage: [cpd_organiser_events organiser_id="123" limit="5"]
+     * Usage: [cpd_organiser_events organiser_id="123"] or auto-detect on organiser page
      */
     public static function shortcode_organiser_events($atts) {
         $atts = shortcode_atts([
             'organiser_id' => 0,
-            'limit'        => 5,
         ], $atts, 'cpd_organiser_events');
         
         $organiser_id = intval($atts['organiser_id']);
+        
+        // Auto-detect organiser ID if on an organiser page
+        if (!$organiser_id && is_singular('cpd_organiser')) {
+            $organiser_id = get_the_ID();
+        }
+        
         if (!$organiser_id) {
-            return '<p>' . __('Please specify an organiser ID.', 'vet-cpd-directory') . '</p>';
+            return '<p>' . __('Please specify an organiser ID or use on an organiser page.', 'vet-cpd-directory') . '</p>';
         }
         
         $events = get_posts([
             'post_type'      => 'cpd_event',
-            'posts_per_page' => intval($atts['limit']),
+            'posts_per_page' => -1, // No limit - show all
             'meta_query'     => [
                 [
                     'key'     => '_cpd_organisers',
@@ -265,36 +228,90 @@ class VET_CPD_Frontend {
             <h3><?php _e('Events by this organiser', 'vet-cpd-directory'); ?></h3>
             <div class="cpd-events-list">
                 <?php foreach ($events as $event) : 
-                    $event_id = $event->ID;
-                    $start_date = VET_CPD_CPD::get_meta($event_id, '_cpd_start_date');
-                    $cost = VET_CPD_CPD::get_meta($event_id, '_cpd_cost');
-                    $currency = VET_CPD_CPD::get_meta($event_id, '_cpd_currency') ?: 'GBP';
-                    
-                    // Format cost
-                    if ($cost !== '' && $cost !== '0') {
-                        $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
-                        $cost_display = $symbol . $cost;
-                    } else {
-                        $cost_display = __('Free', 'vet-cpd-directory');
-                    }
-                    ?>
-                    <div class="cpd-event-item">
-                        <?php if (has_post_thumbnail($event_id)) : ?>
-                            <div class="cpd-event-thumb">
-                                <?php echo get_the_post_thumbnail($event_id, 'thumbnail'); ?>
-                            </div>
-                        <?php endif; ?>
-                        <div class="cpd-event-info">
-                            <h4><a href="<?php echo esc_url(get_permalink($event_id)); ?>"><?php echo esc_html($event->post_title); ?></a></h4>
-                            <?php if ($start_date) : ?>
-                                <span class="cpd-event-date">📅 <?php echo esc_html(date_i18n(get_option('date_format'), strtotime($start_date))); ?></span>
-                            <?php endif; ?>
-                            <span class="cpd-event-cost">💰 <?php echo esc_html($cost_display); ?></span>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                    echo self::render_event_card($event);
+                endforeach; ?>
             </div>
         </div>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Helper: Render an event card with pill badges
+     */
+    public static function render_event_card($event) {
+        $event_id = $event->ID;
+        $start_date = VET_CPD_CPD::get_meta($event_id, '_cpd_start_date');
+        $end_date = VET_CPD_CPD::get_meta($event_id, '_cpd_end_date');
+        $cost = VET_CPD_CPD::get_meta($event_id, '_cpd_cost');
+        $currency = VET_CPD_CPD::get_meta($event_id, '_cpd_currency') ?: 'GBP';
+        $all_day = VET_CPD_CPD::get_meta($event_id, '_cpd_all_day');
+        
+        // Format date
+        if ($start_date) {
+            if ($all_day === '1') {
+                $date_display = date_i18n('j M Y', strtotime($start_date));
+            } else {
+                $date_display = date_i18n('j M Y g:i a', strtotime($start_date));
+            }
+        } else {
+            $date_display = '';
+        }
+        
+        // Format cost
+        if ($cost !== '' && $cost !== '0') {
+            $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
+            $cost_display = $symbol . $cost;
+        } else {
+            $cost_display = __('Free', 'vet-cpd-directory');
+        }
+        
+        // Get categories and tags
+        $categories = get_the_terms($event_id, VET_CPD_Taxonomies::CATEGORY);
+        $tags = get_the_terms($event_id, VET_CPD_Taxonomies::TAG);
+        
+        ob_start();
+        ?>
+        <article class="cpd-card cpd-shortcode-card">
+            <a href="<?php echo esc_url(get_permalink($event_id)); ?>" class="cpd-card-link">
+                <?php if (has_post_thumbnail($event_id)) : ?>
+                    <?php echo get_the_post_thumbnail($event_id, 'medium_large', ['class' => 'cpd-card-image']); ?>
+                <?php endif; ?>
+                
+                <div class="cpd-card-content">
+                    <h2 class="cpd-card-title"><?php echo esc_html($event->post_title); ?></h2>
+                    
+                    <div class="cpd-card-meta">
+                        <?php if ($date_display) : ?>
+                            <span class="cpd-card-date">📅 <?php echo esc_html($date_display); ?></span>
+                        <?php endif; ?>
+                        <span class="cpd-card-cost">💰 <?php echo esc_html($cost_display); ?></span>
+                    </div>
+                    
+                    <?php if (!empty($categories) && !is_wp_error($categories)) : ?>
+                        <div class="cpd-card-badges cpd-categories">
+                            <?php foreach ($categories as $cat) : ?>
+                                <span class="cpd-badge cpd-badge-category"><?php echo esc_html($cat->name); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <?php if (!empty($tags) && !is_wp_error($tags)) : ?>
+                        <div class="cpd-card-badges cpd-tags">
+                            <?php foreach ($tags as $tag) : ?>
+                                <span class="cpd-badge cpd-badge-tag"><?php echo esc_html($tag->name); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="cpd-card-excerpt">
+                        <?php echo wp_trim_words($event->post_excerpt ?: $event->post_content, 20); ?>
+                    </div>
+                    
+                    <span class="cpd-card-more">Learn More →</span>
+                </div>
+            </a>
+        </article>
         <?php
         return ob_get_clean();
     }

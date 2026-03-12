@@ -54,6 +54,24 @@ while (have_posts()) : the_post();
 <article class="cpd-single">
     <div class="cpd-container">
         
+        <!-- Breadcrumbs -->
+        <nav class="cpd-breadcrumbs">
+            <a href="<?php echo esc_url(home_url()); ?>"><?php _e('Home', 'vet-cpd-directory'); ?></a>
+            <span class="cpd-breadcrumb-sep">&rsaquo;</span>
+            <a href="<?php echo esc_url(get_post_type_archive_link('cpd_event')); ?>"><?php _e('CPD Events', 'vet-cpd-directory'); ?></a>
+            <?php
+            // Add category breadcrumb if event has categories
+            $categories = get_the_terms($event_id, 'cpd_category');
+            if ($categories && !is_wp_error($categories)) {
+                $main_cat = $categories[0];
+                echo '<span class="cpd-breadcrumb-sep">&rsaquo;</span>';
+                echo '<a href="' . esc_url(get_term_link($main_cat)) . '">' . esc_html($main_cat->name) . '</a>';
+            }
+            ?>
+            <span class="cpd-breadcrumb-sep">&rsaquo;</span>
+            <span class="cpd-breadcrumb-current"><?php the_title(); ?></span>
+        </nav>
+        
         <header class="cpd-header">
             <?php if (has_post_thumbnail()) : ?>
                 <?php the_post_thumbnail('large', ['class' => 'cpd-featured-image']); ?>

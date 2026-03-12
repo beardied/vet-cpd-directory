@@ -76,6 +76,28 @@ if (is_tax('cpd_category')) {
                                     <span class="cpd-card-cost">💰 <?php echo esc_html($cost_display); ?></span>
                                 </div>
                                 
+                                <?php
+                                // Get categories and tags for pill badges
+                                $card_cats = get_the_terms($event_id, 'cpd_category');
+                                $card_tags = get_the_terms($event_id, 'cpd_tag');
+                                ?>
+                                
+                                <?php if (!empty($card_cats) && !is_wp_error($card_cats)) : ?>
+                                    <div class="cpd-card-badges cpd-categories">
+                                        <?php foreach ($card_cats as $cat) : ?>
+                                            <span class="cpd-badge cpd-badge-category"><?php echo esc_html($cat->name); ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($card_tags) && !is_wp_error($card_tags)) : ?>
+                                    <div class="cpd-card-badges cpd-tags">
+                                        <?php foreach ($card_tags as $tag) : ?>
+                                            <span class="cpd-badge cpd-badge-tag"><?php echo esc_html($tag->name); ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                                
                                 <div class="cpd-card-excerpt">
                                     <?php echo wp_trim_words(get_the_excerpt(), 20); ?>
                                 </div>
