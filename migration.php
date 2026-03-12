@@ -388,17 +388,18 @@ log_msg('═══════════════════════�
 log_msg('STEP 7: Migrating events to CPDs...', 'info');
 log_msg('═══════════════════════════════════════════════════════════════', 'info');
 
-// CRITICAL FIX: Use WP_Query with suppress_filters to get ALL events
-$event_query = new WP_Query([
-    'post_type'      => 'tribe_events',
-    'posts_per_page' => -1,
-    'post_status'    => 'any',
-    'fields'         => 'all',
-    'suppress_filters' => true, // Prevent other plugins from filtering
-]);
-$events = $event_query->posts;
+// CRITICAL FIX: Use direct DB query to bypass TEC's Custom Tables filtering
+// TEC hijacks WP_Query to only return future events from wp_tec_occurrences
+// We need ALL events (past and future) from wp_posts
+global $wpdb;
+$events = $wpdb->get_results(
+    "SELECT * FROM {$wpdb->posts} 
+     WHERE post_type = 'tribe_events' 
+     AND post_status IN ('publish', 'draft', 'pending', 'private')
+     ORDER BY ID ASC"
+);
 
-log_msg("Found " . count($events) . " events to migrate");
+log_msg("Found " . count($events) . " events to migrate (direct DB query)");
 
 // Reload mappings
 $venue_map = get_option('vet_cpd_venue_map', []);
