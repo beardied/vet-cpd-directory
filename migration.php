@@ -48,6 +48,31 @@ if (!class_exists('VET_CPD_CPD')) {
     exit;
 }
 
+/**
+ * Helper: Fix post dates after WordPress overrides them
+ * WordPress wp_insert_post/wp_update_post always sets post_modified to current time
+ * We need to use direct DB query to preserve original dates
+ */
+function fix_post_dates($post_id, $original_post) {
+    global $wpdb;
+    
+    $wpdb->update(
+        $wpdb->posts,
+        [
+            'post_date'           => $original_post->post_date,
+            'post_date_gmt'       => $original_post->post_date_gmt,
+            'post_modified'       => $original_post->post_modified,
+            'post_modified_gmt'   => $original_post->post_modified_gmt,
+        ],
+        ['ID' => $post_id],
+        ['%s', '%s', '%s', '%s'],
+        ['%d']
+    );
+    
+    // Clean cache
+    clean_post_cache($post_id);
+}
+
 // Check if running via WP-CLI
 $is_cli = defined('WP_CLI') && WP_CLI;
 $log_messages = [];
@@ -120,16 +145,15 @@ foreach ($venues as $venue) {
         'post_type'    => 'cpd_venue',
         'post_status'  => $post_status,
         'post_content' => $venue->post_content,
-        'post_date'    => $venue->post_date,
-        'post_date_gmt'=> $venue->post_date_gmt,
-        'post_modified'=> $venue->post_modified,
-        'post_modified_gmt' => $venue->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
         log_msg("✗ ERROR creating venue '{$venue->post_title}': " . $new_id->get_error_message(), 'error');
         continue;
     }
+    
+    // Fix dates (WordPress overrides them)
+    fix_post_dates($new_id, $venue);
     
     $meta_mapping = [
         '_venue_address'     => '_VenueAddress',
@@ -195,16 +219,15 @@ foreach ($organizers as $org) {
         'post_content' => $org->post_content,
         'post_type'    => 'cpd_organiser',
         'post_status'  => $post_status,
-        'post_date'    => $org->post_date,
-        'post_date_gmt'=> $org->post_date_gmt,
-        'post_modified'=> $org->post_modified,
-        'post_modified_gmt' => $org->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
         log_msg("✗ ERROR creating organiser '{$org->post_title}': " . $new_id->get_error_message(), 'error');
         continue;
     }
+    
+    // Fix dates (WordPress overrides them)
+    fix_post_dates($new_id, $org);
     
     update_post_meta($new_id, '_organiser_phone', get_post_meta($org->ID, '_OrganizerPhone', true));
     update_post_meta($new_id, '_organiser_website', get_post_meta($org->ID, '_OrganizerWebsite', true));
@@ -256,16 +279,15 @@ foreach ($instructors as $inst) {
         'post_content' => $inst->post_content,
         'post_type'    => 'cpd_instructor',
         'post_status'  => $post_status,
-        'post_date'    => $inst->post_date,
-        'post_date_gmt'=> $inst->post_date_gmt,
-        'post_modified'=> $inst->post_modified,
-        'post_modified_gmt' => $inst->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
         log_msg("✗ ERROR creating instructor '{$inst->post_title}': " . $new_id->get_error_message(), 'error');
         continue;
     }
+    
+    // Fix dates (WordPress overrides them)
+    fix_post_dates($new_id, $inst);
     
     update_post_meta($new_id, '_instructor_phone', get_post_meta($inst->ID, '_tribe_ext_instructor_phone', true));
     update_post_meta($new_id, '_instructor_website', get_post_meta($inst->ID, '_tribe_ext_instructor_website', true));
@@ -317,16 +339,15 @@ foreach ($series as $s) {
         'post_content' => $s->post_content,
         'post_type'    => 'cpd_series',
         'post_status'  => $post_status,
-        'post_date'    => $s->post_date,
-        'post_date_gmt'=> $s->post_date_gmt,
-        'post_modified'=> $s->post_modified,
-        'post_modified_gmt' => $s->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
         log_msg("✗ ERROR creating series '{$s->post_title}': " . $new_id->get_error_message(), 'error');
         continue;
     }
+    
+    // Fix dates (WordPress overrides them)
+    fix_post_dates($new_id, $s);
     
     // Preserve featured image
     if (has_post_thumbnail($s->ID)) {
@@ -438,16 +459,15 @@ foreach ($events as $event) {
         'post_content' => $event->post_content,
         'post_type'    => 'cpd_event',
         'post_status'  => $post_status,
-        'post_date'    => $event->post_date,
-        'post_date_gmt'=> $event->post_date_gmt,
-        'post_modified'=> $event->post_modified,
-        'post_modified_gmt' => $event->post_modified_gmt,
     ]);
     
     if (is_wp_error($new_id)) {
         log_msg("✗ ERROR creating CPD '{$event->post_title}': " . $new_id->get_error_message(), 'error');
         continue;
     }
+    
+    // Fix dates (WordPress overrides them)
+    fix_post_dates($new_id, $event);
     
     // Meta fields
     update_post_meta($new_id, '_cpd_provider_url', get_post_meta($event->ID, '_EventURL', true));
