@@ -1316,3 +1316,72 @@
 .cpd-map-link a:hover {
     text-decoration: underline;
 }
+
+/* Live Search Box */
+.cpd-archive-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.cpd-header-content {
+    flex: 1;
+    min-width: 250px;
+}
+
+.cpd-search-box {
+    position: relative;
+    min-width: 280px;
+    max-width: 400px;
+}
+
+.cpd-search-input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    font-size: 1em;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.cpd-search-input:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1);
+}
+
+.cpd-search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.cpd-no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 1.1em;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cpd-archive-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .cpd-search-box {
+        max-width: 100%;
+        min-width: auto;
+    }
+}

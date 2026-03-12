@@ -20,16 +20,23 @@ if (is_tax('cpd_category')) {
     <div class="cpd-container">
         
         <header class="cpd-archive-header">
-            <h1 class="cpd-archive-title"><?php echo esc_html(ucwords(strtolower($archive_title))); ?></h1>
+            <div class="cpd-header-content">
+                <h1 class="cpd-archive-title"><?php echo esc_html(ucwords(strtolower($archive_title))); ?></h1>
+                
+                <?php if (is_tax() && $current_term->description) : ?>
+                    <p class="cpd-archive-desc"><?php echo esc_html($current_term->description); ?></p>
+                <?php endif; ?>
+            </div>
             
-            <?php if (is_tax() && $current_term->description) : ?>
-                <p class="cpd-archive-desc"><?php echo esc_html($current_term->description); ?></p>
-            <?php endif; ?>
+            <div class="cpd-search-box">
+                <input type="text" id="cpd-live-search" class="cpd-search-input" placeholder="<?php _e('Search events...', 'vet-cpd-directory'); ?>" autocomplete="off">
+                <span class="cpd-search-icon">🔍</span>
+            </div>
         </header>
         
         <?php if (have_posts()) : ?>
             
-            <div class="cpd-list">
+            <div class="cpd-list" id="cpd-events-list">
                 <?php while (have_posts()) : the_post(); 
                     $event_id = get_the_ID();
                     
@@ -60,7 +67,7 @@ if (is_tax('cpd_category')) {
                     }
                     ?>
                     
-                    <article class="cpd-card">
+                    <article class="cpd-card" data-title="<?php echo esc_attr(strtolower(get_the_title())); ?>">
                         <a href="<?php the_permalink(); ?>" class="cpd-card-link">
                             <?php if (has_post_thumbnail()) : ?>
                                 <?php the_post_thumbnail('medium_large', ['class' => 'cpd-card-image']); ?>
@@ -110,7 +117,7 @@ if (is_tax('cpd_category')) {
                 <?php endwhile; ?>
             </div>
             
-            <div class="cpd-pagination">
+            <div class="cpd-pagination" id="cpd-pagination">
                 <?php
                 the_posts_pagination([
                     'mid_size'  => 2,
@@ -120,11 +127,54 @@ if (is_tax('cpd_category')) {
                 ?>
             </div>
             
+            <p class="cpd-no-results" id="cpd-no-results" style="display: none;">
+                <?php _e('No events match your search.', 'vet-cpd-directory'); ?>
+            </p>
+            
         <?php else : ?>
             <p><?php _e('No CPD events found.', 'vet-cpd-directory'); ?></p>
         <?php endif; ?>
         
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('cpd-live-search');
+    const eventsList = document.getElementById('cpd-events-list');
+    const pagination = document.getElementById('cpd-pagination');
+    const noResults = document.getElementById('cpd-no-results');
+    
+    if (!searchInput || !eventsList) return;
+    
+    const cards = eventsList.querySelectorAll('.cpd-card');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        let visibleCount = 0;
+        
+        cards.forEach(function(card) {
+            const title = card.getAttribute('data-title');
+            
+            if (title.includes(searchTerm)) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show/hide pagination based on search
+        if (pagination) {
+            pagination.style.display = searchTerm ? 'none' : '';
+        }
+        
+        // Show no results message
+        if (noResults) {
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    });
+});
+</script>
 
 <?php get_footer(); ?>
