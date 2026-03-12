@@ -1037,3 +1037,245 @@
         font-size: 1.7em;
     }
 }
+
+/* Fix: Shortcode events should use 3-column grid like archive */
+.cpd-shortcode-events .cpd-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+/* Shortcode section styling */
+.cpd-shortcode-events {
+    margin: 40px 0;
+    padding: 30px 0;
+    border-top: 2px solid #eee;
+}
+
+.cpd-shortcode-events h3 {
+    font-size: 1.5em;
+    margin-bottom: 25px;
+    color: #333;
+    text-align: center;
+}
+
+/* Single Venue, Organiser, Instructor - Complete Styling */
+
+/* Container */
+.cpd-venue-single,
+.cpd-organiser-single,
+.cpd-instructor-single {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Header - Match CPD event style */
+.cpd-venue-single .cpd-header,
+.cpd-organiser-single .cpd-header,
+.cpd-instructor-single .cpd-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.cpd-venue-single .cpd-header h1,
+.cpd-organiser-single .cpd-header h1,
+.cpd-instructor-single .cpd-header h1 {
+    font-size: 2.2em;
+    margin: 0 0 15px;
+    color: #333;
+}
+
+/* Photo styling */
+.cpd-organiser-photo,
+.cpd-instructor-photo {
+    margin-bottom: 25px;
+}
+
+.cpd-organiser-photo img,
+.cpd-instructor-photo img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+    border: 5px solid #f0f0f0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Content area */
+.cpd-venue-single .cpd-content,
+.cpd-organiser-single .cpd-content,
+.cpd-instructor-single .cpd-content {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    font-size: 1.05em;
+    color: #444;
+}
+
+/* Contact/Details box */
+.cpd-venue-details,
+.cpd-organiser-contact,
+.cpd-instructor-contact {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #0073aa;
+}
+
+.cpd-venue-details h2,
+.cpd-organiser-contact h2,
+.cpd-instructor-contact h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    color: #333;
+}
+
+.cpd-venue-details p,
+.cpd-organiser-contact p,
+.cpd-instructor-contact p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.cpd-venue-details strong,
+.cpd-organiser-contact strong,
+.cpd-instructor-contact strong {
+    color: #555;
+    display: inline-block;
+    min-width: 100px;
+}
+
+/* Links */
+.cpd-venue-details a,
+.cpd-organiser-contact a,
+.cpd-instructor-contact a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.cpd-venue-details a:hover,
+.cpd-organiser-contact a:hover,
+.cpd-instructor-contact a:hover {
+    text-decoration: underline;
+}
+
+/* Post Navigation - Match CPD event exactly */
+.cpd-venue-single .cpd-post-nav,
+.cpd-organiser-single .cpd-post-nav,
+.cpd-instructor-single .cpd-post-nav {
+    max-width: 800px;
+    margin: 50px auto 0;
+    padding-top: 30px;
+    border-top: 1px solid #ddd;
+}
+
+.cpd-venue-single .cpd-nav-links,
+.cpd-organiser-single .cpd-nav-links,
+.cpd-instructor-single .cpd-nav-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.cpd-venue-single .cpd-nav-prev,
+.cpd-venue-single .cpd-nav-next,
+.cpd-organiser-single .cpd-nav-prev,
+.cpd-organiser-single .cpd-nav-next,
+.cpd-instructor-single .cpd-nav-prev,
+.cpd-instructor-single .cpd-nav-next {
+    max-width: 45%;
+}
+
+.cpd-venue-single .cpd-nav-next,
+.cpd-organiser-single .cpd-nav-next,
+.cpd-instructor-single .cpd-nav-next {
+    text-align: right;
+}
+
+.cpd-venue-single .cpd-nav-prev a,
+.cpd-venue-single .cpd-nav-next a,
+.cpd-organiser-single .cpd-nav-prev a,
+.cpd-organiser-single .cpd-nav-next a,
+.cpd-instructor-single .cpd-nav-prev a,
+.cpd-instructor-single .cpd-nav-next a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #333;
+}
+
+.cpd-venue-single .cpd-nav-arrow,
+.cpd-organiser-single .cpd-nav-arrow,
+.cpd-instructor-single .cpd-nav-arrow {
+    font-size: 1.4em;
+    color: #0073aa;
+    flex-shrink: 0;
+}
+
+.cpd-venue-single .cpd-nav-title,
+.cpd-organiser-single .cpd-nav-title,
+.cpd-instructor-single .cpd-nav-title {
+    font-size: 0.95em;
+    line-height: 1.4;
+}
+
+/* Breadcrumbs - Match CPD event style */
+.cpd-venue-single .cpd-breadcrumbs,
+.cpd-organiser-single .cpd-breadcrumbs,
+.cpd-instructor-single .cpd-breadcrumbs {
+    max-width: 800px;
+    margin: 0 auto 30px;
+}
+
+/* Responsive for shortcodes */
+@media (max-width: 992px) {
+    .cpd-shortcode-events .cpd-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .cpd-shortcode-events .cpd-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .cpd-venue-single,
+    .cpd-organiser-single,
+    .cpd-instructor-single {
+        padding: 20px 15px;
+    }
+    
+    .cpd-venue-single .cpd-header h1,
+    .cpd-organiser-single .cpd-header h1,
+    .cpd-instructor-single .cpd-header h1 {
+        font-size: 1.8em;
+    }
+    
+    .cpd-venue-details,
+    .cpd-organiser-contact,
+    .cpd-instructor-contact {
+        padding: 20px;
+    }
+    
+    .cpd-venue-single .cpd-nav-links,
+    .cpd-organiser-single .cpd-nav-links,
+    .cpd-instructor-single .cpd-nav-links {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .cpd-venue-single .cpd-nav-next,
+    .cpd-organiser-single .cpd-nav-next,
+    .cpd-instructor-single .cpd-nav-next {
+        text-align: left;
+    }
+}

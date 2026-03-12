@@ -9,7 +9,7 @@ while (have_posts()) : the_post();
     $venue_id = get_the_ID();
 ?>
 
-<article class="cpd-single cpd-venue-single">
+<div class="cpd-archive cpd-venue-single">
     <div class="cpd-container">
         
         <!-- Breadcrumbs -->
@@ -21,8 +21,8 @@ while (have_posts()) : the_post();
             <span class="cpd-breadcrumb-current"><?php the_title(); ?></span>
         </nav>
         
-        <header class="cpd-header">
-            <h1><?php the_title(); ?></h1>
+        <header class="cpd-archive-header">
+            <h1 class="cpd-archive-title"><?php the_title(); ?></h1>
         </header>
         
         <div class="cpd-content">
@@ -92,7 +92,7 @@ while (have_posts()) : the_post();
         </nav>
         
     </div>
-</article>
+</div>
 
 <?php 
 endwhile;

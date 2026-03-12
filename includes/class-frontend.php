@@ -115,9 +115,13 @@ class VET_CPD_Frontend {
     public static function enqueue_assets() {
         if (!is_singular(VET_CPD_CPD::POST_TYPE) && 
             !is_singular(VET_CPD_Series::POST_TYPE) && 
+            !is_singular('cpd_venue') &&
+            !is_singular('cpd_organiser') &&
+            !is_singular('cpd_instructor') &&
             !is_post_type_archive(VET_CPD_CPD::POST_TYPE) &&
             !is_post_type_archive(VET_CPD_Series::POST_TYPE) &&
-            !is_tax([VET_CPD_Taxonomies::CATEGORY, VET_CPD_Taxonomies::TAG])) {
+            !is_tax([VET_CPD_Taxonomies::CATEGORY, VET_CPD_Taxonomies::TAG]) &&
+            !self::is_cpd_category_base()) {
             return;
         }
         
@@ -165,7 +169,7 @@ class VET_CPD_Frontend {
         ?>
         <div class="cpd-shortcode-events cpd-venue-events">
             <h3><?php _e('Events at this venue', 'vet-cpd-directory'); ?></h3>
-            <div class="cpd-events-list">
+            <div class="cpd-list">
                 <?php foreach ($events as $event) : 
                     echo self::render_event_card($event);
                 endforeach; ?>
@@ -216,7 +220,7 @@ class VET_CPD_Frontend {
         ?>
         <div class="cpd-shortcode-events cpd-instructor-events">
             <h3><?php _e('Events by this instructor', 'vet-cpd-directory'); ?></h3>
-            <div class="cpd-events-list">
+            <div class="cpd-list">
                 <?php foreach ($events as $event) : 
                     echo self::render_event_card($event);
                 endforeach; ?>
@@ -267,7 +271,7 @@ class VET_CPD_Frontend {
         ?>
         <div class="cpd-shortcode-events cpd-organiser-events">
             <h3><?php _e('Events by this organiser', 'vet-cpd-directory'); ?></h3>
-            <div class="cpd-events-list">
+            <div class="cpd-list">
                 <?php foreach ($events as $event) : 
                     echo self::render_event_card($event);
                 endforeach; ?>
