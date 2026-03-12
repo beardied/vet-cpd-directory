@@ -52,7 +52,7 @@ class VET_CPD_CPD {
             'hierarchical'          => false,
             'menu_position'         => 5,
             'menu_icon'             => 'dashicons-welcome-learn-more',
-            'supports'              => ['title', 'editor', 'thumbnail', 'revisions'],
+            'supports'              => ['title', 'editor', 'thumbnail', 'revisions', 'author'],
             'taxonomies'            => ['cpd_category', 'cpd_tag'],
             'show_in_rest'          => true,
         ];
