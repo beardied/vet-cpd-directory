@@ -11,6 +11,82 @@ class VET_CPD_Taxonomies {
     public static function init() {
         add_action('init', [__CLASS__, 'register']);
         add_action('admin_init', [__CLASS__, 'add_nav_menu_meta_box']);
+        add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_nav_menu_js']);
+    }
+    
+    /**
+     * Enqueue JavaScript for nav menu page
+     */
+    public static function enqueue_nav_menu_js($hook) {
+        if ($hook !== 'nav-menus.php') {
+            return;
+        }
+        
+        wp_add_inline_script('nav-menu', '
+            jQuery(document).ready(function($) {
+                // Handle CPD Category Add to Menu
+                $("#submit-taxonomy-cpd_category").on("click", function(e) {
+                    e.preventDefault();
+                    var checked = $("#cpd-categorychecklist input:checked");
+                    if (checked.length === 0) {
+                        return false;
+                    }
+                    
+                    var items = [];
+                    checked.each(function() {
+                        var $this = $(this);
+                        items.push({
+                            type: "taxonomy",
+                            object: "cpd_category",
+                            object_id: $this.val(),
+                            title: $this.closest("label").text().trim()
+                        });
+                    });
+                    
+                    wpNavMenu.addItemToMenu(items, wpNavMenu.addMenuItemToBottom, function() {
+                        checked.prop("checked", false);
+                    });
+                    
+                    return false;
+                });
+                
+                // Handle CPD Tag Add to Menu
+                $("#submit-taxonomy-cpd_tag").on("click", function(e) {
+                    e.preventDefault();
+                    var checked = $("#cpd-tagchecklist input:checked");
+                    if (checked.length === 0) {
+                        return false;
+                    }
+                    
+                    var items = [];
+                    checked.each(function() {
+                        var $this = $(this);
+                        items.push({
+                            type: "taxonomy",
+                            object: "cpd_tag",
+                            object_id: $this.val(),
+                            title: $this.closest("label").text().trim()
+                        });
+                    });
+                    
+                    wpNavMenu.addItemToMenu(items, wpNavMenu.addMenuItemToBottom, function() {
+                        checked.prop("checked", false);
+                    });
+                    
+                    return false;
+                });
+                
+                // Select All for Categories
+                $("#cpd-category-tab").on("change", function() {
+                    $("#cpd-categorychecklist input").prop("checked", $(this).prop("checked"));
+                });
+                
+                // Select All for Tags
+                $("#cpd-tag-tab").on("change", function() {
+                    $("#cpd-tagchecklist input").prop("checked", $(this).prop("checked"));
+                });
+            });
+        ', 'after');
     }
     
     /**
