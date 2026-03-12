@@ -6,10 +6,10 @@
 
 get_header();
 
-// Get all parent categories
+// Get all parent categories (hide empty = only show categories with events)
 $categories = get_terms([
     'taxonomy'   => 'cpd_category',
-    'hide_empty' => false,
+    'hide_empty' => true,
     'orderby'    => 'name',
     'order'      => 'ASC',
     'parent'     => 0, // Only top-level categories
@@ -28,10 +28,10 @@ $categories = get_terms([
             
             <div class="cpd-categories-grid">
                 <?php foreach ($categories as $category) : 
-                    // Get child categories
+                    // Get child categories (hide empty)
                     $children = get_terms([
                         'taxonomy'   => 'cpd_category',
-                        'hide_empty' => false,
+                        'hide_empty' => true,
                         'orderby'    => 'name',
                         'order'      => 'ASC',
                         'parent'     => $category->term_id,
