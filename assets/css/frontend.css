@@ -1328,17 +1328,18 @@
 
 .cpd-header-content {
     flex: 1;
-    min-width: 250px;
+    text-align: center;
 }
 
 .cpd-search-box {
     position: relative;
     min-width: 280px;
-    max-width: 400px;
+    max-width: 350px;
 }
 
 .cpd-search-input {
     width: 100%;
+    box-sizing: border-box;
     padding: 12px 45px 12px 15px;
     font-size: 1em;
     border: 2px solid #ddd;
@@ -1355,12 +1356,13 @@
 
 .cpd-search-icon {
     position: absolute;
-    right: 15px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.2em;
-    opacity: 0.6;
+    font-size: 1.1em;
+    opacity: 0.5;
     pointer-events: none;
+    line-height: 1;
 }
 
 .cpd-no-results {
@@ -1382,6 +1384,35 @@
     
     .cpd-search-box {
         max-width: 100%;
+        min-width: auto;
+    }
+}
+
+/* Archive header without search - centered title */
+.cpd-archive-header:not(:has(.cpd-search-box)) {
+    justify-content: center;
+}
+
+.cpd-archive-header:not(:has(.cpd-search-box)) .cpd-header-content {
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cpd-archive-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .cpd-header-content {
+        text-align: center;
+        width: 100%;
+    }
+    
+    .cpd-search-box {
+        max-width: 100%;
+        width: 100%;
         min-width: auto;
     }
 }
