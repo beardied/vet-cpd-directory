@@ -61,7 +61,17 @@ $term = get_queried_object();
                     }
                     ?>
                     
-                    <article class="cpd-card" data-title="<?php echo esc_attr(strtolower(get_the_title())); ?>">
+                    <?php
+                    // Prepare search data (title + categories)
+                    $search_terms = [strtolower(get_the_title())];
+                    if (!empty($card_cats) && !is_wp_error($card_cats)) {
+                        foreach ($card_cats as $cat) {
+                            $search_terms[] = strtolower($cat->name);
+                        }
+                    }
+                    $search_data = implode(' ', $search_terms);
+                    ?>
+                    <article class="cpd-card" data-title="<?php echo esc_attr(strtolower(get_the_title())); ?>" data-search="<?php echo esc_attr($search_data); ?>">
                         <a href="<?php the_permalink(); ?>" class="cpd-card-link">
                             <?php if (has_post_thumbnail()) : ?>
                                 <?php the_post_thumbnail('medium_large', ['class' => 'cpd-card-image']); ?>
@@ -163,9 +173,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let visibleCount = 0;
         
         cards.forEach(function(card) {
-            const title = card.getAttribute('data-title');
+            // Search in both title and categories
+            const searchData = card.getAttribute('data-search') || card.getAttribute('data-title');
             
-            if (title.includes(searchTerm)) {
+            if (searchData.includes(searchTerm)) {
                 card.style.display = '';
                 visibleCount++;
             } else {

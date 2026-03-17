@@ -67,9 +67,21 @@ if (is_tax('cpd_category')) {
                     } else {
                         $cost_display = 'Free';
                     }
+                    
+                    // Get categories for search
+                    $card_cats = get_the_terms($event_id, 'cpd_category');
+                    
+                    // Prepare search data (title + categories)
+                    $search_terms = [strtolower(get_the_title())];
+                    if (!empty($card_cats) && !is_wp_error($card_cats)) {
+                        foreach ($card_cats as $cat) {
+                            $search_terms[] = strtolower($cat->name);
+                        }
+                    }
+                    $search_data = implode(' ', $search_terms);
                     ?>
                     
-                    <article class="cpd-card" data-title="<?php echo esc_attr(strtolower(get_the_title())); ?>">
+                    <article class="cpd-card" data-title="<?php echo esc_attr(strtolower(get_the_title())); ?>" data-search="<?php echo esc_attr($search_data); ?>">
                         <a href="<?php the_permalink(); ?>" class="cpd-card-link">
                             <?php if (has_post_thumbnail()) : ?>
                                 <?php the_post_thumbnail('medium_large', ['class' => 'cpd-card-image']); ?>
@@ -86,8 +98,7 @@ if (is_tax('cpd_category')) {
                                 </div>
                                 
                                 <?php
-                                // Get categories and tags for pill badges
-                                $card_cats = get_the_terms($event_id, 'cpd_category');
+                                // Get tags for pill badges (categories already fetched above)
                                 $card_tags = get_the_terms($event_id, 'cpd_tag');
                                 
                                 // Split categories into visible (max 4) and hidden
@@ -171,9 +182,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let visibleCount = 0;
         
         cards.forEach(function(card) {
-            const title = card.getAttribute('data-title');
+            // Search in both title and categories
+            const searchData = card.getAttribute('data-search') || card.getAttribute('data-title');
             
-            if (title.includes(searchTerm)) {
+            if (searchData.includes(searchTerm)) {
                 card.style.display = '';
                 visibleCount++;
             } else {
