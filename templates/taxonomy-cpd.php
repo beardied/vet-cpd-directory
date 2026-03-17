@@ -59,9 +59,11 @@ $term = get_queried_object();
                     } else {
                         $cost_display = 'Free';
                     }
-                    ?>
                     
-                    <?php
+                    // Get categories and tags for pill badges (BEFORE search data prep)
+                    $card_cats = get_the_terms($event_id, 'cpd_category');
+                    $card_tags = get_the_terms($event_id, 'cpd_tag');
+                    
                     // Prepare search data (title + categories)
                     $search_terms = [strtolower(get_the_title())];
                     if (!empty($card_cats) && !is_wp_error($card_cats)) {
@@ -71,6 +73,7 @@ $term = get_queried_object();
                     }
                     $search_data = implode(' ', $search_terms);
                     ?>
+                    
                     <article class="cpd-card" data-title="<?php echo esc_attr(strtolower(get_the_title())); ?>" data-search="<?php echo esc_attr($search_data); ?>">
                         <a href="<?php the_permalink(); ?>" class="cpd-card-link">
                             <?php if (has_post_thumbnail()) : ?>
@@ -88,9 +91,6 @@ $term = get_queried_object();
                                 </div>
                                 
                                 <?php
-                                // Get categories and tags for pill badges
-                                $card_cats = get_the_terms($event_id, 'cpd_category');
-                                $card_tags = get_the_terms($event_id, 'cpd_tag');
                                 
                                 // Split categories into visible (max 4) and hidden
                                 $max_visible = 4;
