@@ -81,13 +81,28 @@ $term = get_queried_object();
                                 // Get categories and tags for pill badges
                                 $card_cats = get_the_terms($event_id, 'cpd_category');
                                 $card_tags = get_the_terms($event_id, 'cpd_tag');
+                                
+                                // Split categories into visible (max 4) and hidden
+                                $max_visible = 4;
+                                $visible_cats = [];
+                                $hidden_cats = [];
+                                if (!empty($card_cats) && !is_wp_error($card_cats)) {
+                                    $visible_cats = array_slice($card_cats, 0, $max_visible);
+                                    $hidden_cats = array_slice($card_cats, $max_visible);
+                                }
+                                $hidden_count = count($hidden_cats);
                                 ?>
                                 
-                                <?php if (!empty($card_cats) && !is_wp_error($card_cats)) : ?>
-                                    <div class="cpd-card-badges cpd-categories">
-                                        <?php foreach ($card_cats as $cat) : ?>
+                                <?php if (!empty($visible_cats)) : ?>
+                                    <div class="cpd-card-badges cpd-categories" data-event-id="<?php echo esc_attr($event_id); ?>">
+                                        <?php foreach ($visible_cats as $cat) : ?>
                                             <span class="cpd-badge cpd-badge-category"><?php echo esc_html($cat->name); ?></span>
                                         <?php endforeach; ?>
+                                        <?php if ($hidden_count > 0) : ?>
+                                            <span class="cpd-more-categories" data-event-id="<?php echo esc_attr($event_id); ?>" data-hidden-cats='<?php echo esc_attr(json_encode(wp_list_pluck($hidden_cats, 'name'))); ?>'>
+                                                + <?php echo $hidden_count; ?> more
+                                            </span>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
                                 
@@ -167,6 +182,32 @@ document.addEventListener('DOMContentLoaded', function() {
         if (noResults) {
             noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         }
+    });
+    
+    // Handle "+ X more" category expansion
+    const moreLinks = document.querySelectorAll('.cpd-more-categories');
+    moreLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent card click
+            
+            const eventId = this.getAttribute('data-event-id');
+            const hiddenCats = JSON.parse(this.getAttribute('data-hidden-cats'));
+            const badgesContainer = document.querySelector('.cpd-categories[data-event-id="' + eventId + '"]');
+            
+            if (badgesContainer && hiddenCats.length > 0) {
+                // Create and append hidden category badges
+                hiddenCats.forEach(function(catName) {
+                    const badge = document.createElement('span');
+                    badge.className = 'cpd-badge cpd-badge-category cpd-badge-hidden';
+                    badge.textContent = catName;
+                    badgesContainer.insertBefore(badge, link);
+                });
+                
+                // Remove the "+ X more" link
+                link.remove();
+            }
+        });
     });
 });
 </script>

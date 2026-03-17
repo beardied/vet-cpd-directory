@@ -558,6 +558,39 @@
     border: 1px solid #ffeeba;
 }
 
+/* + X more categories link */
+.cpd-more-categories {
+    display: inline-block;
+    font-size: 0.95em;
+    font-weight: bold;
+    color: #0073aa;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-left: 4px;
+    transition: color 0.2s ease;
+}
+
+.cpd-more-categories:hover {
+    color: #005177;
+    text-decoration: underline;
+}
+
+/* Hidden category badges (shown after click) */
+.cpd-badge-hidden {
+    animation: fadeInBadge 0.3s ease;
+}
+
+@keyframes fadeInBadge {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Shortcode event cards */
 .cpd-shortcode-events {
     margin: 30px 0;

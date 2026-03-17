@@ -9,6 +9,9 @@ class VET_CPD_Frontend {
         // Handle 301 redirects from old TEC URLs to new Vet CPD URLs
         add_action('template_redirect', [__CLASS__, 'handle_old_url_redirects']);
         
+        // Order CPD events by start date on taxonomy pages
+        add_action('pre_get_posts', [__CLASS__, 'order_events_by_start_date']);
+        
         // Template loading
         add_filter('template_include', [__CLASS__, 'template_loader']);
         
@@ -64,6 +67,27 @@ class VET_CPD_Frontend {
             $new_path = str_replace('/event/', '/cpd/', $path);
             wp_redirect(home_url($new_path), 301);
             exit;
+        }
+    }
+    
+    /**
+     * Order CPD events by start date (soonest first) on taxonomy pages
+     */
+    public static function order_events_by_start_date($query) {
+        // Only modify frontend taxonomy queries for cpd_event post type
+        if (is_admin() || !$query->is_main_query()) {
+            return;
+        }
+        
+        // Check if this is a CPD taxonomy page
+        if ($query->is_tax(['cpd_category', 'cpd_tag']) || $query->is_post_type_archive('cpd_event')) {
+            $query->set('meta_key', '_cpd_start_date');
+            $query->set('orderby', 'meta_value');
+            $query->set('order', 'ASC');
+            $query->set('meta_type', 'DATETIME');
+            
+            // Only show events with future start dates (or include all if you want past events too)
+            // For now, let's show all but ordered by date
         }
     }
     
