@@ -544,7 +544,7 @@
     margin-top: 0;
 }
 
-/* Lists - add margin and proper padding */
+/* Lists - add margin, proper padding, and bullet points */
 .cpd-content ul,
 .cpd-content ol {
     margin-top: 12px;
@@ -552,18 +552,61 @@
     padding-left: 30px;
 }
 
+.cpd-content ul {
+    list-style-type: disc;
+}
+
+.cpd-content ol {
+    list-style-type: decimal;
+}
+
 .cpd-content li {
     margin-bottom: 8px;
     line-height: 1.6;
 }
 
-/* Images - add vertical margin */
+/* Nested lists */
+.cpd-content ul ul {
+    list-style-type: circle;
+    margin-top: 8px;
+}
+
+.cpd-content ol ol {
+    list-style-type: lower-alpha;
+}
+
+/* Images - nice styling with shadow and hover effect */
 .cpd-content img {
     display: block;
     max-width: 100%;
     height: auto;
-    margin: 20px 0;
-    border-radius: 4px;
+    margin: 24px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cpd-content img:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* Images in a row - side by side styling */
+.cpd-content img + img {
+    margin-top: 12px;
+}
+
+/* Image captions (if using figcaption) */
+.cpd-content figure {
+    margin: 24px 0;
+    text-align: center;
+}
+
+.cpd-content figcaption {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 10px;
+    font-style: italic;
 }
 
 /* Tables - add margin and better styling */
