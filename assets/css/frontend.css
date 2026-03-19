@@ -149,391 +149,136 @@
     align-items: center;
 }
 
-.cpd-date,
-.cpd-cost {
-    display: inline-flex;
+.cpd-header-meta > div {
+    display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.cpd-status {
-    display: flex;
-    gap: 8px;
-}
-
-.cpd-tag {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: bold;
-}
-
-.cpd-tag-upcoming {
-    background: #d4edda;
-    color: #155724;
-}
-
-.cpd-tag-on-demand {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.cpd-tag-online {
-    background: #cce5ff;
-    color: #004085;
-}
-
-.cpd-tag-free {
-    background: #d1ecf1;
-    color: #0c5460;
-}
-
 .cpd-content {
     line-height: 1.7;
-    margin-bottom: 30px;
 }
 
-.cpd-section {
-    margin: 30px 0;
-    padding: 25px;
-    background: #f9f9f9;
-    border-radius: 8px;
+.cpd-content h2 {
+    margin: 30px 0 15px;
+    font-size: 1.5em;
+    color: #333;
 }
 
-.cpd-section h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.4em;
+.cpd-content h3 {
+    margin: 25px 0 12px;
+    font-size: 1.3em;
+    color: #333;
 }
 
-.cpd-provider-button {
-    display: inline-block;
-    background: #0073aa;
-    color: #fff;
-    padding: 12px 30px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background 0.3s ease;
-}
-
-.cpd-provider-button:hover {
-    background: #005177;
-    color: #fff;
-}
-
-.cpd-venue {
-    margin-bottom: 20px;
-}
-
-.cpd-venue h3 {
-    margin-bottom: 5px;
-}
-
-.cpd-venue-address {
-    color: #666;
-    font-style: italic;
-    margin: 0 0 15px;
-}
-
-.cpd-map {
-    margin-top: 15px;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.cpd-map iframe {
-    display: block;
-}
-
-.cpd-online {
-    margin-top: 20px;
-}
-
-.cpd-online a {
-    color: #0073aa;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.cpd-person {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-.cpd-person-photo {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-.cpd-person-info h3 {
-    margin: 0 0 8px;
-}
-
-.cpd-person-info h3 a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.cpd-person-info h3 a:hover {
-    color: #0073aa;
-}
-
-.cpd-person-bio {
-    color: #555;
-    margin-bottom: 10px;
-}
-
-.cpd-person-contact {
-    font-size: 0.9em;
-}
-
-.cpd-person-contact a {
-    color: #0073aa;
-    text-decoration: none;
-}
-
-.cpd-series-nav {
-    background: #f0f8ff;
-    padding: 20px;
-    border-radius: 8px;
-    margin: 30px 0;
-}
-
-.cpd-series-nav h3 {
-    margin-top: 0;
+.cpd-content p {
     margin-bottom: 15px;
 }
 
-.cpd-series-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.cpd-content ul,
+.cpd-content ol {
+    margin: 15px 0;
+    padding-left: 25px;
 }
 
-.cpd-series-nav li {
-    padding: 8px 0;
-    border-bottom: 1px solid #ddd;
+.cpd-content li {
+    margin-bottom: 8px;
 }
 
-.cpd-series-nav li:last-child {
-    border-bottom: none;
+.cpd-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 15px 0;
 }
 
-.cpd-series-nav .current {
+.cpd-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.cpd-content th,
+.cpd-content td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.cpd-content th {
+    background: #f5f5f5;
     font-weight: bold;
 }
 
-.cpd-series-nav a {
+.cpd-content strong {
+    color: #333;
+}
+
+/* Venue/Speaker cards in content */
+.cpd-content .cpd-venue-card,
+.cpd-content .cpd-speaker-card {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+/* Back link */
+.cpd-back-link {
+    margin-bottom: 20px;
+}
+
+.cpd-back-link a {
     color: #0073aa;
     text-decoration: none;
 }
 
-.cpd-footer {
+.cpd-back-link a:hover {
+    text-decoration: underline;
+}
+
+/* Navigation */
+.cpd-navigation {
+    display: flex;
+    justify-content: space-between;
     margin-top: 40px;
     padding-top: 20px;
     border-top: 1px solid #ddd;
 }
 
-.cpd-categories,
-.cpd-tags {
-    margin-bottom: 10px;
-}
-
-.cpd-categories a,
-.cpd-tags a {
+.cpd-navigation a {
     color: #0073aa;
     text-decoration: none;
 }
 
-/* Related Events */
-.cpd-related {
-    margin-top: 40px;
-}
-
-.cpd-related h2 {
-    margin-bottom: 25px;
-    font-size: 1.5em;
-}
-
-.cpd-related-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-}
-
-.cpd-related-item {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.cpd-related-item:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.cpd-related-item a {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
-
-.cpd-related-img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    display: block;
-}
-
-.cpd-related-item h4 {
-    padding: 15px 15px 5px;
-    margin: 0;
-    font-size: 0.95em;
-    line-height: 1.4;
-    font-weight: bold;
-    color: #333;
-}
-
-.cpd-related-date {
-    display: block;
-    padding: 0 15px 15px;
-    color: #666;
-    font-size: 0.85em;
-}
-
-/* Post Navigation */
-.cpd-post-nav {
-    margin-top: 40px;
-    padding-top: 30px;
-    border-top: 1px solid #ddd;
-}
-
-.cpd-nav-links {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.cpd-nav-prev,
-.cpd-nav-next {
-    max-width: 45%;
-}
-
-.cpd-nav-next {
-    text-align: right;
-}
-
-.cpd-nav-prev a,
-.cpd-nav-next a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: #333;
-}
-
-.cpd-nav-arrow {
-    font-size: 1.4em;
-    color: #0073aa;
-    flex-shrink: 0;
-}
-
-.cpd-nav-title {
-    font-size: 0.95em;
-    line-height: 1.4;
-}
-
-.cpd-nav-empty {
-    display: none;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-    .cpd-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .cpd-related-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .cpd-list {
-        grid-template-columns: 1fr;
-    }
-    
-    .cpd-archive-title {
-        font-size: 1.6em;
-    }
-    
-    .cpd-header-meta {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .cpd-person {
-        flex-direction: column;
-    }
-    
-    .cpd-related-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .cpd-nav-links {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .cpd-nav-next {
-        text-align: left;
-    }
-}
-
-/* Breadcrumbs */
-.cpd-breadcrumbs {
-    margin-bottom: 20px;
-    padding: 12px 15px;
-    background: #f5f5f5;
-    border-radius: 4px;
-    font-size: 0.9em;
-    color: #666;
-}
-
-.cpd-breadcrumbs a {
-    color: #0073aa;
-    text-decoration: none;
-}
-
-.cpd-breadcrumbs a:hover {
+.cpd-navigation a:hover {
     text-decoration: underline;
 }
 
-.cpd-breadcrumb-sep {
-    margin: 0 8px;
-    color: #999;
+/* Sidebar Widgets */
+.cpd-sidebar {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
 }
 
-.cpd-breadcrumb-current {
-    color: #333;
-    font-weight: 500;
+.cpd-widget {
+    margin-bottom: 30px;
 }
 
-/* Pill Badges for Categories and Tags */
+.cpd-widget-title {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+/* Badges */
 .cpd-card-badges {
+    margin-bottom: 12px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin: 10px 0;
 }
 
 .cpd-badge {
@@ -542,8 +287,6 @@
     border-radius: 20px;
     font-size: 0.8em;
     font-weight: 500;
-    text-decoration: none;
-    white-space: nowrap;
 }
 
 .cpd-badge-category {
@@ -596,761 +339,53 @@
     margin: 30px 0;
 }
 
-.cpd-shortcode-events h3 {
-    margin-bottom: 20px;
-    font-size: 1.4em;
+.cpd-shortcode-events .cpd-list {
+    grid-template-columns: repeat(2, 1fr);
 }
 
-.cpd-shortcode-events .cpd-events-list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-}
-
-.cpd-shortcode-card .cpd-card-title {
-    font-size: 1.1em;
-}
-
-/* Responsive for shortcode grids */
-@media (max-width: 992px) {
-    .cpd-shortcode-events .cpd-events-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .cpd-shortcode-events .cpd-events-list {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* CPD Category Index Page */
-.cpd-categories-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 40px;
-}
-
-.cpd-category-card {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 25px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.cpd-category-card:hover {
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    transform: translateY(-3px);
-}
-
-.cpd-category-title {
-    font-size: 1.4em;
-    margin: 0 0 10px;
-}
-
-.cpd-category-title a {
-    color: #333;
-    text-decoration: none;
-}
-
-.cpd-category-title a:hover {
-    color: #0073aa;
-}
-
-.cpd-category-desc {
-    color: #666;
-    margin-bottom: 15px;
-    font-size: 0.95em;
-}
-
-.cpd-category-count {
-    display: inline-block;
-    background: #0073aa;
-    color: #fff;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 500;
-}
-
-.cpd-category-children {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
-
-.cpd-category-children h3 {
-    font-size: 1em;
-    margin: 0 0 10px;
-    color: #555;
-}
-
-.cpd-category-children ul {
+/* Taxonomy list on category index */
+.cpd-taxonomy-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.cpd-category-children li {
-    padding: 5px 0;
-    border-bottom: 1px solid #f5f5f5;
+.cpd-taxonomy-list li {
+    margin-bottom: 8px;
 }
 
-.cpd-category-children li:last-child {
-    border-bottom: none;
-}
-
-.cpd-category-children a {
+.cpd-taxonomy-list a {
     color: #0073aa;
     text-decoration: none;
 }
 
-.cpd-category-children a:hover {
+.cpd-taxonomy-list a:hover {
     text-decoration: underline;
 }
 
-.cpd-child-count {
+/* Child categories */
+.cpd-taxonomy-children {
+    margin-left: 20px;
+    margin-top: 8px;
+    list-style: none;
+    padding: 0;
+}
+
+.cpd-taxonomy-children li {
+    margin-bottom: 5px;
+}
+
+.cpd-taxonomy-children a {
+    color: #555;
+}
+
+/* Count badge */
+.cpd-count {
     color: #999;
     font-size: 0.9em;
-    margin-left: 5px;
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-    .cpd-categories-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .cpd-categories-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Single Venue, Organiser, Instructor Pages - Match CPD Event Styling */
-
-.cpd-venue-single,
-.cpd-organiser-single,
-.cpd-instructor-single {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.cpd-venue-single .cpd-header,
-.cpd-organiser-single .cpd-header,
-.cpd-instructor-single .cpd-header {
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.cpd-venue-single .cpd-header h1,
-.cpd-organiser-single .cpd-header h1,
-.cpd-instructor-single .cpd-header h1 {
-    margin-bottom: 15px;
-    font-size: 2em;
-}
-
-.cpd-organiser-photo,
-.cpd-instructor-photo {
-    margin-bottom: 20px;
-}
-
-.cpd-organiser-photo .cpd-person-photo,
-.cpd-instructor-photo .cpd-person-photo {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto;
-    border: 4px solid #f0f0f0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.cpd-venue-single .cpd-content,
-.cpd-organiser-single .cpd-content,
-.cpd-instructor-single .cpd-content {
-    line-height: 1.7;
-    margin-bottom: 30px;
-}
-
-.cpd-venue-details,
-.cpd-organiser-contact,
-.cpd-instructor-contact {
-    margin: 30px 0;
-    padding: 25px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border-left: 4px solid #0073aa;
-}
-
-.cpd-venue-details h2,
-.cpd-organiser-contact h2,
-.cpd-instructor-contact h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.4em;
-    color: #333;
-}
-
-.cpd-venue-details p,
-.cpd-organiser-contact p,
-.cpd-instructor-contact p {
-    margin-bottom: 12px;
-}
-
-.cpd-venue-details strong,
-.cpd-organiser-contact strong,
-.cpd-instructor-contact strong {
-    color: #555;
-    display: inline-block;
-    min-width: 100px;
-}
-
-.cpd-venue-details a,
-.cpd-organiser-contact a,
-.cpd-instructor-contact a {
-    color: #0073aa;
-    text-decoration: none;
-}
-
-.cpd-venue-details a:hover,
-.cpd-organiser-contact a:hover,
-.cpd-instructor-contact a:hover {
-    text-decoration: underline;
-}
-
-/* Shortcode events styling on single pages */
-.cpd-venue-single .cpd-shortcode-events,
-.cpd-organiser-single .cpd-shortcode-events,
-.cpd-instructor-single .cpd-shortcode-events {
-    margin: 40px 0;
-    padding: 30px 0;
-    border-top: 2px solid #eee;
-    border-bottom: 2px solid #eee;
-}
-
-.cpd-venue-single .cpd-shortcode-events h3,
-.cpd-organiser-single .cpd-shortcode-events h3,
-.cpd-instructor-single .cpd-shortcode-events h3 {
-    font-size: 1.5em;
-    margin-bottom: 25px;
-    color: #333;
-}
-
-/* Ensure shortcode cards match archive styling */
-.cpd-shortcode-card {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.cpd-shortcode-card:hover {
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    transform: translateY(-3px);
-}
-
-/* Responsive for single pages */
-@media (max-width: 768px) {
-    .cpd-venue-single,
-    .cpd-organiser-single,
-    .cpd-instructor-single {
-        padding: 15px;
-    }
-    
-    .cpd-venue-single .cpd-header h1,
-    .cpd-organiser-single .cpd-header h1,
-    .cpd-instructor-single .cpd-header h1 {
-        font-size: 1.6em;
-    }
-    
-    .cpd-venue-details,
-    .cpd-organiser-contact,
-    .cpd-instructor-contact {
-        padding: 20px;
-    }
-}
-
-/* CPD Category Index Page - Improved Styling */
-
-.cpd-categories-archive {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.cpd-categories-archive .cpd-archive-header {
-    text-align: center;
-    margin-bottom: 50px;
-    padding-bottom: 30px;
-    border-bottom: 2px solid #e0e0e0;
-}
-
-.cpd-categories-archive .cpd-archive-title {
-    font-size: 2.5em;
-    margin: 0 0 15px;
-    color: #333;
-}
-
-.cpd-categories-archive .cpd-archive-desc {
-    color: #666;
-    font-size: 1.2em;
-    margin: 0;
-}
-
-.cpd-categories-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-}
-
-.cpd-category-card {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.cpd-category-card:hover {
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-    transform: translateY(-5px);
-    border-color: #0073aa;
-}
-
-.cpd-category-header {
-    background: linear-gradient(135deg, #0073aa 0%, #005a87 100%);
-    color: #fff;
-    padding: 25px;
-    text-align: center;
-}
-
-.cpd-category-title {
-    font-size: 1.5em;
-    margin: 0 0 10px;
-    color: #fff;
-}
-
-.cpd-category-title a {
-    color: #fff;
-    text-decoration: none;
-}
-
-.cpd-category-title a:hover {
-    text-decoration: underline;
-}
-
-.cpd-category-count {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 500;
-}
-
-.cpd-category-desc {
-    color: #666;
-    margin: 20px 25px;
-    font-size: 0.95em;
-    line-height: 1.6;
-    flex-grow: 1;
-}
-
-.cpd-category-children {
-    margin: 0 25px 20px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.cpd-category-children h3 {
-    font-size: 0.95em;
-    margin: 0 0 15px;
-    color: #555;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.cpd-category-children ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.cpd-category-children li {
-    padding: 8px 0;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.cpd-category-children li:last-child {
-    border-bottom: none;
-}
-
-.cpd-category-children a {
-    color: #0073aa;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.cpd-category-children a:hover {
-    text-decoration: underline;
-    color: #005a87;
-}
-
-.cpd-child-count {
-    color: #999;
-    font-size: 0.85em;
-    margin-left: 5px;
-}
-
-.cpd-category-footer {
-    padding: 20px 25px;
-    border-top: 1px solid #e0e0e0;
-    text-align: center;
-}
-
-.cpd-category-link {
-    display: inline-block;
-    color: #0073aa;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.95em;
-    transition: color 0.2s;
-}
-
-.cpd-category-link:hover {
-    color: #005a87;
-}
-
-.cpd-no-results {
-    text-align: center;
-    padding: 60px 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    color: #666;
-    font-size: 1.1em;
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-    .cpd-categories-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 25px;
-    }
-    
-    .cpd-categories-archive .cpd-archive-title {
-        font-size: 2em;
-    }
-}
-
-@media (max-width: 600px) {
-    .cpd-categories-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .cpd-categories-archive {
-        padding: 20px 15px;
-    }
-    
-    .cpd-categories-archive .cpd-archive-title {
-        font-size: 1.7em;
-    }
-}
-
-/* Fix: Shortcode events should use 3-column grid like archive */
-.cpd-shortcode-events .cpd-list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-}
-
-/* Shortcode section styling */
-.cpd-shortcode-events {
-    margin: 40px 0;
-    padding: 30px 0;
-    border-top: 2px solid #eee;
-}
-
-.cpd-shortcode-events h3 {
-    font-size: 1.5em;
-    margin-bottom: 25px;
-    color: #333;
-    text-align: center;
-}
-
-/* Single Venue, Organiser, Instructor - Complete Styling */
-
-/* Container */
-.cpd-venue-single,
-.cpd-organiser-single,
-.cpd-instructor-single {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-/* Header - Match CPD event style */
-.cpd-venue-single .cpd-header,
-.cpd-organiser-single .cpd-header,
-.cpd-instructor-single .cpd-header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding-bottom: 30px;
-    border-bottom: 2px solid #e0e0e0;
-}
-
-.cpd-venue-single .cpd-header h1,
-.cpd-organiser-single .cpd-header h1,
-.cpd-instructor-single .cpd-header h1 {
-    font-size: 2.2em;
-    margin: 0 0 15px;
-    color: #333;
-}
-
-/* Photo styling */
-.cpd-organiser-photo,
-.cpd-instructor-photo {
-    margin-bottom: 25px;
-}
-
-.cpd-organiser-photo img,
-.cpd-instructor-photo img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto;
-    border: 5px solid #f0f0f0;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-/* Content area */
-.cpd-venue-single .cpd-content,
-.cpd-organiser-single .cpd-content,
-.cpd-instructor-single .cpd-content {
-    max-width: 800px;
-    margin: 0 auto 40px;
-    line-height: 1.7;
-    font-size: 1.05em;
-    color: #444;
-}
-
-/* Contact/Details box */
-.cpd-venue-details,
-.cpd-organiser-contact,
-.cpd-instructor-contact {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 30px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border-left: 4px solid #0073aa;
-}
-
-.cpd-venue-details h2,
-.cpd-organiser-contact h2,
-.cpd-instructor-contact h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.4em;
-    color: #333;
-}
-
-.cpd-venue-details p,
-.cpd-organiser-contact p,
-.cpd-instructor-contact p {
-    margin-bottom: 12px;
-    line-height: 1.6;
-}
-
-.cpd-venue-details strong,
-.cpd-organiser-contact strong,
-.cpd-instructor-contact strong {
-    color: #555;
-    display: inline-block;
-    min-width: 100px;
-}
-
-/* Links */
-.cpd-venue-details a,
-.cpd-organiser-contact a,
-.cpd-instructor-contact a {
-    color: #0073aa;
-    text-decoration: none;
-}
-
-.cpd-venue-details a:hover,
-.cpd-organiser-contact a:hover,
-.cpd-instructor-contact a:hover {
-    text-decoration: underline;
-}
-
-/* Post Navigation - Match CPD event exactly */
-.cpd-venue-single .cpd-post-nav,
-.cpd-organiser-single .cpd-post-nav,
-.cpd-instructor-single .cpd-post-nav {
-    max-width: 800px;
-    margin: 50px auto 0;
-    padding-top: 30px;
-    border-top: 1px solid #ddd;
-}
-
-.cpd-venue-single .cpd-nav-links,
-.cpd-organiser-single .cpd-nav-links,
-.cpd-instructor-single .cpd-nav-links {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.cpd-venue-single .cpd-nav-prev,
-.cpd-venue-single .cpd-nav-next,
-.cpd-organiser-single .cpd-nav-prev,
-.cpd-organiser-single .cpd-nav-next,
-.cpd-instructor-single .cpd-nav-prev,
-.cpd-instructor-single .cpd-nav-next {
-    max-width: 45%;
-}
-
-.cpd-venue-single .cpd-nav-next,
-.cpd-organiser-single .cpd-nav-next,
-.cpd-instructor-single .cpd-nav-next {
-    text-align: right;
-}
-
-.cpd-venue-single .cpd-nav-prev a,
-.cpd-venue-single .cpd-nav-next a,
-.cpd-organiser-single .cpd-nav-prev a,
-.cpd-organiser-single .cpd-nav-next a,
-.cpd-instructor-single .cpd-nav-prev a,
-.cpd-instructor-single .cpd-nav-next a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: #333;
-}
-
-.cpd-venue-single .cpd-nav-arrow,
-.cpd-organiser-single .cpd-nav-arrow,
-.cpd-instructor-single .cpd-nav-arrow {
-    font-size: 1.4em;
-    color: #0073aa;
-    flex-shrink: 0;
-}
-
-.cpd-venue-single .cpd-nav-title,
-.cpd-organiser-single .cpd-nav-title,
-.cpd-instructor-single .cpd-nav-title {
-    font-size: 0.95em;
-    line-height: 1.4;
-}
-
-/* Breadcrumbs - Match CPD event style */
-.cpd-venue-single .cpd-breadcrumbs,
-.cpd-organiser-single .cpd-breadcrumbs,
-.cpd-instructor-single .cpd-breadcrumbs {
-    max-width: 800px;
-    margin: 0 auto 30px;
-}
-
-/* Responsive for shortcodes */
-@media (max-width: 992px) {
-    .cpd-shortcode-events .cpd-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .cpd-shortcode-events .cpd-list {
-        grid-template-columns: 1fr;
-    }
-    
-    .cpd-venue-single,
-    .cpd-organiser-single,
-    .cpd-instructor-single {
-        padding: 20px 15px;
-    }
-    
-    .cpd-venue-single .cpd-header h1,
-    .cpd-organiser-single .cpd-header h1,
-    .cpd-instructor-single .cpd-header h1 {
-        font-size: 1.8em;
-    }
-    
-    .cpd-venue-details,
-    .cpd-organiser-contact,
-    .cpd-instructor-contact {
-        padding: 20px;
-    }
-    
-    .cpd-venue-single .cpd-nav-links,
-    .cpd-organiser-single .cpd-nav-links,
-    .cpd-instructor-single .cpd-nav-links {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .cpd-venue-single .cpd-nav-next,
-    .cpd-organiser-single .cpd-nav-next,
-    .cpd-instructor-single .cpd-nav-next {
-        text-align: left;
-    }
-}
-
-/* Venue Map Styling */
-.cpd-venue-map {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 30px;
-    background: #f9f9f9;
-    border-radius: 8px;
-}
-
-.cpd-venue-map h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.4em;
-    color: #333;
-}
-
-.cpd-venue-map iframe {
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.cpd-map-link {
-    text-align: center;
-    margin-top: 15px;
-    margin-bottom: 0;
-}
-
-.cpd-map-link a {
-    color: #0073aa;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.cpd-map-link a:hover {
-    text-decoration: underline;
-}
-
-/* Live Search Box */
+/* Archive header with search layout */
 .cpd-archive-header {
     display: flex;
     justify-content: space-between;
@@ -1361,30 +396,33 @@
 
 .cpd-header-content {
     flex: 1;
-    text-align: center;
+    min-width: 250px;
 }
 
+.cpd-archive-title {
+    margin: 0;
+}
+
+/* Search box */
 .cpd-search-box {
     position: relative;
-    min-width: 280px;
-    max-width: 350px;
+    min-width: 300px;
+    max-width: 400px;
 }
 
 .cpd-search-input {
     width: 100%;
-    box-sizing: border-box;
-    padding: 12px 45px 12px 15px;
-    font-size: 1em;
+    padding: 10px 40px 10px 15px;
     border: 2px solid #ddd;
-    border-radius: 8px;
-    background: #fff;
-    transition: all 0.3s ease;
+    border-radius: 25px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
 }
 
 .cpd-search-input:focus {
     outline: none;
     border-color: #0073aa;
-    box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1);
 }
 
 .cpd-search-icon {
@@ -1392,33 +430,48 @@
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.1em;
-    opacity: 0.5;
+    color: #999;
     pointer-events: none;
-    line-height: 1;
+    font-size: 1.2em;
 }
 
+/* No results message */
 .cpd-no-results {
     text-align: center;
-    padding: 40px 20px;
+    padding: 40px;
     color: #666;
     font-size: 1.1em;
-    background: #f8f9fa;
-    border-radius: 8px;
-    margin-top: 20px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .cpd-archive-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .cpd-search-box {
-        max-width: 100%;
-        min-width: auto;
-    }
+/* Single venue page */
+.cpd-venue-header {
+    margin-bottom: 30px;
+}
+
+.cpd-venue-map {
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cpd-venue-map iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.cpd-venue-address {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.cpd-venue-address p {
+    margin: 0;
+    line-height: 1.6;
 }
 
 /* Archive header without search - centered title */
@@ -1449,3 +502,142 @@
         min-width: auto;
     }
 }
+
+/* ==========================================================================
+   TEMPORARY STYLING - Single CPD Event Content Spacing Fix
+   TODO: Remove this when new theme is implemented
+   This fixes spacing issues for HTML elements within .cpd-content
+   ========================================================================== */
+
+/* Base content container */
+.cpd-content {
+    line-height: 1.7;
+    color: #333;
+}
+
+/* Paragraphs - add bottom margin for spacing */
+.cpd-content p {
+    margin-bottom: 16px;
+    margin-top: 0;
+}
+
+/* Headings - add proper top and bottom margins */
+.cpd-content h1,
+.cpd-content h2,
+.cpd-content h3,
+.cpd-content h4,
+.cpd-content h5,
+.cpd-content h6 {
+    margin-top: 24px;
+    margin-bottom: 12px;
+    line-height: 1.3;
+    color: #222;
+}
+
+/* First heading should not have top margin */
+.cpd-content h1:first-child,
+.cpd-content h2:first-child,
+.cpd-content h3:first-child,
+.cpd-content h4:first-child,
+.cpd-content h5:first-child,
+.cpd-content h6:first-child {
+    margin-top: 0;
+}
+
+/* Lists - add margin and proper padding */
+.cpd-content ul,
+.cpd-content ol {
+    margin-top: 12px;
+    margin-bottom: 16px;
+    padding-left: 30px;
+}
+
+.cpd-content li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+/* Images - add vertical margin */
+.cpd-content img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+/* Tables - add margin and better styling */
+.cpd-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.95em;
+}
+
+.cpd-content th,
+.cpd-content td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: top;
+}
+
+.cpd-content th {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+}
+
+.cpd-content tr:nth-child(even) {
+    background: #fafafa;
+}
+
+/* Strong/Bold text used as labels */
+.cpd-content strong {
+    font-weight: 600;
+    color: #222;
+}
+
+/* Blockquotes */
+.cpd-content blockquote {
+    margin: 20px 0;
+    padding: 15px 20px;
+    border-left: 4px solid #0073aa;
+    background: #f9f9f9;
+    font-style: italic;
+}
+
+/* Horizontal rules */
+.cpd-content hr {
+    margin: 30px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+/* Links within content */
+.cpd-content a {
+    color: #0073aa;
+    text-decoration: underline;
+}
+
+.cpd-content a:hover {
+    color: #005177;
+}
+
+/* Definition lists (if used) */
+.cpd-content dl {
+    margin: 16px 0;
+}
+
+.cpd-content dt {
+    font-weight: 600;
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+.cpd-content dd {
+    margin-left: 20px;
+    margin-bottom: 8px;
+}
+
+/* END TEMPORARY STYLING ================================================== */
