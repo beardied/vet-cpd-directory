@@ -11,6 +11,7 @@ $term = get_queried_object();
 $display_title = ucwords(strtolower($term->name));
 $cpd_tags = ['Upcoming', 'On-demand', 'Free'];
 if (in_array($display_title, $cpd_tags)) {
+    $display_title = str_replace('On-demand', 'On Demand', $display_title);
     $display_title .= ' CPD';
 }
 ?>
