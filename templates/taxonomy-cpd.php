@@ -6,11 +6,18 @@
 get_header();
 
 $term = get_queried_object();
+
+// Add 'CPD' to specific tag names for better titles
+$display_title = ucwords(strtolower($term->name));
+$cpd_tags = ['Upcoming', 'On-demand', 'Free'];
+if (in_array($display_title, $cpd_tags)) {
+    $display_title .= ' CPD';
+}
 ?>
 
 <div class="wn-page-header wn-animate">
     <div class="wn-container">
-        <h1 class="wn-page-title"><?php echo esc_html(ucwords(strtolower($term->name))); ?></h1>
+        <h1 class="wn-page-title"><?php echo esc_html($display_title); ?></h1>
         <?php if ($term->description) : ?>
             <p class="wn-page-description"><?php echo esc_html($term->description); ?></p>
         <?php endif; ?>
