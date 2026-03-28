@@ -19,13 +19,15 @@ $categories = get_terms([
 ]);
 ?>
 
+<div class="wn-page-header wn-animate">
+    <div class="wn-container">
+        <h1 class="wn-page-title"><?php _e('CPD Categories', 'vet-cpd-directory'); ?></h1>
+        <p class="wn-page-description"><?php _e('Browse all CPD event categories', 'vet-cpd-directory'); ?></p>
+    </div>
+</div>
+
 <div class="cpd-archive cpd-categories-archive">
     <div class="cpd-container">
-        
-        <header class="cpd-archive-header">
-            <h1 class="cpd-archive-title"><?php _e('CPD Categories', 'vet-cpd-directory'); ?></h1>
-            <p class="cpd-archive-desc"><?php _e('Browse all CPD event categories', 'vet-cpd-directory'); ?></p>
-        </header>
         
         <?php if (!empty($categories) && !is_wp_error($categories)) : ?>
             

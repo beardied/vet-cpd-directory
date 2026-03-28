@@ -8,23 +8,24 @@ get_header();
 $term = get_queried_object();
 ?>
 
+<div class="wn-page-header wn-animate">
+    <div class="wn-container">
+        <h1 class="wn-page-title"><?php echo esc_html(ucwords(strtolower($term->name))); ?></h1>
+        <?php if ($term->description) : ?>
+            <p class="wn-page-description"><?php echo esc_html($term->description); ?></p>
+        <?php endif; ?>
+    </div>
+</div>
+
 <div class="cpd-archive">
     <div class="cpd-container">
         
-        <header class="cpd-archive-header">
-            <div class="cpd-header-content">
-                <h1 class="cpd-archive-title"><?php echo esc_html(ucwords(strtolower($term->name))); ?></h1>
-                
-                <?php if ($term->description) : ?>
-                    <p class="cpd-archive-desc"><?php echo esc_html($term->description); ?></p>
-                <?php endif; ?>
-            </div>
-            
+        <div class="cpd-search-wrapper" style="margin-bottom: 2rem;">
             <div class="cpd-search-box">
                 <input type="text" id="cpd-live-search" class="cpd-search-input" placeholder="<?php _e('Search events...', 'vet-cpd-directory'); ?>" autocomplete="off">
                 <span class="cpd-search-icon">🔍</span>
             </div>
-        </header>
+        </div>
         
         <?php if (have_posts()) : ?>
             
