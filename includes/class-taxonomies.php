@@ -33,6 +33,7 @@ class VET_CPD_Taxonomies {
             'hierarchical'      => true,
             'public'            => true,
             'show_ui'           => true,
+			'has_archive'		=> true,
             'show_admin_column' => true,
             'show_in_nav_menus' => true,
             'show_tagcloud'     => true,

@@ -4,6 +4,9 @@
  * Shows all CPD categories at /cpd-category/
  */
 
+// Fix 404 status - this is a valid custom page
+status_header(200);
+
 get_header();
 
 // Get all parent categories (hide empty = only show categories with events)

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Vet CPD Directory
  * Description: Veterinary CPD Directory - Manage veterinary Continuing Professional Development courses, venues, instructors, and organisers
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: OrangeWidow
  * Author URI: https://orangewidow.com
  * License: GPL v2 or later
@@ -59,6 +59,13 @@ add_action('plugins_loaded', function() {
     // Load WP-CLI commands
     if (defined('WP_CLI') && WP_CLI) {
         require_once VET_CPD_PLUGIN_DIR . 'includes/class-cli-commands.php';
+    }
+});
+
+add_action('template_redirect', function() {
+    if (is_tax('cpd_category') && !get_query_var('term')) {
+        include get_template_directory() . '/templates/taxonomy-cpd-category-index.php';
+        exit;
     }
 });
 

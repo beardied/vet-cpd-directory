@@ -503,6 +503,130 @@
     }
 }
 
+/* Category Grid Styles - CPD Category Index Page (/cpd-category/) */
+.cpd-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.cpd-category-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.cpd-category-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+}
+
+.cpd-category-title {
+    font-size: 1.4em;
+    margin: 0 0 10px;
+}
+
+.cpd-category-title a {
+    color: #333;
+    text-decoration: none;
+}
+
+.cpd-category-title a:hover {
+    color: #0073aa;
+}
+
+.cpd-category-desc {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.95em;
+}
+
+.cpd-category-count {
+    display: inline-block;
+    background: #0073aa;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+.cpd-category-children {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.cpd-category-children h3 {
+    font-size: 1em;
+    margin: 0 0 10px;
+    color: #555;
+}
+
+.cpd-category-children ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cpd-category-children li {
+    padding: 5px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.cpd-category-children li:last-child {
+    border-bottom: none;
+}
+
+.cpd-category-children a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.cpd-category-children a:hover {
+    text-decoration: underline;
+}
+
+.cpd-child-count {
+    color: #999;
+    font-size: 0.9em;
+    margin-left: 5px;
+}
+
+.cpd-category-footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.cpd-category-link {
+    display: inline-block;
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.cpd-category-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive - Category Grid */
+@media (max-width: 992px) {
+    .cpd-categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .cpd-categories-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ==========================================================================
    TEMPORARY STYLING - Single CPD Event Content Spacing Fix
    TODO: Remove this when new theme is implemented
