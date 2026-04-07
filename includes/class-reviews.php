@@ -272,6 +272,28 @@ class VET_CPD_Reviews {
     }
     
     /**
+     * Get overall average rating across all approved reviews
+     */
+    public static function get_overall_average_rating() {
+        global $wpdb;
+        
+        return $wpdb->get_var(
+            "SELECT AVG(star_rating) FROM " . self::$table_name . " WHERE status = 'approved'"
+        );
+    }
+    
+    /**
+     * Get total approved review count
+     */
+    public static function get_total_review_count() {
+        global $wpdb;
+        
+        return $wpdb->get_var(
+            "SELECT COUNT(*) FROM " . self::$table_name . " WHERE status = 'approved'"
+        );
+    }
+    
+    /**
      * Send notification email to staff
      */
     private static function send_staff_notification($review_id) {
@@ -580,10 +602,25 @@ class VET_CPD_Reviews {
             return ''; // Return empty if no reviews
         }
         
+        // Get overall stats
+        $overall_average = self::get_overall_average_rating();
+        $total_reviews = self::get_total_review_count();
+        
         ob_start();
         ?>
         <div class="cpd-recent-reviews">
             <h3 class="cpd-recent-reviews-title">Recent Reviews</h3>
+            
+            <?php if ($overall_average && $total_reviews) : ?>
+            <div class="cpd-overall-rating">
+                <div class="cpd-overall-stars"><?php echo str_repeat('★', round($overall_average)); ?></div>
+                <div class="cpd-overall-text">
+                    <strong><?php echo number_format($overall_average, 1); ?> out of 5</strong> 
+                    based on <?php echo $total_reviews; ?> review<?php echo $total_reviews !== 1 ? 's' : ''; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+            
             <div class="cpd-recent-reviews-grid">
                 <?php foreach ($reviews as $review) : ?>
                     <div class="cpd-recent-review-card">
@@ -631,42 +668,70 @@ class VET_CPD_Reviews {
         $total = $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE status = 'approved'");
         $total_pages = ceil($total / $per_page);
         
+        // Get overall stats
+        $overall_average = self::get_overall_average_rating();
+        
         ob_start();
         ?>
-        <div class="cpd-reviews-page">
-            <h1>All CPD Reviews</h1>
+        <div class="cpd-reviews-page-container">
             
             <?php if (empty($reviews)) : ?>
-                <p>No reviews yet.</p>
+                <div class="cpd-reviews-empty">
+                    <div class="cpd-reviews-empty-icon">⭐</div>
+                    <h2>No Reviews Yet</h2>
+                    <p>Be the first to leave a review on one of our CPD courses!</p>
+                </div>
             <?php else : ?>
-                <div class="cpd-all-reviews-list">
-                    <?php foreach ($reviews as $review) : ?>
-                        <div class="cpd-review-page-item">
-                            <div class="cpd-review-page-header">
-                                <span class="cpd-review-page-stars"><?php echo str_repeat('★', $review->star_rating); ?></span>
-                                <span class="cpd-review-page-date"><?php echo date_i18n('j M Y', strtotime($review->created_at)); ?></span>
+                
+                <!-- Hero Stats Section -->
+                <div class="cpd-reviews-hero">
+                    <div class="cpd-reviews-hero-content">
+                        <div class="cpd-reviews-hero-stars"><?php echo str_repeat('★', round($overall_average)); ?></div>
+                        <div class="cpd-reviews-hero-rating"><?php echo number_format($overall_average, 1); ?> <span>out of 5</span></div>
+                        <div class="cpd-reviews-hero-count">Based on <?php echo $total; ?> review<?php echo $total !== 1 ? 's' : ''; ?></div>
+                    </div>
+                </div>
+                
+                <!-- Reviews Grid -->
+                <div class="cpd-all-reviews-grid">
+                    <?php foreach ($reviews as $review) : 
+                        $cpd_link = get_permalink($review->cpd_event_id);
+                    ?>
+                        <div class="cpd-review-card">
+                            <div class="cpd-review-card-header">
+                                <div class="cpd-review-card-stars"><?php echo str_repeat('★', $review->star_rating); ?></div>
+                                <div class="cpd-review-card-date"><?php echo date_i18n('j M Y', strtotime($review->created_at)); ?></div>
                             </div>
-                            <div class="cpd-review-page-comment"><?php echo nl2br(esc_html($review->review_comment)); ?></div>
-                            <div class="cpd-review-page-meta">
-                                <span class="cpd-review-page-reviewer"><?php echo esc_html($review->reviewer_name); ?></span>
-                                <span class="cpd-review-page-cpd">
-                                    reviewed <a href="<?php echo esc_url(get_permalink($review->cpd_event_id)); ?>"><?php echo esc_html($review->cpd_title); ?></a>
-                                </span>
+                            
+                            <div class="cpd-review-card-body">
+                                <div class="cpd-review-card-quote">"<?php echo esc_html($review->review_comment); ?>"</div>
+                            </div>
+                            
+                            <div class="cpd-review-card-footer">
+                                <div class="cpd-review-card-author">
+                                    <div class="cpd-review-card-avatar"><?php echo esc_html(substr($review->reviewer_name, 0, 1)); ?></div>
+                                    <div class="cpd-review-card-name"><?php echo esc_html($review->reviewer_name); ?></div>
+                                </div>
+                                <a href="<?php echo esc_url($cpd_link); ?>" class="cpd-review-card-cpd">
+                                    <?php echo esc_html($review->cpd_title); ?>
+                                </a>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
                 
                 <?php if ($total_pages > 1) : ?>
-                    <div class="cpd-reviews-pagination">
+                    <div class="cpd-reviews-pagination-wrap">
                         <?php
                         echo paginate_links([
                             'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
                             'format' => '?paged=%#%',
                             'current' => $paged,
                             'total' => $total_pages,
-                            'prev_text' => '&laquo; Previous',
-                            'next_text' => 'Next &raquo;',
+                            'prev_text' => '← Previous',
+                            'next_text' => 'Next →',
+                            'before_page_number' => '',
+                            'after_page_number' => '',
                         ]);
                         ?>
                     </div>

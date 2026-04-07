@@ -1144,7 +1144,8 @@
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 20px 24px;
-    margin: 30px 0;
+    margin: 30px auto;
+    max-width: 600px;
 }
 
 .cpd-review-title {
@@ -1283,7 +1284,8 @@
 
 /* Reviews List Display */
 .cpd-reviews-section {
-    margin: 40px 0;
+    margin: 40px auto;
+    max-width: 700px;
 }
 
 .cpd-reviews-header {
@@ -1465,7 +1467,7 @@
 .cpd-view-all-link {
     display: inline-block;
     background: #0d8f4f;
-    color: #ffffff;
+    color: #ffffff !important;
     padding: 14px 28px;
     border-radius: 8px;
     text-decoration: none;
@@ -1475,107 +1477,239 @@
 
 .cpd-view-all-link:hover {
     background: #0a8043;
+    color: #ffffff !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(13, 143, 79, 0.3);
 }
 
-/* Reviews Page Template */
-.cpd-reviews-page {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.cpd-reviews-page h1 {
-    font-size: 36px;
-    font-weight: 700;
-    color: #1a202c;
-    margin-bottom: 32px;
+/* Overall Rating in Shortcode */
+.cpd-overall-rating {
     text-align: center;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
 }
 
-.cpd-all-reviews-list {
+.cpd-overall-stars {
+    color: #ffc107;
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.cpd-overall-text {
+    color: #4b5563;
+    font-size: 16px;
+}
+
+/* Reviews Page Template - Modern Design */
+.cpd-reviews-page-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Hero Stats Section */
+.cpd-reviews-hero {
+    background: linear-gradient(135deg, #0d8f4f 0%, #0a7040 100%);
+    border-radius: 16px;
+    padding: 48px 24px;
+    margin-bottom: 40px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.cpd-reviews-hero-stars {
+    font-size: 48px;
+    margin-bottom: 12px;
+    letter-spacing: 4px;
+}
+
+.cpd-reviews-hero-rating {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.cpd-reviews-hero-rating span {
+    font-size: 24px;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.cpd-reviews-hero-count {
+    font-size: 18px;
+    opacity: 0.95;
+}
+
+/* Reviews Grid */
+.cpd-all-reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+    .cpd-all-reviews-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Individual Review Card */
+.cpd-review-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
-    gap: 24px;
 }
 
-.cpd-review-page-item {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 28px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+.cpd-review-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
 }
 
-.cpd-review-page-header {
+.cpd-review-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f3f4f6;
 }
 
-.cpd-review-page-stars {
+.cpd-review-card-stars {
     color: #ffc107;
-    font-size: 24px;
+    font-size: 20px;
+    letter-spacing: 2px;
 }
 
-.cpd-review-page-date {
-    color: #94a3b8;
-    font-size: 14px;
+.cpd-review-card-date {
+    color: #9ca3af;
+    font-size: 13px;
 }
 
-.cpd-review-page-comment {
-    color: #374151;
-    font-size: 16px;
-    line-height: 1.7;
+.cpd-review-card-body {
+    flex: 1;
     margin-bottom: 16px;
 }
 
-.cpd-review-page-meta {
+.cpd-review-card-quote {
+    color: #374151;
+    font-size: 15px;
+    line-height: 1.7;
+    font-style: italic;
+}
+
+.cpd-review-card-footer {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-size: 14px;
-    color: #64748b;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #f3f4f6;
 }
 
-.cpd-review-page-reviewer {
+.cpd-review-card-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cpd-review-card-avatar {
+    width: 36px;
+    height: 36px;
+    background: #0d8f4f;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.cpd-review-card-name {
     font-weight: 600;
-    color: #1a202c;
+    color: #1f2937;
+    font-size: 14px;
 }
 
-.cpd-review-page-cpd a {
+.cpd-review-card-cpd {
     color: #0d8f4f;
     text-decoration: none;
+    font-size: 13px;
     font-weight: 500;
+    max-width: 50%;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.cpd-review-page-cpd a:hover {
+.cpd-review-card-cpd:hover {
     text-decoration: underline;
 }
 
-.cpd-reviews-pagination {
+/* Pagination */
+.cpd-reviews-pagination-wrap {
     margin-top: 40px;
-    text-align: center;
+    display: flex;
+    justify-content: center;
 }
 
-.cpd-reviews-pagination .page-numbers {
-    display: inline-block;
-    padding: 10px 16px;
+.cpd-reviews-pagination-wrap .page-numbers {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
     margin: 0 4px;
-    background: #f1f5f9;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     color: #374151;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: 500;
+    transition: all 0.2s;
 }
 
-.cpd-reviews-pagination .page-numbers.current {
+.cpd-reviews-pagination-wrap .page-numbers.current {
     background: #0d8f4f;
+    border-color: #0d8f4f;
     color: #ffffff;
 }
 
-.cpd-reviews-pagination .page-numbers:hover:not(.current) {
-    background: #e2e8f0;
+.cpd-reviews-pagination-wrap .page-numbers:hover:not(.current) {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+/* Empty State */
+.cpd-reviews-empty {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.cpd-reviews-empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.cpd-reviews-empty h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 12px;
+}
+
+.cpd-reviews-empty p {
+    color: #6b7280;
+    font-size: 16px;
 }
