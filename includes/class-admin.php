@@ -12,6 +12,9 @@ class VET_CPD_Admin {
         // Register settings
         add_action('admin_init', [__CLASS__, 'register_settings']);
         
+        // Enqueue admin scripts
+        add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_scripts']);
+        
         // Add plugin action links
         add_filter('plugin_action_links_' . VET_CPD_PLUGIN_BASENAME, [__CLASS__, 'action_links']);
         
@@ -19,6 +22,19 @@ class VET_CPD_Admin {
         add_filter('manage_cpd_event_posts_columns', [__CLASS__, 'cpd_columns']);
         add_action('manage_cpd_event_posts_custom_column', [__CLASS__, 'cpd_column_content'], 10, 2);
         add_filter('manage_edit-cpd_event_sortable_columns', [__CLASS__, 'cpd_sortable_columns']);
+    }
+    
+    /**
+     * Enqueue admin scripts and styles
+     */
+    public static function enqueue_admin_scripts($hook) {
+        // Only load on CPD settings page
+        if ($hook !== 'cpd_event_page_cpd_settings') {
+            return;
+        }
+        
+        // Enqueue WordPress media uploader
+        wp_enqueue_media();
     }
     
     /**

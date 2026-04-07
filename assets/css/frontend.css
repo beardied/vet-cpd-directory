@@ -90,9 +90,13 @@
 }
 
 .cpd-card-more {
-    color: #0073aa;
+    color: #0d8f4f;
     font-weight: bold;
     font-size: 0.95em;
+}
+
+.cpd-card-more:hover {
+    color: #0a7040;
 }
 
 /* Pagination */
