@@ -241,7 +241,7 @@ while (have_posts()) : the_post();
             </div>
         <?php endif; endif; endif; ?>
         
-        <!-- Reviews Section -->
+        <!-- Reviews Section - Only for past events -->
         <?php
         // Check if event is in the past (allow reviews for past events)
         $is_past_event = false;
@@ -251,11 +251,12 @@ while (have_posts()) : the_post();
             $is_past_event = $event_timestamp < $now;
         }
         
-        // Display existing reviews
-        echo VET_CPD_Reviews::render_reviews_list($event_id);
-        
-        // Show review form only for past events
+        // Only show reviews section for past events
         if ($is_past_event) :
+            // Display existing reviews
+            echo VET_CPD_Reviews::render_reviews_list($event_id);
+            
+            // Show review form
             echo VET_CPD_Reviews::render_review_form($event_id);
         endif;
         ?>

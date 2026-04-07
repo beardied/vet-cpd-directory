@@ -579,7 +579,7 @@ class VET_CPD_Reviews {
         $reviews = self::get_recent_reviews(intval($atts['count']));
         
         if (empty($reviews)) {
-            return '<p class="cpd-no-reviews">No reviews yet.</p>';
+            return ''; // Return empty if no reviews
         }
         
         ob_start();
