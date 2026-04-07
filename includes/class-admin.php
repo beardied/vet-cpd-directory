@@ -72,6 +72,12 @@ class VET_CPD_Admin {
         // Contact Settings
         register_setting('cpd_contact_settings', 'cpd_contact_email', 'sanitize_email');
         register_setting('cpd_contact_settings', 'cpd_footer_email', 'sanitize_email');
+        
+        // Header Settings
+        register_setting('cpd_header_settings', 'cpd_header_title_size', 'intval');
+        register_setting('cpd_header_settings', 'cpd_header_title_color', 'sanitize_hex_color');
+        register_setting('cpd_header_settings', 'cpd_header_tagline_size', 'intval');
+        register_setting('cpd_header_settings', 'cpd_header_tagline_color', 'sanitize_hex_color');
     }
     
     /**
@@ -92,6 +98,7 @@ class VET_CPD_Admin {
                 <a href="#general" class="nav-tab nav-tab-active" data-tab="general"><?php _e('General', 'vet-cpd-directory'); ?></a>
                 <a href="#social" class="nav-tab" data-tab="social"><?php _e('Social Media', 'vet-cpd-directory'); ?></a>
                 <a href="#hero" class="nav-tab" data-tab="hero"><?php _e('Hero Section', 'vet-cpd-directory'); ?></a>
+                <a href="#header" class="nav-tab" data-tab="header"><?php _e('Header', 'vet-cpd-directory'); ?></a>
                 <a href="#contact" class="nav-tab" data-tab="contact"><?php _e('Contact', 'vet-cpd-directory'); ?></a>
             </h2>
             
@@ -245,6 +252,48 @@ class VET_CPD_Admin {
                             <td>
                                 <input type="color" id="cpd_hero_overlay_color" name="cpd_hero_overlay_color" value="<?php echo esc_attr(get_option('cpd_hero_overlay_color', '#0d8f4f')); ?>" style="width: 100px; height: 40px;">
                                 <p class="description"><?php _e('Choose the overlay color. Default is the theme green.', 'vet-cpd-directory'); ?></p>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <?php submit_button(); ?>
+                </form>
+            </div>
+            
+            <!-- Header Tab -->
+            <div id="tab-header" class="cpd-tab-content" style="display:none;">
+                <form method="post" action="options.php">
+                    <?php settings_fields('cpd_header_settings'); ?>
+                    <h2><?php _e('Header Styling', 'vet-cpd-directory'); ?></h2>
+                    <p><?php _e('Customize the header logo title and tagline appearance.', 'vet-cpd-directory'); ?></p>
+                    
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row"><label for="cpd_header_title_size"><?php _e('Title Font Size', 'vet-cpd-directory'); ?></label></th>
+                            <td>
+                                <input type="number" id="cpd_header_title_size" name="cpd_header_title_size" value="<?php echo esc_attr(get_option('cpd_header_title_size', '30')); ?>" min="12" max="72" class="small-text"> px
+                                <p class="description"><?php _e('Default: 30px', 'vet-cpd-directory'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="cpd_header_title_color"><?php _e('Title Color', 'vet-cpd-directory'); ?></label></th>
+                            <td>
+                                <input type="color" id="cpd_header_title_color" name="cpd_header_title_color" value="<?php echo esc_attr(get_option('cpd_header_title_color', '#ffffff')); ?>" style="width: 100px; height: 40px;">
+                                <p class="description"><?php _e('Default: white (#ffffff)', 'vet-cpd-directory'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="cpd_header_tagline_size"><?php _e('Tagline Font Size', 'vet-cpd-directory'); ?></label></th>
+                            <td>
+                                <input type="number" id="cpd_header_tagline_size" name="cpd_header_tagline_size" value="<?php echo esc_attr(get_option('cpd_header_tagline_size', '12')); ?>" min="8" max="24" class="small-text"> px
+                                <p class="description"><?php _e('Default: 12px', 'vet-cpd-directory'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="cpd_header_tagline_color"><?php _e('Tagline Color', 'vet-cpd-directory'); ?></label></th>
+                            <td>
+                                <input type="color" id="cpd_header_tagline_color" name="cpd_header_tagline_color" value="<?php echo esc_attr(get_option('cpd_header_tagline_color', 'rgba(255,255,255,0.9)')); ?>" style="width: 100px; height: 40px;">
+                                <p class="description"><?php _e('Default: white with opacity (rgba(255,255,255,0.9))', 'vet-cpd-directory'); ?></p>
                             </td>
                         </tr>
                     </table>

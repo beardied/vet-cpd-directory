@@ -151,7 +151,8 @@
 
 .cpd-header h1 {
     margin-bottom: 15px;
-    font-size: 2em;
+    font-size: 1.4em;
+    color: #0d8f4f;
 }
 
 .cpd-header-meta {
@@ -218,12 +219,13 @@
 .cpd-section h2 {
     margin-top: 0;
     margin-bottom: 20px;
-    font-size: 1.4em;
+    font-size: 2em;
+    color: #0d8f4f;
 }
 
 .cpd-provider-button {
     display: inline-block;
-    background: #0073aa;
+    background: #0d8f4f;
     color: #fff;
     padding: 12px 30px;
     border-radius: 4px;
@@ -233,7 +235,7 @@
 }
 
 .cpd-provider-button:hover {
-    background: #005177;
+    background: #0a7040;
     color: #fff;
 }
 
