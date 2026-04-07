@@ -65,7 +65,7 @@ add_action('plugins_loaded', function() {
 
 add_action('template_redirect', function() {
     if (is_tax('cpd_category') && !get_query_var('term')) {
-        include get_template_directory() . '/templates/taxonomy-cpd-category-index.php';
+        include VET_CPD_PLUGIN_DIR . 'templates/taxonomy-cpd-category-index.php';
         exit;
     }
 });

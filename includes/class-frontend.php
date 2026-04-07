@@ -159,7 +159,15 @@ class VET_CPD_Frontend {
      * Check if we're on the cpd-category base page (/cpd-category/)
      */
     public static function is_cpd_category_base() {
+        // Check via WordPress query vars first (more reliable)
+        if (is_tax('cpd_category') && !get_query_var('term')) {
+            return true;
+        }
+        
+        // Fallback to URI check
         $uri = trim($_SERVER['REQUEST_URI'], '/');
+        // Remove query string if present
+        $uri = strtok($uri, '?');
         return $uri === 'cpd-category' || $uri === 'cpd-category/';
     }
     
