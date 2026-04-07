@@ -1005,73 +1005,98 @@
     margin: 30px 0;
     width: 100%;
     max-width: 100%;
+    display: block !important;
 }
 
+/* FORCE 3 COLUMN GRID - MAXIMUM SPECIFICITY */
+.cpd-upcoming-shortcode .cpd-upcoming-grid,
 .cpd-upcoming-grid {
     display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: auto !important;
     gap: 20px !important;
     width: 100% !important;
     max-width: 100% !important;
-    grid-auto-flow: row;
     box-sizing: border-box !important;
 }
 
 /* Force cards to fit within grid cells */
-.cpd-upcoming-grid .cpd-compact-card {
+.cpd-upcoming-grid .cpd-compact-card,
+.cpd-upcoming-shortcode .cpd-compact-card {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
     box-sizing: border-box !important;
     margin: 0 !important;
+    display: block !important;
 }
 
+/* Enhanced Compact Card Styling */
 .cpd-compact-card {
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .cpd-compact-card:hover {
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    transform: translateY(-6px);
+    border-color: #0d8f4f;
 }
 
 .cpd-compact-link {
-    display: block;
+    display: flex;
+    flex-direction: column;
     text-decoration: none;
     color: inherit;
+    height: 100%;
 }
 
 .cpd-compact-image {
     width: 100%;
-    height: 140px;
+    height: 160px;
     overflow: hidden;
+    position: relative;
 }
 
 .cpd-compact-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease;
 }
 
 .cpd-compact-card:hover .cpd-compact-img {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .cpd-compact-content {
-    padding: 15px;
+    padding: 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .cpd-compact-title {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 700;
     line-height: 1.4;
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
+    color: #1a202c;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cpd-compact-card:hover .cpd-compact-title {
     color: #0d8f4f;
 }
 
@@ -1079,16 +1104,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
 }
 
 .cpd-compact-date {
-    color: #666;
+    color: #4a5568;
+    font-weight: 500;
 }
 
 .cpd-compact-cost {
-    font-weight: 600;
+    font-weight: 700;
     color: #0d8f4f;
+    font-size: 15px;
 }
 
 @media (max-width: 768px) {
