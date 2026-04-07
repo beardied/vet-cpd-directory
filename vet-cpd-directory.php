@@ -55,6 +55,7 @@ add_action('plugins_loaded', function() {
     VET_CPD_Auto_Tag::init();
     VET_CPD_Frontend::init();
     VET_CPD_Admin::init();
+    VET_CPD_Reviews::init();
     
     // Load WP-CLI commands
     if (defined('WP_CLI') && WP_CLI) {
@@ -78,6 +79,10 @@ register_activation_hook(__FILE__, function() {
     VET_CPD_Instructor::register();
     VET_CPD_Series::register();
     VET_CPD_Taxonomies::register();
+    
+    // Create reviews table
+    VET_CPD_Reviews::create_table();
+    
     flush_rewrite_rules();
 });
 

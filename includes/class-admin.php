@@ -72,6 +72,7 @@ class VET_CPD_Admin {
         // Contact Settings
         register_setting('cpd_contact_settings', 'cpd_contact_email', 'sanitize_email');
         register_setting('cpd_contact_settings', 'cpd_footer_email', 'sanitize_email');
+        register_setting('cpd_contact_settings', 'cpd_review_notification_email', 'sanitize_email');
         
         // Header Settings
         register_setting('cpd_header_settings', 'cpd_header_title_size', 'intval');
@@ -321,6 +322,13 @@ class VET_CPD_Admin {
                             <td>
                                 <input type="email" id="cpd_footer_email" name="cpd_footer_email" value="<?php echo esc_attr(get_option('cpd_footer_email', '')); ?>" class="regular-text">
                                 <p class="description"><?php _e('Email address displayed in the footer. Leave blank to hide.', 'vet-cpd-directory'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><label for="cpd_review_notification_email"><?php _e('Review Notification Email', 'vet-cpd-directory'); ?></label></th>
+                            <td>
+                                <input type="email" id="cpd_review_notification_email" name="cpd_review_notification_email" value="<?php echo esc_attr(get_option('cpd_review_notification_email', get_option('admin_email'))); ?>" class="regular-text">
+                                <p class="description"><?php _e('Email address where new review notifications will be sent. Defaults to admin email.', 'vet-cpd-directory'); ?></p>
                             </td>
                         </tr>
                     </table>

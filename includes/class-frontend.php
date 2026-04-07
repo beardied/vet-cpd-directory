@@ -211,6 +211,15 @@ class VET_CPD_Frontend {
         }
         
         wp_enqueue_style('vet-cpd-frontend', VET_CPD_PLUGIN_URL . 'assets/css/frontend.css', [], VET_CPD_VERSION);
+        
+        // Enqueue reviews JS on CPD single pages
+        if (is_singular(VET_CPD_CPD::POST_TYPE) || $has_shortcode) {
+            wp_enqueue_script('vet-cpd-reviews', VET_CPD_PLUGIN_URL . 'assets/js/reviews.js', ['jquery'], VET_CPD_VERSION, true);
+            wp_localize_script('vet-cpd-reviews', 'cpd_reviews', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('cpd_review_nonce')
+            ]);
+        }
     }
     
     /**
