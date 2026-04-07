@@ -1003,12 +1003,27 @@
 /* Compact Upcoming Events Shortcode ================================================== */
 .cpd-upcoming-shortcode {
     margin: 30px 0;
+    width: 100%;
+    max-width: 100%;
 }
 
 .cpd-upcoming-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-auto-flow: row;
+    box-sizing: border-box !important;
+}
+
+/* Force cards to fit within grid cells */
+.cpd-upcoming-grid .cpd-compact-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
 }
 
 .cpd-compact-card {
