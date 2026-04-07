@@ -180,15 +180,33 @@ class VET_CPD_Frontend {
      * Enqueue frontend assets
      */
     public static function enqueue_assets() {
-        if (!is_singular(VET_CPD_CPD::POST_TYPE) && 
-            !is_singular(VET_CPD_Series::POST_TYPE) && 
-            !is_singular('cpd_venue') &&
-            !is_singular('cpd_organiser') &&
-            !is_singular('cpd_instructor') &&
-            !is_post_type_archive(VET_CPD_CPD::POST_TYPE) &&
-            !is_post_type_archive(VET_CPD_Series::POST_TYPE) &&
-            !is_tax([VET_CPD_Taxonomies::CATEGORY, VET_CPD_Taxonomies::TAG]) &&
-            !self::is_cpd_category_base()) {
+        // Check if we're on a CPD page
+        $is_cpd_page = is_singular(VET_CPD_CPD::POST_TYPE) || 
+            is_singular(VET_CPD_Series::POST_TYPE) || 
+            is_singular('cpd_venue') ||
+            is_singular('cpd_organiser') ||
+            is_singular('cpd_instructor') ||
+            is_post_type_archive(VET_CPD_CPD::POST_TYPE) ||
+            is_post_type_archive(VET_CPD_Series::POST_TYPE) ||
+            is_tax([VET_CPD_Taxonomies::CATEGORY, VET_CPD_Taxonomies::TAG]) ||
+            self::is_cpd_category_base();
+        
+        // Check if any CPD shortcodes are present in the content
+        $has_shortcode = false;
+        if (is_singular()) {
+            $post = get_post();
+            if ($post && $post->post_content) {
+                $shortcodes = ['cpd_upcoming', 'cpd_venue_events', 'cpd_instructor_events', 'cpd_organiser_events'];
+                foreach ($shortcodes as $shortcode) {
+                    if (has_shortcode($post->post_content, $shortcode)) {
+                        $has_shortcode = true;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!$is_cpd_page && !$has_shortcode) {
             return;
         }
         
