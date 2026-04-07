@@ -241,22 +241,28 @@ while (have_posts()) : the_post();
             </div>
         <?php endif; endif; endif; ?>
         
-        <!-- Reviews Section - Only for past events -->
+        <!-- Reviews Section - Only for past events (not tagged as upcoming) -->
         <?php
-        // Check if event is in the past (allow reviews for past events)
-        $is_past_event = false;
-        if (!empty($start_date)) {
-            $event_timestamp = strtotime($start_date);
-            $now = current_time('timestamp');
-            $is_past_event = $event_timestamp < $now;
-        } else {
-            $is_past_event = true;
-        }
+        // Check if CPD has 'upcoming' tag - if so, don't show reviews at all
+        $is_upcoming = has_term('upcoming', 'cpd_tag', $event_id);
         
-        // Only show reviews section for past events
-        if ($is_past_event && class_exists('VET_CPD_Reviews')) :
-            echo VET_CPD_Reviews::render_reviews_list($event_id);
-            echo VET_CPD_Reviews::render_review_form($event_id);
+        // Only show reviews if NOT upcoming
+        if (!$is_upcoming && class_exists('VET_CPD_Reviews')) :
+            // Check if event is in the past (allow reviews for past events)
+            $is_past_event = false;
+            if (!empty($start_date)) {
+                $event_timestamp = strtotime($start_date);
+                $now = current_time('timestamp');
+                $is_past_event = $event_timestamp < $now;
+            } else {
+                $is_past_event = true;
+            }
+            
+            // Only show reviews section for past events
+            if ($is_past_event) :
+                echo VET_CPD_Reviews::render_reviews_list($event_id);
+                echo VET_CPD_Reviews::render_review_form($event_id);
+            endif;
         endif;
         ?>
         
