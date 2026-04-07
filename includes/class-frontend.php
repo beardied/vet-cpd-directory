@@ -25,6 +25,7 @@ class VET_CPD_Frontend {
         add_shortcode('cpd_venue_events', [__CLASS__, 'shortcode_venue_events']);
         add_shortcode('cpd_instructor_events', [__CLASS__, 'shortcode_instructor_events']);
         add_shortcode('cpd_organiser_events', [__CLASS__, 'shortcode_organiser_events']);
+        add_shortcode('cpd_upcoming', [__CLASS__, 'shortcode_upcoming_events']);
         
         // Fix page title for category index
         add_filter('wp_title', [__CLASS__, 'fix_category_index_title'], 10, 2);
@@ -338,6 +339,52 @@ class VET_CPD_Frontend {
         <div class="cpd-shortcode-events cpd-organiser-events">
             <h3><?php _e('Events by this organiser', 'vet-cpd-directory'); ?></h3>
             <div class="cpd-list">
+                <?php foreach ($events as $event) : 
+                    echo self::render_event_card($event);
+                endforeach; ?>
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Shortcode: [cpd_upcoming]
+     * Display the 3 newest upcoming CPD events as tiles
+     * Usage: [cpd_upcoming]
+     */
+    public static function shortcode_upcoming_events($atts) {
+        $atts = shortcode_atts([
+            'count' => 3,
+        ], $atts, 'cpd_upcoming');
+        
+        $count = intval($atts['count']);
+        
+        // Get upcoming events
+        $events = get_posts([
+            'post_type'      => 'cpd_event',
+            'posts_per_page' => $count,
+            'orderby'        => 'meta_value',
+            'meta_key'       => '_cpd_start_date',
+            'order'          => 'ASC',
+            'meta_query'     => [
+                [
+                    'key'     => '_cpd_start_date',
+                    'value'   => date('Y-m-d H:i:s'),
+                    'compare' => '>=',
+                    'type'    => 'DATETIME',
+                ],
+            ],
+        ]);
+        
+        if (empty($events)) {
+            return '<p>' . __('No upcoming events found.', 'vet-cpd-directory') . '</p>';
+        }
+        
+        ob_start();
+        ?>
+        <div class="cpd-shortcode-events cpd-upcoming-events">
+            <div class="cpd-list cpd-upcoming-list">
                 <?php foreach ($events as $event) : 
                     echo self::render_event_card($event);
                 endforeach; ?>
