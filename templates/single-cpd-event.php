@@ -243,21 +243,31 @@ while (have_posts()) : the_post();
         
         <!-- Reviews Section - Only for past events -->
         <?php
+        // DEBUG: Check values
+        // echo '<!-- DEBUG: start_date=' . esc_html($start_date) . ' -->';
+        
         // Check if event is in the past (allow reviews for past events)
         $is_past_event = false;
-        if ($start_date) {
+        if (!empty($start_date)) {
             $event_timestamp = strtotime($start_date);
             $now = current_time('timestamp');
             $is_past_event = $event_timestamp < $now;
+            // echo '<!-- DEBUG: event_timestamp=' . $event_timestamp . ', now=' . $now . ', is_past=' . ($is_past_event ? 'yes' : 'no') . ' -->';
+        } else {
+            // If no start date, check if event is tagged as physical-event and in past
+            // or allow reviews for any CPD without a date (fallback)
+            $is_past_event = true; // Allow reviews if no date set
         }
         
         // Only show reviews section for past events
         if ($is_past_event) :
             // Display existing reviews
-            echo VET_CPD_Reviews::render_reviews_list($event_id);
-            
-            // Show review form
-            echo VET_CPD_Reviews::render_review_form($event_id);
+            if (class_exists('VET_CPD_Reviews')) {
+                echo VET_CPD_Reviews::render_reviews_list($event_id);
+                echo VET_CPD_Reviews::render_review_form($event_id);
+            } else {
+                echo '<!-- DEBUG: VET_CPD_Reviews class not found -->';
+            }
         endif;
         ?>
         
