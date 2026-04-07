@@ -133,7 +133,7 @@
 
 /* Single CPD Event */
 .cpd-single {
-    max-width: 800px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -226,7 +226,7 @@
 .cpd-provider-button {
     display: inline-block;
     background: #0d8f4f;
-    color: #fff;
+    color: #ffffff !important;
     padding: 12px 30px;
     border-radius: 4px;
     text-decoration: none;
@@ -236,7 +236,7 @@
 
 .cpd-provider-button:hover {
     background: #0a7040;
-    color: #fff;
+    color: #ffffff !important;
 }
 
 .cpd-venue {
