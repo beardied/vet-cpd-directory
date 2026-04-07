@@ -1504,43 +1504,8 @@
 
 /* Reviews Page Template - Modern Design */
 .cpd-reviews-page-container {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 20px;
-}
-
-/* Hero Stats Section */
-.cpd-reviews-hero {
-    background: linear-gradient(135deg, #0d8f4f 0%, #0a7040 100%);
-    border-radius: 16px;
-    padding: 48px 24px;
-    margin-bottom: 40px;
-    text-align: center;
-    color: #ffffff;
-}
-
-.cpd-reviews-hero-stars {
-    font-size: 48px;
-    margin-bottom: 12px;
-    letter-spacing: 4px;
-}
-
-.cpd-reviews-hero-rating {
-    font-size: 56px;
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 8px;
-}
-
-.cpd-reviews-hero-rating span {
-    font-size: 24px;
-    font-weight: 400;
-    opacity: 0.9;
-}
-
-.cpd-reviews-hero-count {
-    font-size: 18px;
-    opacity: 0.95;
 }
 
 /* Reviews Grid */

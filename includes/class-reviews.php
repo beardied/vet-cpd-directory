@@ -294,6 +294,18 @@ class VET_CPD_Reviews {
     }
     
     /**
+     * Get count of reviews by star rating
+     */
+    public static function get_reviews_by_rating($rating) {
+        global $wpdb;
+        
+        return $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM " . self::$table_name . " WHERE star_rating = %d AND status = 'approved'",
+            $rating
+        ));
+    }
+    
+    /**
      * Send notification email to staff
      */
     private static function send_staff_notification($review_id) {
@@ -682,17 +694,6 @@ class VET_CPD_Reviews {
                     <p>Be the first to leave a review on one of our CPD courses!</p>
                 </div>
             <?php else : ?>
-                
-                <!-- Hero Stats Section -->
-                <div class="cpd-reviews-hero">
-                    <div class="cpd-reviews-hero-content">
-                        <div class="cpd-reviews-hero-stars"><?php echo str_repeat('★', round($overall_average)); ?></div>
-                        <div class="cpd-reviews-hero-rating"><?php echo number_format($overall_average, 1); ?> <span>out of 5</span></div>
-                        <div class="cpd-reviews-hero-count">Based on <?php echo $total; ?> review<?php echo $total !== 1 ? 's' : ''; ?></div>
-                    </div>
-                </div>
-                
-                <!-- Reviews Grid -->
                 <div class="cpd-all-reviews-grid">
                     <?php foreach ($reviews as $review) : 
                         $cpd_link = get_permalink($review->cpd_event_id);
