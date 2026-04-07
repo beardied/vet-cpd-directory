@@ -383,13 +383,68 @@ class VET_CPD_Frontend {
         
         ob_start();
         ?>
-        <div class="cpd-shortcode-events cpd-upcoming-events">
-            <div class="cpd-list cpd-upcoming-list">
+        <div class="cpd-upcoming-shortcode">
+            <div class="cpd-upcoming-grid">
                 <?php foreach ($events as $event) : 
-                    echo self::render_event_card($event);
+                    echo self::render_compact_event_card($event);
                 endforeach; ?>
             </div>
         </div>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Helper: Render a compact event card for shortcodes
+     */
+    public static function render_compact_event_card($event) {
+        $event_id = $event->ID;
+        $start_date = VET_CPD_CPD::get_meta($event_id, '_cpd_start_date');
+        $cost = VET_CPD_CPD::get_meta($event_id, '_cpd_cost');
+        $currency = VET_CPD_CPD::get_meta($event_id, '_cpd_currency') ?: 'GBP';
+        $all_day = VET_CPD_CPD::get_meta($event_id, '_cpd_all_day');
+        
+        // Format date
+        if ($start_date) {
+            if ($all_day === '1') {
+                $date_display = date_i18n('j M Y', strtotime($start_date));
+            } else {
+                $date_display = date_i18n('j M Y', strtotime($start_date));
+            }
+        } else {
+            $date_display = '';
+        }
+        
+        // Format cost
+        if (self::is_past_physical_event($event_id)) {
+            $cost_display = __('Past Event', 'vet-cpd-directory');
+        } elseif ($cost !== '' && $cost !== '0') {
+            $symbol = $currency === 'GBP' ? '£' : ($currency === 'EUR' ? '€' : '$');
+            $cost_display = $symbol . $cost;
+        } else {
+            $cost_display = __('Free', 'vet-cpd-directory');
+        }
+        
+        ob_start();
+        ?>
+        <article class="cpd-compact-card">
+            <a href="<?php echo esc_url(get_permalink($event_id)); ?>" class="cpd-compact-link">
+                <?php if (has_post_thumbnail($event_id)) : ?>
+                    <div class="cpd-compact-image">
+                        <?php echo get_the_post_thumbnail($event_id, 'medium', ['class' => 'cpd-compact-img']); ?>
+                    </div>
+                <?php endif; ?>
+                <div class="cpd-compact-content">
+                    <h3 class="cpd-compact-title"><?php echo esc_html($event->post_title); ?></h3>
+                    <div class="cpd-compact-meta">
+                        <?php if ($date_display) : ?>
+                            <span class="cpd-compact-date"><?php echo esc_html($date_display); ?></span>
+                        <?php endif; ?>
+                        <span class="cpd-compact-cost"><?php echo esc_html($cost_display); ?></span>
+                    </div>
+                </div>
+            </a>
+        </article>
         <?php
         return ob_get_clean();
     }
