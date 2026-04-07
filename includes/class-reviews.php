@@ -406,12 +406,13 @@ class VET_CPD_Reviews {
     public static function ajax_submit_review() {
         check_ajax_referer('cpd_review_nonce', 'nonce');
         
-        // Verify CAPTCHA
-        $captcha = isset($_POST['captcha_answer']) ? intval($_POST['captcha_answer']) : 0;
-        $expected = isset($_POST['captcha_expected']) ? intval($_POST['captcha_expected']) : 0;
+        // Honeypot check - if this field is filled, it's a bot
+        $honeypot = isset($_POST['cpd_website']) ? sanitize_text_field($_POST['cpd_website']) : '';
         
-        if ($captcha !== $expected) {
-            wp_send_json_error(['message' => __('CAPTCHA verification failed. Please try again.', 'vet-cpd-directory')]);
+        if (!empty($honeypot)) {
+            // Bot detected - pretend success but don't save
+            wp_send_json_success(['message' => __('Thank you for your review! It will be displayed after moderation.', 'vet-cpd-directory')]);
+            return;
         }
         
         $data = [
@@ -469,30 +470,32 @@ class VET_CPD_Reviews {
      * Render review form
      */
     public static function render_review_form($event_id) {
-        // Generate simple math CAPTCHA
-        $num1 = wp_rand(1, 10);
-        $num2 = wp_rand(1, 10);
-        $expected = $num1 + $num2;
-        
         ob_start();
         ?>
         <div class="cpd-review-form-section" id="cpd-review-form">
-            <h3 class="cpd-review-title">What did you think of this CPD?</h3>
-            <p class="cpd-review-subtitle">Leave a review to help others choose the right course</p>
+            <h3 class="cpd-review-title">What did you think?</h3>
+            <p class="cpd-review-subtitle">Leave a review to help others</p>
             
             <form class="cpd-review-form" method="post">
                 <input type="hidden" name="cpd_event_id" value="<?php echo esc_attr($event_id); ?>">
-                <input type="hidden" name="captcha_expected" value="<?php echo esc_attr($expected); ?>">
                 <?php wp_nonce_field('cpd_review_nonce', 'cpd_review_nonce'); ?>
                 
-                <div class="cpd-form-group">
-                    <label for="reviewer_name">Your Name *</label>
-                    <input type="text" id="reviewer_name" name="reviewer_name" required>
+                <!-- Honeypot field - hidden from humans -->
+                <div class="cpd-honeypot" style="position: absolute; left: -9999px; opacity: 0;">
+                    <label for="cpd_website">Leave this empty</label>
+                    <input type="text" id="cpd_website" name="cpd_website" tabindex="-1" autocomplete="off">
                 </div>
                 
-                <div class="cpd-form-group">
-                    <label for="reviewer_email">Your Email (not published) *</label>
-                    <input type="email" id="reviewer_email" name="reviewer_email" required>
+                <div class="cpd-form-row">
+                    <div class="cpd-form-group cpd-form-group-half">
+                        <label for="reviewer_name">Your Name *</label>
+                        <input type="text" id="reviewer_name" name="reviewer_name" required placeholder="Jane Smith">
+                    </div>
+                    
+                    <div class="cpd-form-group cpd-form-group-half">
+                        <label for="reviewer_email">Your Email (private) *</label>
+                        <input type="email" id="reviewer_email" name="reviewer_email" required placeholder="jane@example.com">
+                    </div>
                 </div>
                 
                 <div class="cpd-form-group">
@@ -507,12 +510,7 @@ class VET_CPD_Reviews {
                 
                 <div class="cpd-form-group">
                     <label for="review_comment">Your Review *</label>
-                    <textarea id="review_comment" name="review_comment" rows="4" required placeholder="Share your experience with this CPD course..."></textarea>
-                </div>
-                
-                <div class="cpd-form-group cpd-captcha">
-                    <label for="captcha_answer">Security Check: What is <?php echo $num1; ?> + <?php echo $num2; ?>? *</label>
-                    <input type="number" id="captcha_answer" name="captcha_answer" required>
+                    <textarea id="review_comment" name="review_comment" rows="3" required placeholder="How was this CPD course?"></textarea>
                 </div>
                 
                 <button type="submit" class="cpd-submit-review-btn">Submit Review</button>
