@@ -68,6 +68,16 @@
     font-size: 1.2em;
     margin: 0 0 12px;
     line-height: 1.3;
+    color: #0d8f4f;
+}
+
+.cpd-card-title a {
+    color: #0d8f4f;
+    text-decoration: none;
+}
+
+.cpd-card-title a:hover {
+    color: #0a7040;
 }
 
 .cpd-card-meta {
