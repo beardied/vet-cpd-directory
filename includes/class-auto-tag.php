@@ -8,7 +8,6 @@ class VET_CPD_Auto_Tag {
     const TAG_UPCOMING = 'upcoming';
     const TAG_ON_DEMAND = 'on-demand';
     const TAG_PHYSICAL = 'physical-event';
-    const TAG_FREE = 'free';
     
     public static function init() {
         // Apply tags on save (after meta is saved at priority 10)
@@ -22,9 +21,8 @@ class VET_CPD_Auto_Tag {
     }
     
     /**
-     * Apply appropriate tags based on CPD date and cost
+     * Apply appropriate tags based on CPD date
      * Physical events: don't add on-demand tag when past, keep physical-event tag
-     * Free events: auto-tag if cost is blank or 0
      */
     public static function apply_tags($post_id) {
         if (get_post_type($post_id) !== VET_CPD_CPD::POST_TYPE) {
@@ -63,6 +61,11 @@ class VET_CPD_Auto_Tag {
             $new_terms[] = 'online';
         }
         
+        // Keep free tag if present
+        if (in_array('free', $current_terms)) {
+            $new_terms[] = 'free';
+        }
+        
         // Handle date-based tags
         if ($cpd_timestamp > $now) {
             // Future event - add upcoming tag
@@ -73,15 +76,6 @@ class VET_CPD_Auto_Tag {
                 // Non-physical past events get on-demand tag
                 $new_terms[] = self::TAG_ON_DEMAND;
             }
-        }
-        
-        // Handle free tag based on cost
-        $cost = VET_CPD_CPD::get_meta($post_id, '_cpd_cost');
-        $cost = trim($cost);
-        
-        // Check if free should be added (blank, 0, or '0')
-        if ($cost === '' || $cost === '0' || floatval($cost) == 0) {
-            $new_terms[] = self::TAG_FREE;
         }
         
         // Apply all terms at once (replaces existing)
