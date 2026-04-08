@@ -82,6 +82,7 @@ class VET_CPD_Frontend {
         
         // Check if this is a CPD taxonomy page
         if ($query->is_tax(['cpd_category', 'cpd_tag']) || $query->is_post_type_archive('cpd_event')) {
+            $query->set('posts_per_page', 12);
             $query->set('meta_key', '_cpd_start_date');
             $query->set('orderby', 'meta_value');
             $query->set('order', 'ASC');
