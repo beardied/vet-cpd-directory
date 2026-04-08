@@ -31,8 +31,12 @@ class VET_CPD_Auto_Tag {
             return;
         }
         
+        // Avoid infinite loops
+        remove_action('save_post', [__CLASS__, 'apply_tags'], 30);
+        
         $date = VET_CPD_CPD::get_meta($post_id, '_cpd_start_date');
         if (empty($date)) {
+            add_action('save_post', [__CLASS__, 'apply_tags'], 30, 2);
             return;
         }
         
@@ -42,38 +46,51 @@ class VET_CPD_Auto_Tag {
         // Check if this is a physical event
         $is_physical = has_term(self::TAG_PHYSICAL, VET_CPD_Taxonomies::TAG, $post_id);
         
-        // Remove upcoming tag (always remove it, will re-add if still future)
-        wp_remove_object_terms($post_id, self::TAG_UPCOMING, VET_CPD_Taxonomies::TAG);
+        // Get current terms to preserve manually checked tags
+        $current_terms = wp_get_object_terms($post_id, VET_CPD_Taxonomies::TAG, ['fields' => 'slugs']);
+        $current_terms = is_wp_error($current_terms) ? [] : $current_terms;
         
-        // Apply appropriate tag based on date and type
+        // Build new terms array
+        $new_terms = [];
+        
+        // Always keep physical-event tag if present
+        if ($is_physical) {
+            $new_terms[] = self::TAG_PHYSICAL;
+        }
+        
+        // Keep online tag if present
+        if (in_array('online', $current_terms)) {
+            $new_terms[] = 'online';
+        }
+        
+        // Handle date-based tags
         if ($cpd_timestamp > $now) {
             // Future event - add upcoming tag
-            wp_set_object_terms($post_id, self::TAG_UPCOMING, VET_CPD_Taxonomies::TAG, true);
+            $new_terms[] = self::TAG_UPCOMING;
         } else {
             // Past event
             if (!$is_physical) {
                 // Non-physical past events get on-demand tag
-                wp_set_object_terms($post_id, self::TAG_ON_DEMAND, VET_CPD_Taxonomies::TAG, true);
+                $new_terms[] = self::TAG_ON_DEMAND;
             }
-            // Physical events don't get on-demand tag, keep physical-event tag as-is
         }
         
         // Handle free tag based on cost
         $cost = VET_CPD_CPD::get_meta($post_id, '_cpd_cost');
+        $cost = trim($cost);
         
-        // DEBUG: Log the cost value
-        error_log("CPD Auto-Tag: Post ID {$post_id}, Cost value: '" . var_export($cost, true) . "'");
-        
-        if ($cost === '' || $cost === '0' || $cost === 0 || floatval($cost) == 0) {
-            // Cost is blank or 0 - add free tag
-            error_log("CPD Auto-Tag: Adding free tag to post {$post_id}");
-            $result = wp_set_object_terms($post_id, self::TAG_FREE, VET_CPD_Taxonomies::TAG, true);
-            error_log("CPD Auto-Tag: Result: " . var_export($result, true));
-        } else {
-            // Cost has a value - remove free tag
-            error_log("CPD Auto-Tag: Removing free tag from post {$post_id}, cost has value: {$cost}");
-            wp_remove_object_terms($post_id, self::TAG_FREE, VET_CPD_Taxonomies::TAG);
+        // Check if free should be added (blank, 0, or '0')
+        if ($cost === '' || $cost === '0' || floatval($cost) == 0) {
+            $new_terms[] = self::TAG_FREE;
         }
+        
+        // Apply all terms at once (replaces existing)
+        if (!empty($new_terms)) {
+            wp_set_object_terms($post_id, $new_terms, VET_CPD_Taxonomies::TAG, false);
+        }
+        
+        // Restore the action
+        add_action('save_post', [__CLASS__, 'apply_tags'], 30, 2);
     }
     
     /**

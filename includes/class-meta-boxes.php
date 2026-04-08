@@ -672,8 +672,7 @@ class VET_CPD_Meta_Boxes {
         // Save tags from checkboxes
         self::save_cpd_tags($post_id);
         
-        // Apply auto-tags based on date (runs after to ensure upcoming/on-demand are correct)
-        VET_CPD_Auto_Tag::apply_tags($post_id);
+        // Note: Auto-tags (upcoming, on-demand, free) are applied via save_post hook
     }
     
     /**
