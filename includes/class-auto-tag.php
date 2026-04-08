@@ -11,8 +11,8 @@ class VET_CPD_Auto_Tag {
     const TAG_FREE = 'free';
     
     public static function init() {
-        // Apply tags on save
-        add_action('save_post', [__CLASS__, 'apply_tags'], 20, 2);
+        // Apply tags on save (after meta is saved at priority 10)
+        add_action('save_post', [__CLASS__, 'apply_tags'], 30, 2);
         
         // Daily cron to update tags
         if (!wp_next_scheduled('vet_cpd_daily_tag_update')) {
