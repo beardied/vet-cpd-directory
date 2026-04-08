@@ -60,11 +60,18 @@ class VET_CPD_Auto_Tag {
         
         // Handle free tag based on cost
         $cost = VET_CPD_CPD::get_meta($post_id, '_cpd_cost');
+        
+        // DEBUG: Log the cost value
+        error_log("CPD Auto-Tag: Post ID {$post_id}, Cost value: '" . var_export($cost, true) . "'");
+        
         if ($cost === '' || $cost === '0' || $cost === 0 || floatval($cost) == 0) {
             // Cost is blank or 0 - add free tag
-            wp_set_object_terms($post_id, self::TAG_FREE, VET_CPD_Taxonomies::TAG, true);
+            error_log("CPD Auto-Tag: Adding free tag to post {$post_id}");
+            $result = wp_set_object_terms($post_id, self::TAG_FREE, VET_CPD_Taxonomies::TAG, true);
+            error_log("CPD Auto-Tag: Result: " . var_export($result, true));
         } else {
             // Cost has a value - remove free tag
+            error_log("CPD Auto-Tag: Removing free tag from post {$post_id}, cost has value: {$cost}");
             wp_remove_object_terms($post_id, self::TAG_FREE, VET_CPD_Taxonomies::TAG);
         }
     }
