@@ -8,6 +8,7 @@ class VET_CPD_Auto_Tag {
     const TAG_UPCOMING = 'upcoming';
     const TAG_ON_DEMAND = 'on-demand';
     const TAG_PHYSICAL = 'physical-event';
+    const TAG_FREE = 'free';
     
     public static function init() {
         // Apply tags on save
@@ -21,8 +22,9 @@ class VET_CPD_Auto_Tag {
     }
     
     /**
-     * Apply appropriate tags based on CPD date
+     * Apply appropriate tags based on CPD date and cost
      * Physical events: don't add on-demand tag when past, keep physical-event tag
+     * Free events: auto-tag if cost is blank or 0
      */
     public static function apply_tags($post_id) {
         if (get_post_type($post_id) !== VET_CPD_CPD::POST_TYPE) {
@@ -54,6 +56,16 @@ class VET_CPD_Auto_Tag {
                 wp_set_object_terms($post_id, self::TAG_ON_DEMAND, VET_CPD_Taxonomies::TAG, true);
             }
             // Physical events don't get on-demand tag, keep physical-event tag as-is
+        }
+        
+        // Handle free tag based on cost
+        $cost = VET_CPD_CPD::get_meta($post_id, '_cpd_cost');
+        if ($cost === '' || $cost === '0' || $cost === 0 || floatval($cost) == 0) {
+            // Cost is blank or 0 - add free tag
+            wp_set_object_terms($post_id, self::TAG_FREE, VET_CPD_Taxonomies::TAG, true);
+        } else {
+            // Cost has a value - remove free tag
+            wp_remove_object_terms($post_id, self::TAG_FREE, VET_CPD_Taxonomies::TAG);
         }
     }
     
